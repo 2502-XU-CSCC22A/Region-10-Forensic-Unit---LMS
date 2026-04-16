@@ -1,5 +1,5 @@
 dj-database-url==3.1.2
-Django==6.0.4
+Django==5.2.13
 executing==2.2.1
 fastjsonschema==2.21.2
 Flask==3.1.1
@@ -20,6 +20,7 @@ packaging==25.0
 pandas==2.3.3
 psycopg2-binary==2.9.11
 pylance==0.39.0
+python==3.12
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
 referencing==0.37.0
