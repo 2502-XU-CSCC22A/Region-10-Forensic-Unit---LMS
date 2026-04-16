@@ -1,7 +1,7 @@
 services:
   web:
     build: .
-    container_name: rfu-10-lms-web-1
+    container_name: rfu-10-lms-web
     # This 'tail' command keeps the container alive even if the DB connection fails
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
