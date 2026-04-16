@@ -20,7 +20,16 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
+<<<<<<< Updated upstream
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+=======
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+
+ALLOWED_HOSTS = ['*']
+>>>>>>> Stashed changes
 
 # While we're here, add this so the app doesn't crash in production mode
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost 127.0.0.1 [::1] .vercel.app .supabase.co').split(' ')
