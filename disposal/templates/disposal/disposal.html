@@ -1,14 +1,17 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RFU 10 LMS Dashboard</title>
     <link rel="stylesheet" href="{% static 'disposal/disposal_style.css' %}">
+    <link rel="stylesheet" href="{% static 'disposal/filter_modal.css' %}" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
+
 <body>
     <div class="dashboard-container">
         <header class="main-header">
@@ -17,38 +20,34 @@
                 <h1>Regional Forensic Unit 10 LMS</h1>
             </div>
             <div class="user-profile">
+                <div class="avatar"></div>
                 <div class="user-info">
                     <span class="user-name">Logistics Officer</span>
                     <span class="welcome-text">Welcome!</span>
                 </div>
-                <div class="avatar"></div>
             </div>
         </header>
 
         <div class="content-wrapper">
-            
+
             <aside class="sidebar" id="sidebarNav">
                 {% include 'sidebar.html' %}
-                
-                <div class="nav-bottom">
-                    <a href="#" class="nav-link">
-                        <i class="ph ph-user-gear"></i> User Management
-                    </a>
-                </div>
             </aside>
 
             <main class="main-content">
                 <div class="summary-alert">
-                    <div class="alert-icon"><i class="ph ph-info"></i></div>
+                    <img src="{% static 'img/alert.svg' %}" class="alert-icon">
                     <div class="alert-content">
                         <p><strong>Removal Summary:</strong> 5 Firearms were removed today</p>
-                        <span>Last sync: 4/5/2026, 10:04:22 AM • <a href="#">Learn more</a></span>
+                        <span class="sync-text">Last sync: 4/5/2026 10:04:22 AM • </span>
+                        <a href="#" class="learn-more-link">Learn more</a>
                     </div>
                 </div>
 
                 <div class="action-bar">
-                    <button class="btn-outline"><i class="ph ph-sliders"></i> Filter</button>
-                    <button class="btn-outline"><i class="ph ph-download-simple"></i> Download</button>
+                    <button class="btn-outline" onclick="toggleModal()"><img
+                            src="{% static 'img/filter.svg' %}">Filter</button>
+                    <button class="btn-outline"><img src="{% static 'img/download.svg' %}"> Download</button>
                 </div>
 
                 <div class="table-container">
@@ -63,17 +62,34 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for item in items %}
                             <tr>
-                                <td>11/11/2022</td>
-                                <td>Fire&Blood</td>
+                                <td>{{ item.unit }}</td>
+
+                                <td>{{ item.sub_unit }}</td>
+
                                 <td>
-                                    <span class="badge badge-pink">Fantasy</span>
-                                    <span class="badge badge-purple">Fiction</span>
+                                    <span class="badge badge-purple">{{ item.comm_type }}</span>
                                 </td>
-                                <td>11/11/2022</td>
-                                <td><a href="#" class="link">https://abc.in</a></td>
+
+                                <td>{{ item.expiry_status|date:"d/m/Y" }}</td>
+
+                                <td>
+                                    <a href="{{ item.station_url }}" class="link" target="_blank">
+                                        {{ item.station_url }}
+                                    </a>
+                                </td>
                             </tr>
-                            </tbody>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #64748b;">
+                                    <i class="ph ph-database-slash"
+                                        style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
+                                    No disposal records found in the database.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
                     </table>
                 </div>
 
@@ -88,5 +104,30 @@
             </main>
         </div>
     </div>
+
+    {% include 'disposal/filter_modal.html' %}
+
+    <script>
+        function toggleModal() {
+            const modal = document.getElementById('filterModal');
+            if (modal) {
+                modal.classList.toggle('active');
+                console.log("Modal toggled"); // Debugging line
+            } else {
+                console.error("Error: Element #filterModal not found!");
+            }
+        }
+
+        // Close modal when clicking the blurred overlay
+        window.onclick = function (event) {
+            const modal = document.getElementById('filterModal');
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
+        }
+    </script>
 </body>
+
+
+
 </html>
