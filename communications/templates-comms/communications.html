@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFU 10 LMS Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/communications.css' %}">
+    <link rel="stylesheet" href="{% static 'css/filter_modal.css' %}" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <header class="main-header">
+            <div class="logo-section">
+                <img src="{% static 'img/RFU10 Logo.png' %}" alt="Logo" class="logo-img">
+                <h1>Regional Forensic Unit 10 LMS</h1>
+            </div>
+            <div class="user-profile">
+                <div class="avatar"></div>
+                <div class="user-info">
+                    <span class="user-name">Logistics Officer</span>
+                    <span class="welcome-text">Welcome!</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <aside class="sidebar" id="sidebarNav">
+                {% include 'sidebar.html' %}
+            </aside>
+
+            <main class="main-content">
+                <div class="summary-alert">
+                    <img src="{% static 'img/alert.svg' %}" class="alert-icon">
+                    <div class="alert-content">
+                        <p><strong>Removal Summary:</strong> 5 Firearms were removed today</p>
+                        <span class="sync-text">Last sync: 4/5/2026 10:04:22 AM • </span>
+                        <a href="#" class="learn-more-link">Learn more</a>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <button class="btn-outline" onclick="toggleModal()"><img
+                            src="{% static 'img/filter.svg' %}">Filter</button>
+                    <button class="btn-outline"><img src="{% static 'img/download.svg' %}"> Download</button>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="ph ph-calendar"></i> Unit</th>
+                                <th><i class="ph ph-text-align-left"></i> Sub-Unit</th>
+                                <th><i class="ph ph-headphones"></i> Communication Type</th>
+                                <th><i class="ph ph-calendar-check"></i> Status Expiry</th>
+                                <th><i class="ph ph-link"></i> Station</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                            <tr>
+                                <td>{{ item.unit_date|date:"d/m/Y" }}</td>
+                                <td>{{ item.sub_unit }}</td>
+                                <td>
+                                    <span class="badge badge-purple">{{ item.comm_type }}</span>
+                                </td>
+                                <td>{{ item.status_expiry|date:"d/m/Y" }}</td>
+                                <td>
+                                    <a href="{{ item.station_url }}" class="link" target="_blank">
+                                        {{ item.station_url }}
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px; color: #64748b;">
+                                    <i class="ph ph-database-slash"
+                                        style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
+                                    No communication records found in the database.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination">
+                    <button class="page-num active">1</button>
+                    <button class="page-num">2</button>
+                    <button class="page-num">3</button>
+                    <span class="dots">...</span>
+                    <button class="page-num">67</button>
+                    <button class="page-num">68</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    {% include 'filter_modal.html' %}
+
+    <script>
+        function toggleModal() {
+            const modal = document.getElementById('filterModal');
+            if (modal) {
+                modal.classList.toggle('active');
+            }
+        }
+        window.onclick = function (event) {
+            const modal = document.getElementById('filterModal');
+            if (event.target === modal) {
+                modal.classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{% load static %}
+
+<div id="filterModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Filter</h2>
+            <button class="close-btn" type="button" onclick="toggleModal()">&times;</button>
+        </div>
+
+        <form method="GET" action="{% url 'communications_list' %}">
+            <div class="modal-body">
+                <div class="filter-section">
+                    <label>Unit</label>
+                    <div class="tag-container">
+                        <div class="filter-item">
+                            <input type="radio" name="Unit" value="PNP FG 10" id="pnp" checked>
+                            <label for="pnp" class="filter-tag">PNP FG 10</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <label>Sub-Unit</label>
+                    <div class="tag-container">
+                        <div class="filter-item">
+                            <input type="radio" name="Sub-Unit" value="Regional Crime Laboratory Office 10" id="rclo10" checked>
+                            <label for="rclo10" class="filter-tag">Regional Crime Laboratory Office 10</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <label>Expiry Status</label>
+                    <div class="tag-container">
+                        <div class="filter-item">
+                            <input type="radio" name="expiry_status" value="Expired" id="expired" checked>
+                            <label for="expired" class="filter-tag">Expired</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <label>Station</label>
+                    <div class="tag-container">
+                        <div class="filter-item">
+                            <input type="radio" name="station" value="all" id="all_stations" checked>
+                            <label for="all_stations" class="filter-tag">All Stations</label>
+                        </div>
+                        <div class="filter-item">
+                            <input type="radio" name="station" value="HQS RCLO 10" id="hqs">
+                            <label for="hqs" class="filter-tag">HQS RCLO 10</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <label>Communication Type</label>
+                    <div class="tag-container">
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="all" id="all_types" checked>
+                            <label for="all_types" class="filter-tag">All Types</label>
+                        </div>
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Analog Repeater" id="analog">
+                            <label for="analog" class="filter-tag">Analog Repeater</label>
+                        </div>
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Phone" id="phone">
+                            <label for="phone" class="filter-tag">Phone</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="submit" class="btn-apply">Apply Filter</button>
+                <button type="reset" class="btn-apply" onclick="window.location.href='{% url 'communications_list' %}'">Reset</button>
+            </div>
+        </form>
+    </div>
+</div>
