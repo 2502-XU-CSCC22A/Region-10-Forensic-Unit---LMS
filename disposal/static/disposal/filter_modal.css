@@ -1,5 +1,11 @@
+h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+}
+
 /* Modal Background Blur */
-.modal-overlay {
+#filterModal {
     display: none;
     position: fixed;
     top: 0;
@@ -13,12 +19,12 @@
     align-items: center;
 }
 
-.modal-overlay.active {
-    display: flex;
+#filterModal.active {
+    display: flex; /* This overrides 'none' when the class is added */
 }
 
-/* Modal Container */
-.modal-content {
+/* 3. Your styling remains the same, just ensure class names match your HTML */
+.filter-modal-content {
     background: white;
     width: 600px;
     max-height: 90vh;
@@ -29,7 +35,7 @@
     border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.modal-header {
+.filter-modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -38,20 +44,20 @@
     margin-bottom: 25px;
 }
 
-.modal-header h2 {
+.filter-modal-header h2 {
     font-family: 'Inter', sans-serif;
     font-size: 24px;
     font-weight: 900;
     color: #000;
 }
 
-.modal-footer {
+.filter-modal-footer {
     display: flex;
     flex-direction: row;
     gap: 25px;
 }
 
-.close-btn {
+.filter-close-btn {
     font-size: 28px;
     background: none;
     border: none;
@@ -66,7 +72,7 @@
 
 .filter-section label {
     display: block;
-    font-weight: 400;
+    font-weight: 500;
     font-size: 14px;
     color: #333;
     margin-bottom: 12px;
@@ -113,7 +119,7 @@
 }
 
 /* Apply Button */
-.btn-apply {
+.filter-btn-apply {
     font-family: 'Inter', sans-serif;
     width: 100%;
     border-color: #3C59DD;
@@ -126,7 +132,7 @@
     margin-top: 20px;
 }
 
-.btn-apply:hover {
+.filter-btn-apply:hover {
     background: #151b61;
     border: none;
     color: #FFFFFF;

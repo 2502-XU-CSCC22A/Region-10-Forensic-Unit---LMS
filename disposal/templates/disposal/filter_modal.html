@@ -1,17 +1,18 @@
 {% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
 
-<div id="filterModal" class="modal-overlay">
-    <div class="modal-content">
-        <div class="modal-header">
+<div id="filterModal" class="filter-modal-overlay">
+    <div class="filter-modal-content">
+        <div class="filter-modal-header">
             <h2>Filter</h2>
-            <button class="close-btn" type="button" onclick="toggleModal()">&times;</button>
+            <button class="filter-close-btn" type="button" onclick="closeFilterModal()">&times;</button>
         </div>
 
         <form method="GET" action="{% url 'disposal_list' %}">
-            <div class="modal-body">
+            <div class="filter-modal-body">
 
                 <div class="filter-section">
-                    <label>Unit</label>
+                    <h1>Unit</h1>
                     <div class="tag-container">
                         <div class="filter-item">
                             <input type="radio" name="Unit" value="PNP FG 10" id="pnp" checked>
@@ -21,7 +22,7 @@
                 </div>
 
                 <div class="filter-section">
-                    <label>Sub-Unit</label>
+                    <h1>Sub-Unit</h1>
                     <div class="tag-container">
                         <div class="filter-item">
                             <input type="radio" name="Sub-Unit" value="Regional Crime Laboratory Office 10" id="rclo10" checked>
@@ -31,7 +32,7 @@
                 </div>
 
                 <div class="filter-section">
-                    <label>Expiry Status</label>
+                    <h1>Expiry Status</h1>
                     <div class="tag-container">
                         <div class="filter-item">
                             <input type="radio" name="expiry_status" value="Expired" id="expired" checked>
@@ -45,7 +46,7 @@
                 </div>
 
                 <div class="filter-section">
-                    <label>Station</label>
+                    <h1>Station</h1>
                     <div class="tag-container">
                         <div class="filter-item">
                             <input type="radio" name="station" value="all" id="all_types" checked>
@@ -71,7 +72,7 @@
                 </div>
 
                 <div class="filter-section">
-                    <label>Communication Type</label>
+                    <h1>Communication Type</h1>
                     <div class="tag-container">
                         <div class="filter-item">
                             <input type="radio" name="comm_type" value="all" id="all_types" checked>
@@ -87,13 +88,83 @@
                             <input type="radio" name="comm_type" value="Phone" id="phone">
                             <label for="phone" class="filter-tag">Phone</label>
                         </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="HF/SSB Manpack Radio" id="HF/SSB">
+                            <label for="HF/SSB" class="filter-tag">HF/SSB Manpack Radio</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Mobile Radio UHF" id="UHF">
+                            <label for="UHF" class="filter-tag">Phone</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Mobile Radio VHF" id="VHF">
+                            <label for="VHF" class="filter-tag">Phone</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="VOIP" id="VOIP">
+                            <label for="VOIP" class="filter-tag">VOIP</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Other Signal Equipment" id="Signal_Equipment">
+                            <label for="Signal_Equipment" class="filter-tag">Signal Equipment</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Public Address System" id="PAS">
+                            <label for="PAS" class="filter-tag">Phone</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Tactical HF/SSB" id="Tactical HF/SSB">
+                            <label for="Tactical HF/SSB" class="filter-tag">Tactical HF/SSB</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Tactical VHF Low Band" id="VHF Low Band">
+                            <label for="VHF Low Band" class="filter-tag">Tactical VHF Low Band</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Telephony System" id="Telephony">
+                            <label for="Telephony" class="filter-tag">Telephony System</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Tower System" id="Tower System">
+                            <label for="Tower System" class="filter-tag">Tower System</label>
+                        </div>
+                        
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="Test Equipment" id="Test Equipment">
+                            <label for="Test Equipment" class="filter-tag">Test Equipment</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="UHF Analog" id="UHF Analog">
+                            <label for="UHF Analog" class="filter-tag">UHF Analog</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="UHF Digital" id="UHF Digital">
+                            <label for="UHF Digital" class="filter-tag">UHF Digital</label>
+                        </div>
+
+                        <div class="filter-item">
+                            <input type="radio" name="comm_type" value="VHF (Medium/High Brand)" id="VHF_(Medium/High Brand)">
+                            <label for="VHF (Medium/High Brand)" class="filter-tag">VHF (Medium/High Brand)</label>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="modal-footer">
-                <button type="submit" class="btn-apply">Apply Filter</button>
-                <button type="submit" class="btn-apply">Reset</button>
+            <div class="filter-modal-footer">
+                <button type="submit" class="filter-btn-apply">Apply Filter</button>
+                <button type="submit" class="filter-btn-apply">Reset</button>
             </div>
         </form>
     </div>
