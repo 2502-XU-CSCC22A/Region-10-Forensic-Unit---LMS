@@ -33,6 +33,11 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions', 
     'disposal',
+<<<<<<< Updated upstream
+=======
+    'login',
+    'config',
+>>>>>>> Stashed changes
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
