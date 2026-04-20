@@ -51,7 +51,11 @@
                 <div class="action-bar">
                     <button class="btn-outline" onclick="toggleFilterModal()"><img
                             src="{% static 'img/filter.svg' %}">Filter</button>
-                    <button class="btn-outline"><img src="{% static 'img/download.svg' %}"> Download</button>
+                    <a href="{% url 'export_disposal_csv' %}?{{ request.GET.urlencode }}">
+                        <button type="button" class="btn-outline"> <img src="{% static 'img/download.svg' %}">
+                            Download
+                        </button>
+                    </a>
                 </div>
 
                 <div class="table-container">
@@ -59,6 +63,7 @@
                         <thead>
                             <tr>
                                 <th><i class="ph ph-calendar"></i> Asset ID</th>
+                                <th><i class="ph ph-calendar"></i>Asset Model</th>
                                 <th><i class="ph ph-text-align-left"></i> Days Overdue</th>
                                 <th><i class="ph ph-headphones"></i> Expiry Date</th>
                                 <th><i class="ph ph-link"></i> Disposal Reason</th>
@@ -69,23 +74,25 @@
                             {% for item in items %}
                             <tr>
                                 <td>{{ item.id }}</td>
-                
+                                <td>{{ item.asset_ptr.model }}</td>
                                 <td>
-                                    <span class="badge {% if item.days_overdue > 0 %}badge-red{% else %}badge-gray{% endif %}">
+                                    <span
+                                        class="badge {% if item.days_overdue > 0 %}badge-red{% else %}badge-gray{% endif %}">
                                         {{ item.days_overdue }} days
                                     </span>
                                 </td>
-                
+
                                 <td>{{ item.expiry_date|date:"d/m/Y"|default:"N/A" }}</td>
-                
+
                                 <td>{{ item.reason }}</td>
-                
+
                                 <td>{{ item.disposal_date|date:"d/m/Y H:i" }}</td>
                             </tr>
                             {% empty %}
                             <tr>
                                 <td colspan="5" style="text-align: center; padding: 40px; color: #64748b;">
-                                    <i class="ph ph-database-slash" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
+                                    <i class="ph ph-database-slash"
+                                        style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
                                     No disposal records found in the database.
                                 </td>
                             </tr>

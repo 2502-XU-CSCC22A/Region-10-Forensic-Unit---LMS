@@ -15,22 +15,22 @@
                     <h1>Device Type</h1>
                     <div class="tag-container">
                         <div class="filter-item">
-                            <input type="radio" name="Firearms" value="Firearm" id="firearm" checked>
+                            <input type="radio" name="device_type" value="firearms" id="firearm">
                             <label for="firearm" class="filter-tag">Firearms</label>
                         </div>
-
+                
                         <div class="filter-item">
-                            <input type="radio" name="Mobility" value="Mobility" id="mobility" checked>
+                            <input type="radio" name="device_type" value="mobility" id="mobility" >
                             <label for="mobility" class="filter-tag">Mobility</label>
                         </div>
-
+                
                         <div class="filter-item">
-                            <input type="radio" name="Communication_Device" value="Communication_Device" id="comm_dev" checked>
+                            <input type="radio" name="device_type" value="communications" id="comm_dev" >
                             <label for="comm_dev" class="filter-tag">Communication Device</label>
                         </div>
-
+                
                         <div class="filter-item">
-                            <input type="radio" name="Investigative_Equipment" value="Investigative_Equipment" id="inv_equipment" checked>
+                            <input type="radio" name="device_type" value="investigative_equipment" id="inv_equipment" >
                             <label for="inv_equipment" class="filter-tag">Investigative Equipment</label>
                         </div>
                     </div>
@@ -40,11 +40,11 @@
                     <h1>Expiry Status</h1>
                     <div class="tag-container">
                         <div class="filter-item">
-                            <input type="radio" name="expiry_status" value="Expired" id="expired" checked>
+                            <input type="radio" name="expiry_status" value="Expired" id="expired" >
                             <label for="expired" class="filter-tag">Expired</label>
                         </div>
                         <div class="filter-item">
-                            <input type="radio" name="expiry_status" value="Expired" id="expired_3Months" checked>
+                            <input type="radio" name="expiry_status" value="expired_3Months" id="expired_3Months" >
                             <label for="expired" class="filter-tag">Expired (3 Months)</label>
                         </div>
                     </div>
@@ -54,23 +54,23 @@
                     <h1>Station</h1>
                     <div class="tag-container">
                         <div class="filter-item">
-                            <input type="radio" name="station" value="all" id="all_types_station" checked>
+                            <input type="radio" name="station" value="all" id="all_types_station" >
                             <label for="all_types" class="filter-tag">All Stations</label>
                         </div>
                         <div class="filter-item">
-                            <input type="radio" name="station" value="HQS RCLO 10" id="hqs" checked>
+                            <input type="radio" name="station" value="HQS RCLO 10" id="hqs" >
                             <label for="hqs" class="filter-tag">HQS RCLO 10</label>
                         </div>
                         <div class="filter-item">
-                            <input type="radio" name="station" value="Iligan City Crime Laboratory Office" id="iligan" checked>
+                            <input type="radio" name="station" value="Iligan City Crime Laboratory Office" id="iligan" >
                             <label for="iligan" class="filter-tag">Iligan City Crime Laboratory Office</label>
                         </div>
                         <div class="filter-item">
-                            <input type="radio" name="station" value="Lanao del Norte Prov CLO" id="lanao" checked>
+                            <input type="radio" name="station" value="Lanao del Norte Prov CLO" id="lanao" >
                             <label for="lanao" class="filter-tag">Lanao del Norte Prov CLO</label>
                         </div>
                         <div class="filter-item">
-                            <input type="radio" name="station" value="Misamis Occidental PCLO" id="misamis" checked>
+                            <input type="radio" name="station" value="Misamis Occidental PCLO" id="misamis" >
                             <label for="misamis" class="filter-tag">Misamis Occidental PCLO</label>
                         </div>
                     </div>
@@ -80,88 +80,8 @@
                     <h1>Communication Type</h1>
                     <div class="tag-container">
                         <div class="filter-item">
-                            <input type="radio" name="comm_type" value="all" id="all_types_communications" checked>
+                            <input type="radio" name="comm_type" value="all" id="all_types_communications" >
                             <label for="all_types" class="filter-tag">All Types</label>
-                        </div>
-                
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Analog Repeater" id="analog">
-                            <label for="analog" class="filter-tag">Analog Repeater</label>
-                        </div>
-                
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Phone" id="phone">
-                            <label for="phone" class="filter-tag">Phone</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="HF/SSB Manpack Radio" id="HF/SSB">
-                            <label for="HF/SSB" class="filter-tag">HF/SSB Manpack Radio</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Mobile Radio UHF" id="UHF">
-                            <label for="UHF" class="filter-tag">Phone</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Mobile Radio VHF" id="VHF">
-                            <label for="VHF" class="filter-tag">Phone</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="VOIP" id="VOIP">
-                            <label for="VOIP" class="filter-tag">VOIP</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Other Signal Equipment" id="Signal_Equipment">
-                            <label for="Signal_Equipment" class="filter-tag">Signal Equipment</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Public Address System" id="PAS">
-                            <label for="PAS" class="filter-tag">Phone</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Tactical HF/SSB" id="Tactical_HF/SSB">
-                            <label for="Tactical HF/SSB" class="filter-tag">Tactical HF/SSB</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Tactical VHF Low Band" id="VHF_LowBand">
-                            <label for="VHF Low Band" class="filter-tag">Tactical VHF Low Band</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Telephony System" id="Telephony">
-                            <label for="Telephony" class="filter-tag">Telephony System</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Tower System" id="Tower_System">
-                            <label for="Tower System" class="filter-tag">Tower System</label>
-                        </div>
-                        
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="Test Equipment" id="Test_Equipment">
-                            <label for="Test Equipment" class="filter-tag">Test Equipment</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="UHF Analog" id="UHF_Analog">
-                            <label for="UHF Analog" class="filter-tag">UHF Analog</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="UHF Digital" id="UHF_Digital">
-                            <label for="UHF Digital" class="filter-tag">UHF Digital</label>
-                        </div>
-
-                        <div class="filter-item">
-                            <input type="radio" name="comm_type" value="VHF (Medium/High Brand)" id="VHF_(Medium/High Brand)">
-                            <label for="VHF (Medium/High Brand)" class="filter-tag">VHF (Medium/High Brand)</label>
                         </div>
                     </div>
                 </div>

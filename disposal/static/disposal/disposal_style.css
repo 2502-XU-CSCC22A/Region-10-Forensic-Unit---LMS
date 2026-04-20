@@ -162,11 +162,17 @@ body {
     font-size: 14px;
     font-weight: 500;
     transition: background 0.2s;
+    text-decoration: none;
 }
 
 .btn-outline:hover {
     border-color: #3f51b5;
     color: #3f51b5;
+}
+
+a:has(.btn-outline) {
+    text-decoration: none;
+    color: inherit;
 }
 
 .learn-more-link {

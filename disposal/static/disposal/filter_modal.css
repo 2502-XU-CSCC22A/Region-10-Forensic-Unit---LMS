@@ -132,6 +132,25 @@ h1 {
     margin-top: 20px;
 }
 
+.filter-btn-reset {
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    border-color: #3C59DD;
+    color: #1a237e;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.filter-btn-reset:hover {
+    background: #151b61;
+    border: none;
+    color: #FFFFFF;
+}
+
 .filter-btn-apply:hover {
     background: #151b61;
     border: none;
