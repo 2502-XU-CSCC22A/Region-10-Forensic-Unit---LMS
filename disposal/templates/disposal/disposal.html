@@ -58,37 +58,34 @@
                     <table>
                         <thead>
                             <tr>
-                                <th><i class="ph ph-calendar"></i> Unit</th>
-                                <th><i class="ph ph-text-align-left"></i> Sub-Unit</th>
-                                <th><i class="ph ph-headphones"></i> Communication Type</th>
-                                <th><i class="ph ph-calendar-check"></i> Status Expiry</th>
-                                <th><i class="ph ph-link"></i> Station</th>
+                                <th><i class="ph ph-calendar"></i> Asset ID</th>
+                                <th><i class="ph ph-text-align-left"></i> Days Overdue</th>
+                                <th><i class="ph ph-headphones"></i> Expiry Date</th>
+                                <th><i class="ph ph-link"></i> Disposal Reason</th>
+                                <th><i class="ph ph-calendar-check"></i> Disposal Date</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in items %}
                             <tr>
-                                <td>{{ item.unit }}</td>
-
-                                <td>{{ item.sub_unit }}</td>
-
+                                <td>{{ item.id }}</td>
+                
                                 <td>
-                                    <span class="badge badge-purple">{{ item.comm_type }}</span>
+                                    <span class="badge {% if item.days_overdue > 0 %}badge-red{% else %}badge-gray{% endif %}">
+                                        {{ item.days_overdue }} days
+                                    </span>
                                 </td>
-
-                                <td>{{ item.expiry_status|date:"d/m/Y" }}</td>
-
-                                <td>
-                                    <a href="{{ item.station_url }}" class="link" target="_blank">
-                                        {{ item.station_url }}
-                                    </a>
-                                </td>
+                
+                                <td>{{ item.expiry_date|date:"d/m/Y"|default:"N/A" }}</td>
+                
+                                <td>{{ item.reason }}</td>
+                
+                                <td>{{ item.disposal_date|date:"d/m/Y H:i" }}</td>
                             </tr>
                             {% empty %}
                             <tr>
                                 <td colspan="5" style="text-align: center; padding: 40px; color: #64748b;">
-                                    <i class="ph ph-database-slash"
-                                        style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
+                                    <i class="ph ph-database-slash" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
                                     No disposal records found in the database.
                                 </td>
                             </tr>
@@ -180,23 +177,75 @@
             }
         }
 
+        function applyTableFilters() {
+            const unit = document.getElementById('filterUnit').value;
+            const commType = document.getElementById('filterCommType').value;
+
+            // Build the URL with parameters
+            let url = new URL(window.location.href);
+
+            if (unit) url.searchParams.set('unit', unit);
+            else url.searchParams.delete('unit');
+
+            if (commType) url.searchParams.set('comm_type', commType);
+            else url.searchParams.delete('comm_type');
+
+            // Reload the page with the new filters
+            window.location.href = url.toString();
+        }
+
+        // --- Inside disposal.html (or your main script file) ---
+
         function renderItems(filter) {
             const grid = document.getElementById('itemsGrid');
-            const filtered = filter === 'all'
+            const modalTitle = document.getElementById('modalTitle');
+            const itemCountText = document.getElementById('itemCountText');
+
+            if (!grid) return;
+
+            // 1. Filter the list (using dummy or Supabase data)
+            const filtered = (filter === 'all')
                 ? allItems
                 : allItems.filter(item => item.category === filter);
 
+            // 2. Clear the grid
             grid.innerHTML = '';
-            document.getElementById('itemCount').innerText = `${filtered.length} Items Listed`;
 
+            // 3. --- UPDATE THE NEW MODAL HEADER ---
+
+            // Set dynamic title
+            const titleMap = {
+                'all': 'REMOVED EQUIPMENT (SUMMARY)',
+                'firearm': 'REMOVED FIREARMS',
+                'communication': 'REMOVED COMMUNICATION UNITS',
+                'investigative': 'REMOVED INVESTIGATIVE TOOLS'
+            };
+            modalTitle.innerText = titleMap[filter];
+
+            // Set dynamic item count
+            const unitMap = {
+                'all': 'Items',
+                'firearm': 'Firearms',
+                'communication': 'Comms Units',
+                'investigative': 'Tools'
+            };
+            const unitName = (filtered.length === 1) ? filter : unitMap[filter];
+            itemCountText.innerText = `${filtered.length} ${unitName} Removed This Week`;
+
+            // 4. Populate the new cards
             filtered.forEach(item => {
                 const card = document.createElement('div');
+
+                // This keeps the red/blue/yellow border logic from earlier
                 card.className = `firearm-card card-${item.category}`;
+
                 card.innerHTML = `
             <div class="category-tag">${item.category}</div>
-            <img src="${item.image_url || 'placeholder.png'}" class="card-img" alt="equipment">
-            <h3>${item.title}</h3>
-            <p>${item.description}</p>
+            
+            <div class="card-img"></div>
+            
+            <h3>${item.title || 'Untitled Item'}</h3>
+            <p>${item.description || 'No description provided.'}</p>
         `;
                 grid.appendChild(card);
             });

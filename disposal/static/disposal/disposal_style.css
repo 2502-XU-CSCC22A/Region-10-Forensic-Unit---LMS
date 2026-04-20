@@ -76,12 +76,13 @@ body {
 
 .user-name {
     display: block;
+    font-size: 18px;
     font-weight: bold;
     color: #60a5fa;
 }
 
 .welcome-text {
-    font-size: 12px;
+    font-size: 15px;
     color: var(--text-muted);
 }
 

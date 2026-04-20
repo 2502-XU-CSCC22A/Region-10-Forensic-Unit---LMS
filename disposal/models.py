@@ -1,28 +1,48 @@
 from django.db import models
+from django.conf import settings
+from config.models import Asset
 
-class DisposalItem(models.Model):
-    unit = models.CharField(max_length=100)
-    sub_unit = models.CharField(max_length=100)
-    comm_type = models.CharField(max_length=100) # You can store "Fantasy, Fiction" here
-    expiry_status = models.DateField()
-    station_url = models.URLField()
+class DisposalItem(Asset): 
+    """
+    Inherits from Asset. 
+    In the database, this creates a table with a pointer (AssetID) to the parent Asset table.
+    """
+    # Fields matching your 'Disposal_Log' ERD and Supabase updates
+    disposal_reason = models.TextField(
+        db_column='disposal_reason', 
+        help_text="Reason for disposal/BER",
+        null=True, 
+        blank=True,
+    )
+    disposal_date = models.DateTimeField(
+        db_column='disposal_date', 
+        auto_now_add=True
+    )
+    days_overdue = models.IntegerField(
+        db_column='days_overdue', 
+        default=0, 
+        null=True, 
+        blank=True
+    )
+    expiry_date = models.DateField(
+        db_column='expiry_date', 
+        null=True, 
+        blank=True
+    )
+
+    # Tracking the User (From your ERD Disposal_Log -> UserID)
+    processed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        db_column='processed_by',
+        null=True, 
+        blank=True,
+        related_name='disposed_items'
+    )
+
+    class Meta:
+        db_table = 'disposal_disposalitems' # Matches your Supabase table name
+        verbose_name = "Disposal Item"
 
     def __str__(self):
-        return self.sub_unit
-
-class BerItem(models.Model):
-    # Mapping to your filter categories
-    CATEGORY_CHOICES = [
-        ('firearm', 'Firearm'),
-        ('communication', 'Communication'),
-        ('investigative', 'Investigative'),
-    ]
-
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    image_url = models.URLField(max_length=500, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.title} ({self.category})"
+        return f"Disposal: {self.property_no} - {self.reason[:20]}"
