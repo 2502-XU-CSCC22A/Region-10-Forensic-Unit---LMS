@@ -47,32 +47,37 @@
                     <button class="btn-outline" onclick="toggleModal()"><img
                             src="{% static 'img/filter.svg' %}">Filter</button>
                     <button class="btn-outline"><img src="{% static 'img/download.svg' %}"> Download</button>
+                    <button class="btn-outline btn-add" onclick="toggleAddModal()">
+                        <i class="ph ph-plus-circle"></i> Add New Equipment
+                    </button>
                 </div>
 
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th><i class="ph ph-calendar"></i> Unit</th>
-                                <th><i class="ph ph-text-align-left"></i> Sub-Unit</th>
-                                <th><i class="ph ph-headphones"></i> Communication Type</th>
-                                <th><i class="ph ph-calendar-check"></i> Status Expiry</th>
-                                <th><i class="ph ph-link"></i> Station</th>
+                                <th><i class="ph ph-hash"></i> IMEI/Serial</th>
+                                <th><i class="ph ph-broadcast"></i> Frequency Range</th>
+                                <th><i class="ph ph-tag"></i> Communication Type</th>
+                                <th><i class="ph ph-stack"></i> Stock Level</th>
+                                <th><i class="ph ph-info"></i> Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in items %}
                             <tr>
-                                <td>{{ item.unit_date|date:"d/m/Y" }}</td>
-                                <td>{{ item.sub_unit }}</td>
+                                <td>{{ item.imei_serial|default:"N/A" }}</td>
+
+                                <td>{{ item.frequency_range }}</td>
+
                                 <td>
-                                    <span class="badge badge-purple">{{ item.comm_type }}</span>
+                                    <span class="badge badge-purple">{{ item.type }}</span>
                                 </td>
-                                <td>{{ item.status_expiry|date:"d/m/Y" }}</td>
+
+                                <td>{{ item.stock_level }}</td>
+
                                 <td>
-                                    <a href="{{ item.station_url }}" class="link" target="_blank">
-                                        {{ item.station_url }}
-                                    </a>
+                                    <span class="status-text">{{ item.status|default:"Active" }}</span>
                                 </td>
                             </tr>
                             {% empty %}
@@ -101,14 +106,41 @@
     </div>
 
     {% include 'filter_modal.html' %}
+    {% include 'add_modal.html' %}
 
     <script>
+        /**
+         * Toggles the 'active' class on the filter modal.
+         * This matches the ID #filterModal in your CSS.
+         */
         function toggleModal() {
+            const modal = document.getElementById('filterModal'); // Looks for ID
+            if (modal) {
+                modal.classList.toggle('active'); // Toggles the class to trigger CSS 'display: flex'
+            }
+        }
+
+        /**
+         * Closes the modal specifically.
+         * Useful for the close button inside the modal.
+         */
+        function closeFilterModal() {
             const modal = document.getElementById('filterModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        function toggleAddModal() {
+            const modal = document.getElementById('addEquipmentModal');
             if (modal) {
                 modal.classList.toggle('active');
             }
         }
+
+        /**
+         * Allows the user to click the blurred background (overlay) 
+         * to exit the filter menu.
+         */
         window.onclick = function (event) {
             const modal = document.getElementById('filterModal');
             if (event.target === modal) {
@@ -117,4 +149,5 @@
         }
     </script>
 </body>
+
 </html>

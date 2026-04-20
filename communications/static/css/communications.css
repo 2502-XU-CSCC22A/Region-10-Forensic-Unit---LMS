@@ -254,3 +254,48 @@ td {
     border-color: var(--primary-blue);
     font-weight: 400;
 }
+/* Add New Equipment Button Specifics */
+.btn-add {
+    text-decoration: none; /* Removes underline from the <a> tag */
+    background-color: var(--primary-blue) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.btn-add i {
+    font-size: 18px;
+    margin-right: 5px;
+}
+
+.btn-add:hover {
+    background-color: #1a1b4b !important; /* Slightly darker blue on hover */
+    color: #ffffff !important;
+}
+
+/* Form Input Styling for Modals */
+.form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #1a237e;
+    box-shadow: 0 0 0 2px rgba(26, 35, 126, 0.1);
+}
+
+.btn-cancel {
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+    border: none !important;
+}
+
+.btn-cancel:hover {
+    background: #e2e8f0 !important;
+}

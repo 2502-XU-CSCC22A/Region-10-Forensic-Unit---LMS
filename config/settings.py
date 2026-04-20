@@ -31,8 +31,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions', 
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Ensure your app is registered so Django finds 'templates-comms'
     'communications',
+    'config',
 ]
 
 MIDDLEWARE = [

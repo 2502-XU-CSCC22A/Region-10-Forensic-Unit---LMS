@@ -1,21 +1,9 @@
 from django.db import models
+from config.models import Asset # Import the parent table from the Core app
 
-class Communication(models.Model):
-    # 'Unit' column - likely a date or timestamp in your screenshot
-    unit_date = models.DateField(null=True, blank=True)
-    
-    # 'Sub-Unit' column (e.g., Fire&Blood, Bridge of clay)
-    sub_unit = models.CharField(max_length=255)
-    
-    # 'Communication Type' column (e.g., Fantasy, Fiction)
-    # In a more advanced setup, you might use a ManyToMany field for tags
-    comm_type = models.CharField(max_length=100, help_text="e.g., Fantasy, Fiction, Self-help")
-    
-    # 'Status Expiry' column
-    status_expiry = models.DateField(null=True, blank=True)
-    
-    # 'Station' column (e.g., https://abc.in)
-    station_url = models.URLField(max_length=500, blank=True)
-
-    def __str__(self):
-        return f"{self.sub_unit} - {self.unit_date}"
+class Communication(Asset): # This 'Asset' link creates the 1:1 relationship
+    type = models.CharField(max_length=100)
+    imei_serial = models.CharField(max_length=100, null=True, blank=True)
+    frequency_range = models.CharField(max_length=100)
+    # You can change 'Encryption_Status' to 'Stock_Level' here
+    stock_level = models.IntegerField(default=0)
