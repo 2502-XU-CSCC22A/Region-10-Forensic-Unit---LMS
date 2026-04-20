@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RFU10 LMS – Welcome</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{% static 'css/home.css' %}"/>
+</head>
+<body>
+  <div class="desktop">
+    <div class="hero">
+      <img class="logo" src="{% static 'img/RFU10_Logo.png' %}" alt="PNP Forensic Group RFU10 Logo"/>
+      <div class="content">
+        <div class="description">
+          <p class="welcome-to">Welcome to RFU10<br/>Logistics Management<br/>System</p>
+          <p class="subtitle">Let us serve the people of the Philippines for the better.</p>
+          <a href="{% url 'login' %}" class="primary-button">
+            <span class="text-wrapper">Login</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
