@@ -1,0 +1,128 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Card Grid from Figma Prototype */
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .f-card { background: white; border-radius: 12px; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .f-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 18px; }
+    .f-info h4 { margin: 0; font-size: 1.3rem; font-weight: 700; color: #1e293b; }
+    .f-info small { color: #64748b; font-size: 0.7rem; font-weight: 600; display: block; line-height: 1.2; }
+
+    /* Figma Prototype Colors */
+    .c-blue { border: 1px solid #4e73df; } .i-blue { background: #4e73df; color: white; }
+    .c-orange { border: 1px solid #f6ad55; } .i-orange { background: #f6ad55; color: white; }
+    .c-red { border: 1px solid #e53e3e; } .i-red { background: #e53e3e; color: white; }
+    .c-green { border: 1px solid #48bb78; } .i-green { background: #48bb78; color: white; }
+    
+    .section-title { font-weight: 700; color: #1a2b6d; margin: 35px 0 15px 0; }
+    
+    /* Compressed Form Styles to match reference image */
+    .form-row-compact { margin-bottom: 10px; }
+    .form-group-compact label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+    .card-form { background-color: #f8f9fc; border-radius: 8px; }
+</style>
+
+<div class="stat-grid">
+    <div class="f-card c-blue"><div class="f-icon i-blue"><i class="fas fa-car"></i></div><div class="f-info"><small>Total Vehicles</small><h4>{{ total_vehicles }}</h4></div></div>
+    <div class="f-card c-blue"><div class="f-icon i-blue"><i class="fas fa-car"></i></div><div class="f-info"><small>With PMS Record</small><h4>{{ with_pms }}</h4></div></div>
+    <div class="f-card c-orange"><div class="f-icon i-orange"><i class="fas fa-car"></i></div><div class="f-info"><small>Without PMS Record</small><h4>{{ without_pms }}</h4></div></div>
+    <div class="f-card c-red"><div class="f-icon i-red"><i class="fas fa-wrench"></i></div><div class="f-info"><small>For PMS</small><h4>{{ for_pms }}</h4></div></div>
+    <div class="f-card c-orange"><div class="f-icon i-orange"><i class="fas fa-box"></i></div><div class="f-info"><small>For Registration Renewal</small><h4>{{ for_registration_renewal }}</h4></div></div>
+    <div class="f-card c-green"><div class="f-icon i-green"><i class="fas fa-shield-alt"></i></div><div class="f-info"><small>For Insurance Renewal</small><h4>{{ for_insurance_renewal }}</h4></div></div>
+    <div class="f-card c-green"><div class="f-icon i-green"><i class="fas fa-wrench"></i></div><div class="f-info"><small>Upcoming Repairs</small><h4>{{ upcoming_repairs }}</h4></div></div>
+    <div class="f-card c-green"><div class="f-icon i-green"><i class="fas fa-cog"></i></div><div class="f-info"><small>Upcoming PMS</small><h4>{{ upcoming_pms }}</h4></div></div>
+</div>
+
+<hr>
+
+<h3 class="section-title">List of Vehicles</h3>
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Vehicle ID</th>
+                        <th>Model</th>
+                        <th>Year</th>
+                        <th>Status</th>
+                        <th>Engine Number</th>
+                        <th>Chassis Number</th>
+                        <th>Registration Renewal</th>
+                        <th>Insurance Renewal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehicle in vehicles %}
+                    <tr>
+                        <td>{{ vehicle.vehicle_id }}</td>
+                        <td>{{ vehicle.model }}</td>
+                        <td>{{ vehicle.year }}</td>
+                        <td><span class="badge badge-info">{{ vehicle.status }}</span></td>
+                        <td>{{ vehicle.engine_number }}</td>
+                        <td>{{ vehicle.chassis_number }}</td>
+                        <td>{{ vehicle.registration_renewal_date }}</td>
+                        <td>{{ vehicle.insurance_renewal_date }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" class="text-center text-muted py-4">No vehicles recorded yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<h3 class="section-title">Add New Vehicle Asset</h3>
+<div class="card shadow-sm border-0 card-form p-4 mb-5">
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-row form-row-compact">
+            <div class="form-group col-md-3 form-group-compact">
+                <label>Vehicle ID</label>
+                {{ form.vehicle_id }}
+            </div>
+            <div class="form-group col-md-3 form-group-compact">
+                <label>Model</label>
+                {{ form.model }}
+            </div>
+            <div class="form-group col-md-3 form-group-compact">
+                <label>Year</label>
+                {{ form.year }}
+            </div>
+            <div class="form-group col-md-3 form-group-compact">
+                <label>Status</label>
+                {{ form.status }}
+            </div>
+        </div>
+
+        <div class="form-row form-row-compact">
+            <div class="form-group col-md-3 form-group-compact">
+                <label>Engine Number</label>
+                {{ form.engine_number }}
+            </div>
+            <div class="form-group col-md-3 form-group-compact">
+                <label>Chassis Number</label>
+                {{ form.chassis_number }}
+            </div>
+            <div class="form-group col-md-3 form-group-compact">
+                <label>LTO Registration Renewal</label>
+                {{ form.registration_renewal_date }}
+            </div>
+            <div class="form-group col-md-3 form-group-compact">
+                <label>Insurance Renewal</label>
+                {{ form.insurance_renewal_date }}
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+            <button type="submit" class="btn btn-primary px-5 shadow-sm" style="background-color: #1a2b6d; border: none;">
+                <i class="fas fa-plus-circle mr-2"></i> Save Vehicle Asset
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
