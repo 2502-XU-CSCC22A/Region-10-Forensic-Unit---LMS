@@ -8,43 +8,46 @@
     --alert-border: #bfdbfe;
 }
 
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg-light);
-    color: var(--text-main);
+body, html {
     margin: 0;
-    padding: 20px;
+    padding: 0;
+    height: 100vh; /* Exactly 100% of the screen height */
+    width: 100vw;
+    overflow: hidden; /* This is the "Magic" line that stops the page scroll */
 }
 
 .dashboard-container {
     display: flex;
-    flex-direction: column;
     height: 100vh;
-    overflow: hidden; /* Prevents the whole page from scrolling */
+    width: 100%;
 }
 
 .content-wrapper {
-    display: flex; 
-    flex-direction: row; /* Sidebar and Main sit side-by-side */
     flex: 1;
-    overflow: hidden; 
+    display: flex;
+    flex-direction: column; /* Stacks Header and Main vertically */
+    margin-left: 10px;      /* The 10px gap you wanted */
+    overflow: hidden;
 }
 
 .main-content {
-    flex: 1; /* Takes up all remaining width */
+    flex: 1;
+    padding: 0 30px 20px 30px; /* Match horizontal padding of header */
     background-color: #f4f7fe;
-    margin-left: 30px;
-    overflow-y: auto; /* This makes your table scrollable while nav stays fixed */
+    margin-right: 10px;
+    overflow-y: auto;
 }
 
 /* Header */
 .main-header {
-    height: 133px;
+    font-family: 'Inter', sans-serif;
+    background: white;
+    padding: 20px 30px; /* Adjust padding to match main-content */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10px;
-    background: white;
+    margin-right: 10px;
+    flex-shrink: 0;
 }
 
 .logo-section {
@@ -95,10 +98,11 @@ body {
 
 .sidebar {
     width: 280px;
-    min-width: 280px; /* Prevents it from squishing */
+    min-width: 280px;
     background-color: #1a237e;
-    height: 100%;
-    overflow-y: auto; /* Only the sidebar scrolls if links are long */
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
 }
 
 /* Alert Box */
@@ -122,6 +126,7 @@ body {
 }
 
 .alert-content {
+    font-family: 'Inter', sans-serif;
     display: flex;
     flex-direction: column; /* This stacks the P, SPAN, and A tags */
     gap: 4px; /* Space between the lines of text */
@@ -192,6 +197,7 @@ a:has(.btn-outline) {
 }
 
 table {
+    font-family: 'Inter', sans-serif;
     width: 100%;
     border-collapse: collapse;
     text-align: left;

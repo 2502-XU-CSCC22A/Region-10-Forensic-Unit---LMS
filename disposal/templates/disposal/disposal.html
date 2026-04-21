@@ -17,26 +17,24 @@
 
 <body>
     <div class="dashboard-container">
-        <header class="main-header">
-            <div class="logo-section">
-                <img src="{% static 'img/RFU10 Logo.png' %}" alt="Logo" class="logo-img">
-                <h1>Regional Forensic Unit 10 LMS</h1>
-            </div>
-            <div class="user-profile">
-                <div class="avatar"></div>
-                <div class="user-info">
-                    <span class="user-name">Logistics Officer</span>
-                    <span class="welcome-text">Welcome!</span>
-                </div>
-            </div>
-        </header>
-
+        <aside class="sidebar" id="sidebarNav">
+            {% include 'sidebar.html' %}
+        </aside>
+        
         <div class="content-wrapper">
-
-            <aside class="sidebar" id="sidebarNav">
-                {% include 'sidebar.html' %}
-            </aside>
-
+            <header class="main-header">
+                <div class="logo-section">
+                    <img src="{% static 'img/RFU10 Logo.png' %}" alt="Logo" class="logo-img">
+                    <h1>Regional Forensic Unit 10 LMS</h1>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar"></div>
+                    <div class="user-info">
+                        <span class="user-name">Logistics Officer</span>
+                        <span class="welcome-text">Welcome!</span>
+                    </div>
+                </div>
+            </header>
             <main class="main-content">
                 <div class="summary-alert">
                     <img src="{% static 'img/alert.svg' %}" class="alert-icon">
