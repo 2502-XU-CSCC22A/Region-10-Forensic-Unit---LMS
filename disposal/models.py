@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from config.models import Asset
+from datetime import date
 
 class DisposalItem(Asset): 
     """
@@ -43,6 +44,13 @@ class DisposalItem(Asset):
     class Meta:
         db_table = 'disposal_disposalitems' # Matches your Supabase table name
         verbose_name = "Disposal Item"
+    
+    @property
+    def days_overdue_calc(self):
+        if self.expiry_date and self.expiry_date < date.today():
+            delta = date.today() - self.expiry_date
+            return delta.days
+        return 0
 
     def __str__(self):
         return f"Disposal: {self.property_no} - {self.reason[:20]}"
