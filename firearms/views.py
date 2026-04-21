@@ -1,4 +1,9 @@
+
 from django.shortcuts import render
 
-def home(request):
-    return render(request, 'firearms/firearms.html')
+
+def index(request):
+   
+    return render(request, 'firearms/firearms_main.html', {
+        'active_page': 'firearms',
+    })
