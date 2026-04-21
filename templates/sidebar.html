@@ -1,143 +1,64 @@
 {% load static %}
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
-  rel="stylesheet"
-/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
 
-<div class="nav-sidebar-fixed">
-  <div class="sidebar-content d-flex flex-column">
-    <div class="nav-section">
-      <h6 class="nav-title">Dashboard</h6>
+<aside>
+  <div class="nav-section-label">Dashboard</div>
 
-      <a href="#" class="nav-item active">
-        <img src="{% static 'img/car.svg' %}" class="nav-icon" />
-        <span class="nav-text">Mobility</span>
-        <span class="badge">24</span>
-      </a>
+  <a class="nav-item {% if active_page == 'home' %}active{% endif %}"
+     href="#">
+    <span class="nav-icon">&#x1F3E0;</span> Home
+  </a>
 
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/gun.svg' %}" class="nav-icon" />
-        <span class="nav-text">Firearms</span>
-      </a>
+  <a class="nav-item {% if active_page == 'mobility' %}active{% endif %}"
+     href="#">
+    <span class="nav-icon">&#x1F697;</span> Mobility
+    <span class="nav-badge">24</span>
+  </a>
 
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/radio.svg' %}" class="nav-icon" />
-        <span class="nav-text">Communications</span>
-      </a>
+  <a class="nav-item {% if active_page == 'firearms' %}active{% endif %}"
+     href="#">
+    <span class="nav-icon">&#x1F52B;</span> Firearms
+    <span class="nav-badge">100+</span>
+  </a>
 
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/search.svg' %}" class="nav-icon" />
-        <span class="nav-text">Investigative Equipment</span>
-      </a>
-    </div>
+  <a class="nav-item {% if active_page == 'communications' %}active{% endif %}"
+     href="#">
+    <span class="nav-icon">&#x1F4E1;</span> Communications
+  </a>
 
-    <hr class="nav-divider" />
+  <a class="nav-item {% if active_page == 'investigative' %}active{% endif %}"
+     href="#">
+    <span class="nav-icon">&#x1F50D;</span> Investigative Equipment
+  </a>
 
-    <div class="nav-section">
-      <h6 class="nav-title">Monitoring</h6>
+  <hr class="nav-divider"/>
+  <div class="nav-section-label">Monitoring</div>
 
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/search-small.svg' %}" class="nav-icon" />
-        <span class="nav-text">PAR Monitoring</span>
-      </a>
+  <a class="nav-item {% if active_page == 'par' %}active{% endif %}"
+     href="#">
+    <span class="nav-icon">&#x1F4CB;</span> PAR Monitoring
+  </a>
 
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/doc.svg' %}" class="nav-icon" />
-        <span class="nav-text">Inspection Monitoring</span>
-      </a>
+  <a class="nav-item {% if active_page == 'inspection' %}active{% endif %}"
+     href="#">
+    <span class="nav-icon">&#x1F50E;</span> Inspection Monitoring
+  </a>
 
-      <a
-        href="{% url 'disposal' %}"
-        class="nav-item {% if request.resolver_match.url_name == 'disposal' %} active {% endif %}"
-      >
-        <img src="{% static 'img/trash.svg' %}" class="nav-icon" />
-        <span class="nav-text">BER & Disposal</span>
-      </a>
+  <a class="nav-item {% if active_page == 'ber' %}active{% endif %}"
+     href="#">
+    <span class="nav-icon">&#x1F5C2;&#xFE0F;</span> BER &amp; Disposal
+  </a>
 
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/folder.svg' %}" class="nav-icon" />
-        <span class="nav-text">Reports</span>
-      </a>
-    </div>
+  <a class="nav-item {% if active_page == 'reports' %}active{% endif %}"
+     href="#">
+    <span class="nav-icon">&#x1F4C1;</span> Reports
+  </a>
 
-    <div class="mt-auto user-mgmt-section">
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/user-square.svg' %}" class="nav-icon" />
-        <span class="nav-text">User Management</span>
-      </a>
-    </div>
+  <div class="bottom-nav">
+    <a class="nav-item {% if active_page == 'users' %}active{% endif %}"
+       href="#">
+      <span class="nav-icon">&#x1F464;</span> User Management
+    </a>
   </div>
-</div>
-
-{% load static %}
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
-  rel="stylesheet"
-/>
-<link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
-
-<div class="nav-sidebar-fixed">
-  <div class="sidebar-content d-flex flex-column">
-    <div class="nav-section">
-      <h6 class="nav-title">Dashboard</h6>
-
-      <a href="#" class="nav-item active">
-        <img src="{% static 'img/car.svg' %}" class="nav-icon" />
-        <span class="nav-text">Mobility</span>
-        <span class="badge">24</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/gun.svg' %}" class="nav-icon" />
-        <span class="nav-text">Firearms</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/radio.svg' %}" class="nav-icon" />
-        <span class="nav-text">Communications</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/search.svg' %}" class="nav-icon" />
-        <span class="nav-text">Investigative Equipment</span>
-      </a>
-    </div>
-
-    <hr class="nav-divider" />
-
-    <div class="nav-section">
-      <h6 class="nav-title">Monitoring</h6>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/search-small.svg' %}" class="nav-icon" />
-        <span class="nav-text">PAR Monitoring</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/doc.svg' %}" class="nav-icon" />
-        <span class="nav-text">Inspection Monitoring</span>
-      </a>
-
-      <a
-        href="{% url 'disposal' %}"
-        class="nav-item {% if request.resolver_match.url_name == 'disposal' %} active {% endif %}"
-      >
-        <img src="{% static 'img/trash.svg' %}" class="nav-icon" />
-        <span class="nav-text">BER & Disposal</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/folder.svg' %}" class="nav-icon" />
-        <span class="nav-text">Reports</span>
-      </a>
-    </div>
-
-    <div class="mt-auto user-mgmt-section">
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/user-square.svg' %}" class="nav-icon" />
-        <span class="nav-text">User Management</span>
-      </a>
-    </div>
-  </div>
-</div>
+</aside>

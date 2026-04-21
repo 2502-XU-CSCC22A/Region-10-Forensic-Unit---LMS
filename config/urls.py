@@ -9,7 +9,7 @@ from .views import home_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('disposal/', include('disposal.urls')),
-    
+    path('login/', include ('login.urls')),
     path('', home_view, name='home'), 
     
 ]
