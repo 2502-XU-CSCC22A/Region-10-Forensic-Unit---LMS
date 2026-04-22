@@ -1,0 +1,219 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+  
+  /* This centers everything on the screen */
+  .login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  /* This creates the side-by-side box */
+  .login-container {
+    display: flex;
+    /* This is the "magic" line for side-by-side */
+    width: 900px;
+    height: 550px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    /* Keeps the purple gradient inside the corners */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Left side (Purple) */
+  .welcome-panel {
+    flex: 1;
+    /* Takes up 50% width */
+    background: linear-gradient(135deg, #a88beb 0%, #7d5fff 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+  
+  .welcome-panel h1 {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Right side (Form) */
+  .form-panel {
+    flex: 1;
+    /* Takes up 50% width */
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  /* Left Side Gradient Panel */
+  .welcome-panel {
+    flex: 1;
+    background: linear-gradient(135deg, #3C59DD 0%, #192A7A 100%);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+  }
+  
+  .welcome-panel::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+    top: -50px;
+    left: -50px;
+  }
+  
+  .welcome-panel h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-top: 20px;
+    /* Adds space between logo and text */
+  }
+  
+  .small-logo {
+    width: 250px;
+    /* Adjust size as needed */
+    height: auto;
+    margin-bottom: 20px;
+  }
+  
+  .header {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    margin-bottom: 40px;
+    text-align: center  ;
+    /* This creates the gap */
+  }
+  
+  .header p {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    /* Removes default paragraph spacing */
+    text-transform: uppercase;
+  }
+  
+  /* Right Side Form Panel */
+  .form-panel {
+    flex: 1;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .form-panel h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #333;
+    font-weight: 900;
+  }
+  
+  .subtitle {
+    color: #888;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+  }
+  
+  .input-group {
+    margin-bottom: 20px;
+  }
+  
+  .input-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-bottom: 8px;
+  }
+  
+  .input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    font-size: 1rem;
+    outline: none;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    margin-bottom: 30px;
+  }
+  
+  .remember-me {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #333;
+  }
+  
+  .forgot-link {
+    color: #ccc;
+    text-decoration: none;
+  }
+  
+  .login-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #3C59DD;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .login-button:hover {
+    background-color: #192A7A;
+    cursor: pointer;
+  }
+  
+  .signup-text {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+  }
+  
+  .signup-text a {
+    color: #7d5fff;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .error-msg {
+    color: red;
+    font-size: 0.8rem;
+    margin-top: 10px;
+    text-align: center;
+  }

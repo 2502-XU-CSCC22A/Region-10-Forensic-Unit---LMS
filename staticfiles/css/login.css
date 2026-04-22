@@ -1,0 +1,317 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f0f2f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* ── Outer wrapper ─────────────────────────────────────────────────────────── */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+  width: 100%;
+}
+
+/* ── Card ──────────────────────────────────────────────────────────────────── */
+.login-container {
+  display: flex;
+  width: 900px;
+  min-height: 550px;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  animation: fadeUp 0.55s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Left gradient panel ───────────────────────────────────────────────────── */
+.welcome-panel {
+  flex: 1;
+  background: linear-gradient(135deg, #3c59dd 0%, #192a7a 100%);
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+/* Decorative blob */
+.welcome-panel::before {
+  content: '';
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  top: -60px;
+  left: -60px;
+  pointer-events: none;
+}
+
+.welcome-panel::after {
+  content: '';
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  bottom: -40px;
+  right: -40px;
+  pointer-events: none;
+}
+
+.small-logo {
+  width: 200px;
+  height: auto;
+  margin-bottom: 24px;
+  filter: drop-shadow(0 6px 20px rgba(0,0,0,0.25));
+  animation: floatLogo 4s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes floatLogo {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+.welcome-panel h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-panel .panel-sub {
+  font-size: 0.9rem;
+  opacity: 0.75;
+  margin-top: 8px;
+  font-weight: 500;
+  position: relative;
+  z-index: 1;
+}
+
+/* Green variant for "All Set!" panel */
+.welcome-panel.success-panel {
+  background: linear-gradient(135deg, #38a169 0%, #1e6b40 100%);
+}
+
+/* ── Right form panel ──────────────────────────────────────────────────────── */
+.form-panel {
+  flex: 1;
+  padding: 56px 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-header {
+  margin-bottom: 36px;
+  text-align: center;
+}
+
+.form-header h2,
+.form-panel h2 {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #1a202c;
+  letter-spacing: -0.02em;
+}
+
+.form-panel .subtitle {
+  color: #718096;
+  font-size: 0.88rem;
+  margin-top: 8px;
+  margin-bottom: 28px;
+}
+
+/* ── Inputs ────────────────────────────────────────────────────────────────── */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #a0aec0;
+  margin-bottom: 7px;
+  letter-spacing: 0.01em;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 7px;
+  font-size: 0.95rem;
+  font-family: 'Inter', sans-serif;
+  color: #1a202c;
+  outline: none;
+  background: #fafafa;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #3c59dd;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(60, 89, 221, 0.13);
+}
+
+/* ── Form options row ──────────────────────────────────────────────────────── */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  margin-bottom: 28px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4a5568;
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember-me input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: #3c59dd;
+}
+
+.forgot-link {
+  color: #a0aec0;
+  text-decoration: none;
+  font-size: 0.82rem;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: #3c59dd;
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+.login-button {
+  width: 100%;
+  padding: 14px;
+  background-color: #3c59dd;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 14px rgba(60, 89, 221, 0.3);
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.login-button:hover {
+  background-color: #192a7a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(25, 42, 122, 0.38);
+}
+
+/* ── Form footer link ──────────────────────────────────────────────────────── */
+.form-footer {
+  margin-top: 22px;
+  text-align: center;
+}
+
+.form-footer a {
+  font-size: 0.85rem;
+  color: #a0aec0;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.form-footer a:hover {
+  color: #3c59dd;
+}
+
+/* ── Alert messages ────────────────────────────────────────────────────────── */
+.alert {
+  padding: 10px 14px;
+  border-radius: 7px;
+  font-size: 0.83rem;
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+
+.alert-error {
+  background: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+}
+
+.alert-success {
+  background: #f0fff4;
+  color: #276749;
+  border: 1px solid #c6f6d5;
+}
+
+/* ── Error list (password form validation) ─────────────────────────────────── */
+.error-list {
+  list-style: none;
+  padding: 0;
+  margin: -10px 0 14px 0;
+}
+
+.error-list li {
+  color: #c53030;
+  font-size: 0.78rem;
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .login-container {
+    flex-direction: column;
+    width: 100%;
+    min-height: auto;
+    border-radius: 12px;
+  }
+
+  .welcome-panel {
+    padding: 36px 24px;
+    min-height: 220px;
+  }
+
+  .small-logo {
+    width: 130px;
+    margin-bottom: 14px;
+  }
+
+  .welcome-panel h1 { font-size: 1.6rem; }
+
+  .form-panel {
+    padding: 36px 28px;
+  }
+}

@@ -3,17 +3,17 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
+from .views import home_view
 from login.views import login_view, verify_token_view, dashboard_view, logout_view
 
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
-<<<<<<< HEAD
+
     path('disposal/', include('disposal.urls')),
     path('login/', include ('login.urls')),
     path('', home_view, name='home'), 
     path('mobility/', include('mobility.urls')), # Dashboard will be at /mobility/
-=======
 
     # Home / Landing page
     path('', TemplateView.as_view(template_name='Home/home.html'), name='home'),
@@ -49,5 +49,4 @@ urlpatterns = [
     path('reset-password/complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/password_reset_complete.html',
     ), name='password_reset_complete'),
->>>>>>> eb059739a12adacacd35f7704b66fea8333f9409
 ]
