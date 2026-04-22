@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+
+    <link rel="stylesheet" href="{% static 'usermanagement/usermanagement_style.css' %}" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <header class="main-header">
+            <div class="logo-section">
+                <img src="{% static 'img/RFU10 Logo.png' %}" alt="Logo" class="logo-img">
+                <h1>Regional Forensic Unit 10 LMS</h1>
+            </div>
+            <div class="user-profile">
+                <div class="avatar"></div>
+                <div class="user-info">
+                    <span class="user-name">Logistics Officer</span>
+                    <span class="welcome-text">Welcome!</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <aside class="sidebar" id="sidebarNav">
+                {% include 'sidebar.html' %}
+            </aside>
+
+            <main class="main-content">
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Full Name</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Role</th>
+                                <th>Last Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td class="name-cell">
+                                    {% if user.avatar %}
+                                        <img src="{{ user.avatar }}" alt="avatar" class="avatar"/>
+                                    {% else %}
+                                        <div class="avatar-placeholder">{{ user.full_name|first }}</div>
+                                    {% endif %}
+                                    {{ user.full_name }}
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.phone_num }}</td>
+                                <td>{{ user.role }}</td>
+                                <td>{{ user.last_login|date:"M d, Y H:i" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px; color: #64748b;">
+                                    No users found in the database.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </main>
+        </div>
+    </div>
+</body>
+
+</html>
