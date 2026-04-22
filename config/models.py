@@ -1,10 +1,24 @@
 from django.db import models
+<<<<<<< HEAD
 from django.conf import settings
 from datetime import date
 
 class AssetStatus(models.Model):
     status_id = models.AutoField(primary_key=True, db_column='StatusID') # Explicit PK
     status_name = models.CharField(max_length=50, db_column='StatusName', unique=True)
+=======
+
+class AssetStatus(models.Model):
+    """
+    Independent lookup table for Asset Statuses.
+    Matches 'Asset_Status' in your ERD.
+    """
+    status_name = models.CharField(
+        max_length=50, 
+        db_column='StatusName',  # Matches Supabase column name
+        unique=True
+    )
+>>>>>>> eb059739a12adacacd35f7704b66fea8333f9409
 
     class Meta:
         db_table = 'Asset_Status'  # Matches Supabase table name
@@ -13,6 +27,7 @@ class AssetStatus(models.Model):
     def __str__(self):
         return self.status_name
 
+<<<<<<< HEAD
 class PARRecord(models.Model):
     """
     Property Acknowledgement Receipt Record.
@@ -61,6 +76,10 @@ class PARRecord(models.Model):
 
         
 class Category(models.Model):   
+=======
+
+class Category(models.Model):
+>>>>>>> eb059739a12adacacd35f7704b66fea8333f9409
     category_name = models.CharField(max_length=100, unique=True)
 
     def __str__(self):

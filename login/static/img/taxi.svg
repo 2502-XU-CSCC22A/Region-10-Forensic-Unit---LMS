@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M3.5 16.5H19.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M5.5 16.5V18.5C5.5 19.05 5.05 19.5 4.5 19.5H2.5C1.95 19.5 1.5 19.05 1.5 18.5V11.68C1.5 10.9 1.68 10.14 2.03 9.44L4.4 4.71C5.08 3.35 6.46 2.5 7.98 2.5H15.04C16.56 2.5 17.94 3.36 18.62 4.71L20.99 9.44C21.34 10.13 21.52 10.9 21.52 11.68V18.5C21.52 19.05 21.07 19.5 20.52 19.5H18.52C17.97 19.5 17.52 19.05 17.52 18.5V16.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
@@ -7,3 +8,14 @@
 <path d="M9.5 14.5H13.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M8.5 2.5L9.22 1.05C9.39 0.71 9.74 0.5 10.11 0.5H12.87C13.25 0.5 13.6 0.71 13.76 1.05L14.48 2.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
+=======
+<svg width="23" height="20" viewBox="0 0 23 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M3.5 16.5H19.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M5.5 16.5V18.5C5.5 19.05 5.05 19.5 4.5 19.5H2.5C1.95 19.5 1.5 19.05 1.5 18.5V11.68C1.5 10.9 1.68 10.14 2.03 9.44L4.4 4.71C5.08 3.35 6.46 2.5 7.98 2.5H15.04C16.56 2.5 17.94 3.36 18.62 4.71L20.99 9.44C21.34 10.13 21.52 10.9 21.52 11.68V18.5C21.52 19.05 21.07 19.5 20.52 19.5H18.52C17.97 19.5 17.52 19.05 17.52 18.5V16.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22.5 8.51001H20C20 8.51001 16.5 9.50001 11.5 9.50001C6.5 9.50001 3 8.51001 3 8.51001H0.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M18.5 11.5C18.5 12.05 18.05 12.5 17.5 12.5H15.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4.5 11.5C4.5 12.05 4.95 12.5 5.5 12.5H7.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M9.5 14.5H13.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.5 2.5L9.22 1.05C9.39 0.71 9.74 0.5 10.11 0.5H12.87C13.25 0.5 13.6 0.71 13.76 1.05L14.48 2.5" stroke="white" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+>>>>>>> eb059739a12adacacd35f7704b66fea8333f9409
