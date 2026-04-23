@@ -1,320 +1,245 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard – RFU10 LMS</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <title>Regional Forensic Unit 10 LMS – Dashboard</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}"/>
 </head>
 <body>
 
-<!-- ── App Shell ─────────────────────────────────────────────────────────── -->
-<div class="app">
+<!-- ── Header ──────────────────────────────────────────────────────────────── -->
+<header>
+  <div class="header-brand">
+    <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
+    <span class="header-title">Regional Forensic Unit 10 LMS</span>
+  </div>
+  <div class="header-user">
+    <div class="user-avatar"></div>
+    <div class="user-info">
+      <div class="user-role">{{ user.get_full_name|default:user.username }}</div>
+      <div class="user-greet">Logistics Officer</div>
+    </div>
+  </div>
+</header>
 
-  <!-- ── SIDEBAR ─────────────────────────────────────────────────────────── -->
-  <aside class="sidebar">
-    <div class="sidebar-section-title">Dashboard</div>
+<!-- ── Layout ──────────────────────────────────────────────────────────────── -->
+<div class="layout">
 
-    <a href="{% url 'dashboard' %}" class="nav-item active">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-      <span>Home</span>
+  <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+  <aside>
+    <div class="nav-section-label">Dashboard</div>
+
+    <a class="nav-item active" href="{% url 'dashboard' %}">
+      <span class="nav-icon">&#x1F3E0;</span> Home
     </a>
 
-    <a href="#" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
-      </svg>
-      <span>Mobility</span>
-      <span class="badge">24</span>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">&#x1F697;</span> Mobility
+      <span class="nav-badge">24</span>
     </a>
 
-    <a href="#" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
-      </svg>
-      <span>Firearms</span>
+    <a class="nav-item" href="{% url 'firearms:index' %}">
+      <span class="nav-icon">&#x1F52B;</span> Firearms
+      <span class="nav-badge">100+</span>
     </a>
 
-    <a href="#" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013 5.18 2 2 0 015 3h3a2 2 0 012 1.72 12.05 12.05 0 00.66 2.65 2 2 0 01-.45 2.11L9.91 10a16 16 0 006 6l.22-.22a2 2 0 012.11-.45 12.05 12.05 0 002.65.66A2 2 0 0122 18z"/>
-      </svg>
-      <span>Communications</span>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">&#x1F4E1;</span> Communications
     </a>
 
-    <a href="#" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-      </svg>
-      <span>Investigative Equipment</span>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">&#x1F50D;</span> Investigative Equipment
     </a>
 
-    <div class="sidebar-section-title" style="margin-top:8px;">Monitoring</div>
+    <hr class="nav-divider"/>
+    <div class="nav-section-label">Monitoring</div>
 
-    <a href="#" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-      </svg>
-      <span>PAR Monitoring</span>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">&#x1F4CB;</span> PAR Monitoring
     </a>
 
-    <a href="#" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-      </svg>
-      <span>Inspection Monitoring</span>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">&#x1F50E;</span> Inspection Monitoring
     </a>
 
-    <a href="#" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
-      </svg>
-      <span>BER &amp; Disposal</span>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">&#x1F5C2;&#xFE0F;</span> BER &amp; Disposal
     </a>
 
-    <a href="#" class="nav-item">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-      </svg>
-      <span>Reports</span>
+    <a class="nav-item" href="#">
+      <span class="nav-icon">&#x1F4C1;</span> Reports
     </a>
 
-    <!-- Bottom: User Management -->
-    <div class="sidebar-bottom">
-      <a href="#" class="nav-item">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-        </svg>
-        <span>User Management</span>
+    <div class="bottom-nav">
+      <a class="nav-item" href="#">
+        <span class="nav-icon">&#x1F464;</span> User Management
       </a>
-      <a href="{% url 'logout' %}" class="nav-item nav-logout">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-        <span>Logout</span>
+      <a class="nav-item nav-logout" href="{% url 'logout' %}">
+        <span class="nav-icon">&#x1F6AA;</span> Logout
       </a>
     </div>
   </aside>
 
-  <!-- ── MAIN ─────────────────────────────────────────────────────────────── -->
-  <div class="main">
+  <!-- ── Main ────────────────────────────────────────────────────────────── -->
+  <main>
 
-    <!-- HEADER -->
-    <header class="header">
-      <img src="{% static 'img/RFU10_Logo.png' %}" class="header-logo" alt="RFU10"/>
-      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
-      <div class="header-user">
-        <div class="avatar">
-          {{ user.get_full_name|first|default:user.username|first|upper }}{{ user.last_name|first|upper }}
+    <!-- ── Stat Cards ──────────────────────────────────────────────────── -->
+    <div class="stat-cards">
+
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon blue">&#x1F4BC;</div>
+          <div>
+            <div class="stat-label">Total Assets</div>
+            <div class="stat-value">{{ total_assets }}</div>
+          </div>
         </div>
-        <div class="user-info">
-          <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
-          <div class="user-role">Welcome!</div>
-        </div>
+        <div class="stat-bar-wrap"><div class="stat-bar blue" style="width:100%"></div></div>
       </div>
-    </header>
 
-    <!-- CONTENT -->
-    <main class="content">
-
-      <!-- ── STAT CARDS ─────────────────────────────────────────────────── -->
-      <section class="stat-cards">
-
-        <div class="stat-card">
-          <div class="stat-icon bg-blue">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
-            </svg>
-          </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon green">&#x2705;</div>
           <div>
-            <div class="stat-val c-blue">{{ total_assets }}</div>
-            <div class="stat-lbl">Total Assets</div>
+            <div class="stat-label">Issued Items</div>
+            <div class="stat-value">{{ issued_items }}</div>
           </div>
         </div>
+        <div class="stat-bar-wrap"><div class="stat-bar green" style="{% if total_assets %}width:{{ issued_items|floatformat:0 }}%{% else %}width:0%{% endif %}"></div></div>
+      </div>
 
-        <div class="stat-card">
-          <div class="stat-icon bg-orange">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>
-            </svg>
-          </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon teal">&#x1F4E6;</div>
           <div>
-            <div class="stat-val c-orange">{{ issued_items }}</div>
-            <div class="stat-lbl">Issued Items</div>
+            <div class="stat-label">Available Items</div>
+            <div class="stat-value">{{ available_items }}</div>
           </div>
         </div>
+        <div class="stat-bar-wrap"><div class="stat-bar teal" style="{% if total_assets %}width:{{ available_items|floatformat:0 }}%{% else %}width:0%{% endif %}"></div></div>
+      </div>
 
-        <div class="stat-card">
-          <div class="stat-icon bg-green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-            </svg>
-          </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon red">&#x26A0;&#xFE0F;</div>
           <div>
-            <div class="stat-val c-green">{{ available_items }}</div>
-            <div class="stat-lbl">Available Items</div>
+            <div class="stat-label">Low Stock</div>
+            <div class="stat-value">{{ low_stock }}</div>
           </div>
         </div>
+        <div class="stat-bar-wrap"><div class="stat-bar red" style="{% if total_assets %}width:{{ low_stock|floatformat:0 }}%{% else %}width:0%{% endif %}"></div></div>
+      </div>
 
-        <div class="stat-card">
-          <div class="stat-icon bg-red">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-          </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon orange">&#x1F5A5;&#xFE0F;</div>
           <div>
-            <div class="stat-val c-red">{{ low_stock }}</div>
-            <div class="stat-lbl">Low Stock</div>
+            <div class="stat-label">BER Items</div>
+            <div class="stat-value">{{ ber_items }}</div>
           </div>
         </div>
+        <div class="stat-bar-wrap"><div class="stat-bar orange" style="{% if total_assets %}width:{{ ber_items|floatformat:0 }}%{% else %}width:0%{% endif %}"></div></div>
+      </div>
 
-        <div class="stat-card">
-          <div class="stat-icon bg-gray">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-            </svg>
-          </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-icon purple">&#x1F5D1;&#xFE0F;</div>
           <div>
-            <div class="stat-val c-gray">{{ ber_items }}</div>
-            <div class="stat-lbl">BER Items</div>
+            <div class="stat-label">Disposal Items</div>
+            <div class="stat-value">{{ disposal_items }}</div>
           </div>
         </div>
+        <div class="stat-bar-wrap"><div class="stat-bar purple" style="{% if total_assets %}width:{{ disposal_items|floatformat:0 }}%{% else %}width:0%{% endif %}"></div></div>
+      </div>
 
-        <div class="stat-card">
-          <div class="stat-icon bg-purple">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/>
-            </svg>
-          </div>
-          <div>
-            <div class="stat-val c-purple">{{ disposal_items }}</div>
-            <div class="stat-lbl">Disposal Items</div>
-          </div>
-        </div>
+    </div><!-- /stat-cards -->
 
-      </section>
+    <!-- ── Two-column widgets ───────────────────────────────────────────── -->
+    <div class="two-col">
 
-      <!-- ── TWO-COLUMN: Assets + Notifications ────────────────────────── -->
-      <section class="two-col">
-
-        <!-- Assets widget -->
-        <div class="widget">
-          <div class="widget-header">
-            <span class="widget-title">Assets</span>
-            <div class="widget-actions">
-              <button class="icon-btn" title="Refresh">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-              </button>
-              <button class="icon-btn" title="Filter">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-              </button>
-              <button class="icon-btn" title="Export">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><polyline points="8 2 12 6 16 2"/><line x1="12" y1="6" x2="12" y2="15"/></svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="activity-list">
-            {% for act in activities %}
-            <div class="activity-item">
-              <div class="av-sm">{{ act.initials }}</div>
-              <div class="activity-body">
-                <div class="activity-text">
-                  <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{% endif %}
-                </div>
-                {% if act.change %}
-                  <div class="activity-change">{{ act.change }}</div>
-                {% endif %}
-                <div class="activity-meta">{{ act.timestamp }}</div>
-              </div>
-              {% if act.unread %}<span class="dot"></span>{% endif %}
-            </div>
-            {% endfor %}
-          </div>
-
-          <button class="view-all">View all</button>
-        </div>
-
-        <!-- Notifications widget -->
-        <div class="widget">
-          <div class="widget-header">
-            <span class="widget-title">Notifications</span>
-            <span class="notif-count">{{ notification_count }}</span>
-            <button class="read-btn">Read</button>
-            <div class="widget-actions">
-              <button class="icon-btn" title="Refresh">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-              </button>
-              <button class="icon-btn" title="Filter">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-              </button>
-              <button class="icon-btn" title="Mark all read">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/></svg>
-              </button>
-            </div>
-          </div>
-
-          <div class="activity-list">
-            {% for act in activities %}
-            <div class="activity-item">
-              <div class="av-sm">{{ act.initials }}</div>
-              <div class="activity-body">
-                <div class="activity-text">
-                  <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{% endif %}
-                </div>
-                {% if act.change %}
-                  <div class="activity-change">{{ act.change }}</div>
-                {% endif %}
-                <div class="activity-meta">{{ act.timestamp }}</div>
-              </div>
-              {% if act.unread %}<span class="dot"></span>{% endif %}
-            </div>
-            {% endfor %}
-          </div>
-
-          <button class="view-all">View all</button>
-        </div>
-
-      </section>
-
-      <!-- ── RECENT ACTIVITIES ──────────────────────────────────────────── -->
-      <section class="widget">
+      <!-- Assets / Activity -->
+      <div class="widget">
         <div class="widget-header">
-          <span class="widget-title">Recent Activities</span>
-          <div class="widget-actions" style="margin-left:auto;">
-            <button class="icon-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-            </button>
-          </div>
+          <span class="widget-title">Recent Assets</span>
         </div>
-
         <div class="activity-list">
           {% for act in activities %}
           <div class="activity-item">
             <div class="av-sm">{{ act.initials }}</div>
             <div class="activity-body">
               <div class="activity-text">
-                <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{% endif %}
+                <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
               </div>
-              {% if act.change %}
-                <div class="activity-change">{{ act.change }}</div>
-              {% endif %}
+              <div class="activity-change">{{ act.change }}</div>
               <div class="activity-meta">{{ act.timestamp }}</div>
             </div>
             {% if act.unread %}<span class="dot"></span>{% endif %}
           </div>
+          {% empty %}
+          <p class="empty-msg">No recent asset records.</p>
           {% endfor %}
         </div>
-      </section>
+        <button class="view-all">View all</button>
+      </div>
 
-    </main><!-- /content -->
-  </div><!-- /main -->
+      <!-- Notifications -->
+      <div class="widget">
+        <div class="widget-header">
+          <span class="widget-title">Notifications</span>
+          <span class="notif-count">{{ notification_count }}</span>
+          <button class="read-btn">Mark read</button>
+        </div>
+        <div class="activity-list">
+          {% for act in activities %}
+          <div class="activity-item">
+            <div class="av-sm">{{ act.initials }}</div>
+            <div class="activity-body">
+              <div class="activity-text">
+                <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
+              </div>
+              <div class="activity-change">{{ act.change }}</div>
+              <div class="activity-meta">{{ act.timestamp }}</div>
+            </div>
+            {% if act.unread %}<span class="dot"></span>{% endif %}
+          </div>
+          {% empty %}
+          <p class="empty-msg">No notifications.</p>
+          {% endfor %}
+        </div>
+        <button class="view-all">View all</button>
+      </div>
 
-</div><!-- /app -->
+    </div><!-- /two-col -->
+
+    <!-- ── Recent Activities (full-width) ──────────────────────────────── -->
+    <div class="widget">
+      <div class="widget-header">
+        <span class="widget-title">Recent Activities</span>
+      </div>
+      <div class="activity-list">
+        {% for act in activities %}
+        <div class="activity-item">
+          <div class="av-sm">{{ act.initials }}</div>
+          <div class="activity-body">
+            <div class="activity-text">
+              <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
+            </div>
+            <div class="activity-change">{{ act.change }}</div>
+            <div class="activity-meta">{{ act.timestamp }}</div>
+          </div>
+          {% if act.unread %}<span class="dot"></span>{% endif %}
+        </div>
+        {% empty %}
+        <p class="empty-msg">No activity yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+  </main>
+</div><!-- /layout -->
 
 <script src="{% static 'js/dashboard.js' %}"></script>
 </body>
