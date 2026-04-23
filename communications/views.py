@@ -23,7 +23,7 @@ def add_communication_view(request):
             stock = request.POST.get('stock_level') or 0
 
             # Satisfy mandatory Parent (Asset) requirements
-            cat, _ = Category.objects.get_or_create(category_name="Communication")
+            cat = Category.objects.get(category_name="communications")
             unique_id = imei if imei else str(uuid.uuid4())[:8]
 
             # Create the record in Supabase
