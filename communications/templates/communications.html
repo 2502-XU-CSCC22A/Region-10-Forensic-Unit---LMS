@@ -194,7 +194,7 @@
                     <div class="stat-top">
                         <div class="stat-icon blue">&#x1F52B;</div>
                         <div>
-                            <div class="stat-label">Total Firearms</div>
+                            <div class="stat-label">Total Communications</div>
                             <div class="stat-value" id="totalCount">&#8212;</div>
                         </div>
                     </div>
@@ -207,7 +207,7 @@
                     <div class="stat-top">
                         <div class="stat-icon green">&#x2705;</div>
                         <div>
-                            <div class="stat-label">Issued Firearms</div>
+                            <div class="stat-label">Issued Communications</div>
                             <div class="stat-value" id="issuedCount">&#8212;</div>
                         </div>
                     </div>
@@ -246,7 +246,7 @@
                         <option value="UNSERVICEABLE">Unserviceable</option>
                         <option value="LOST">Lost</option>
                     </select>
-                    <button class="btn btn-primary" onclick="openAddModal()">&#xFF0B; Add Record</button>
+                    <button id="addRecordBtn" class="btn btn-primary">＋ Add Record</button>
                     <button class="btn btn-outline" onclick="exportCSV()">&#x2B07; Export CSV</button>
                 </div>
 
@@ -285,7 +285,7 @@
             </div>
         </div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="{% static 'js/communications.js' %}"></script>
 </body>
 
