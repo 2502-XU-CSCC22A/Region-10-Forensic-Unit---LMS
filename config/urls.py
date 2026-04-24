@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from login.views import login_view, verify_token_view, dashboard_view, logout_view
+from dashboard.views import dashboard_view
 
 urlpatterns = [
     # Admin
@@ -19,8 +20,8 @@ urlpatterns = [
     # Logout
     path('logout/', logout_view, name='logout'),
 
-    # ── Dashboard ─────────────────────────────────────────────────────────────
-    path('dashboard/', dashboard_view, name='dashboard'),
+     # ── Dashboard ─────────────────────────────────────────────────────────────
+     path('dashboard/', dashboard_view, name='dashboard'),
 
     # ── Password Reset (Django built-ins) ─────────────────────────────────────
     path('reset-password/', auth_views.PasswordResetView.as_view(
@@ -42,4 +43,4 @@ urlpatterns = [
     path('reset-password/complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/password_reset_complete.html',
     ), name='password_reset_complete'),
-]
+ ]

@@ -3,141 +3,43 @@
   href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
   rel="stylesheet"
 />
-<link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
+  <nav id="sidebar">
+      <ul class="list-unstyled components">
+          <p>Dashboard</p>
+          <li>
+              <a href="#"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
+          </li>
 
-<div class="nav-sidebar-fixed">
-  <div class="sidebar-content d-flex flex-column">
-    <div class="nav-section">
-      <h6 class="nav-title">Dashboard</h6>
+          <li class="{% if request.resolver_match.url_name == 'vehicle_management' %}active{% endif %}">
+              <a href="#">
+                  <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
+                  <span class="badge badge-light badge-pill">24</span>
+              </a>
+          </li>
 
-      <a href="#" class="nav-item active">
-        <img src="{% static 'img/car.svg' %}" class="nav-icon" />
-        <span class="nav-text">Mobility</span>
-        <span class="badge">24</span>
-      </a>
+          <li>
+              <a href="#">
+                  <span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
+                  <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">100+</span>
+              </a>
+          </li>
+          <li>
+              <a href="#">
+                  <span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
+              </a>
+          </li>
+          <li><a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span></a></li>
+          
+          <p class="mt-4">Monitoring</p>
+          <li><a href="#"><i class="fas fa-desktop"></i> <span class="sidebar-item-label">PAR Monitoring</span></a></li>
+          <li><a href="#"><i class="fas fa-clipboard-check"></i> <span class="sidebar-item-label">Inspection Monitoring</span></a></li>
+          <li><a href="#"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span></a></li>
+          <li><a href="#"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a></li>
+      </ul>
 
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/gun.svg' %}" class="nav-icon" />
-        <span class="nav-text">Firearms</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/radio.svg' %}" class="nav-icon" />
-        <span class="nav-text">Communications</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/search.svg' %}" class="nav-icon" />
-        <span class="nav-text">Investigative Equipment</span>
-      </a>
-    </div>
-
-    <hr class="nav-divider" />
-
-    <div class="nav-section">
-      <h6 class="nav-title">Monitoring</h6>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/search-small.svg' %}" class="nav-icon" />
-        <span class="nav-text">PAR Monitoring</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/doc.svg' %}" class="nav-icon" />
-        <span class="nav-text">Inspection Monitoring</span>
-      </a>
-
-      <a
-        href="{% url 'disposal' %}"
-        class="nav-item {% if request.resolver_match.url_name == 'disposal' %} active {% endif %}"
-      >
-        <img src="{% static 'img/trash.svg' %}" class="nav-icon" />
-        <span class="nav-text">BER & Disposal</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/folder.svg' %}" class="nav-icon" />
-        <span class="nav-text">Reports</span>
-      </a>
-    </div>
-
-    <div class="mt-auto user-mgmt-section">
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/user-square.svg' %}" class="nav-icon" />
-        <span class="nav-text">User Management</span>
-      </a>
-    </div>
-  </div>
-</div>
-
-{% load static %}
-<link
-  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap"
-  rel="stylesheet"
-/>
-<link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
-
-<div class="nav-sidebar-fixed">
-  <div class="sidebar-content d-flex flex-column">
-    <div class="nav-section">
-      <h6 class="nav-title">Dashboard</h6>
-
-      <a href="#" class="nav-item active">
-        <img src="{% static 'img/car.svg' %}" class="nav-icon" />
-        <span class="nav-text">Mobility</span>
-        <span class="badge">24</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/gun.svg' %}" class="nav-icon" />
-        <span class="nav-text">Firearms</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/radio.svg' %}" class="nav-icon" />
-        <span class="nav-text">Communications</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/search.svg' %}" class="nav-icon" />
-        <span class="nav-text">Investigative Equipment</span>
-      </a>
-    </div>
-
-    <hr class="nav-divider" />
-
-    <div class="nav-section">
-      <h6 class="nav-title">Monitoring</h6>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/search-small.svg' %}" class="nav-icon" />
-        <span class="nav-text">PAR Monitoring</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/doc.svg' %}" class="nav-icon" />
-        <span class="nav-text">Inspection Monitoring</span>
-      </a>
-
-      <a
-        href="{% url 'disposal' %}"
-        class="nav-item {% if request.resolver_match.url_name == 'disposal' %} active {% endif %}"
-      >
-        <img src="{% static 'img/trash.svg' %}" class="nav-icon" />
-        <span class="nav-text">BER & Disposal</span>
-      </a>
-
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/folder.svg' %}" class="nav-icon" />
-        <span class="nav-text">Reports</span>
-      </a>
-    </div>
-
-    <div class="mt-auto user-mgmt-section">
-      <a href="#" class="nav-item">
-        <img src="{% static 'img/user-square.svg' %}" class="nav-icon" />
-        <span class="nav-text">User Management</span>
-      </a>
-    </div>
-  </div>
-</div>
+      <div class="p-3" style="position: absolute; bottom: 10px; width: 100%;">
+          <a href="#" class="btn btn-link btn-block text-white-50 text-decoration-none text-left small">
+              <i class="fas fa-user-shield mr-2"></i> User Management
+          </a>
+      </div>
+  </nav>
