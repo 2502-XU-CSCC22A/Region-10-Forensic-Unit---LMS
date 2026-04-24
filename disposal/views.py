@@ -60,4 +60,4 @@ def disposal_list(request):
         three_months_later = today + timedelta(days=90)
         items = items.filter(expiry_date__range=(today, three_months_later))
 
-    return render(request, 'disposal/disposal.html', {'items': items})
+    return render(request, 'disposal/disposal_admin.html', {'items': items})

@@ -18,6 +18,9 @@ body {
   color: white;
   transition: all 0.3s;
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 #sidebar .sidebar-header {
