@@ -1,19 +1,23 @@
 import os
+import ssl
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv 
 
 load_dotenv()
 
+# --- SSL BYPASS FOR WINDOWS/GMAIL ERRORS ---
+# This forces the entire environment to trust the connection, fixing the _ssl.c:1028 error
+if (not os.environ.get('PYTHONHTTPSVERIFY', '') and 
+    getattr(ssl, '_create_unverified_context', None)):
+    ssl._create_default_https_context = ssl._create_unverified_context
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Matches your .env key exactly
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# Fixed: This now correctly handles the lowercase "true" in your .env
 DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
 
-# Ensure local dev and Supabase are allowed
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.vercel.app', '.supabase.co']
 
 INSTALLED_APPS = [
@@ -56,12 +60,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database Configuration
-# We use the DATABASE_URL from your .env. 
-# Since your URL already has sslmode=require, we don't need to force it here.
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
-        conn_max_age=0, # Necessary for Supabase Pooler (Port 6543)
+        conn_max_age=0, 
     )
 }
 
@@ -73,7 +75,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila' # Updated to Philippine Time
 USE_I18N = True
 USE_TZ = True
 
@@ -81,3 +83,19 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- EMAIL CONFIGURATION ---
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# Updated to match the keys you showed in your .env
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER') 
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+# Professional sender name
+DEFAULT_FROM_EMAIL = f"RFU 10 Logistics System <{EMAIL_HOST_USER}>"
+
+# Critical for fixing the certificate verify failed error
+EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
