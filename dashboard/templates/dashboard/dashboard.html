@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}" />
   <link rel="stylesheet" href="{% static 'dashboard/sidebar.css' %}" />
@@ -22,14 +22,14 @@
   <!-- ── Header ──────────────────────────────────────────────────────────────── -->
   <header>
     <div class="header-brand">
-      <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
+      <img src="{% static 'img/RFU10_Logo.png' %}" alt="RFU10 Logo" class="header-logo-img" />
       <span class="header-title">Regional Forensic Unit 10 LMS</span>
     </div>
     <div class="header-user">
       <div class="user-avatar"></div>
       <div class="user-info">
         <div class="user-role">{{ user.get_full_name|default:user.username }}</div>
-        <div class="user-greet">Logistics Officer</div>
+        <div class="user-greet">Welcome!</div>
       </div>
     </div>
   </header>
@@ -41,21 +41,20 @@
     <nav id="sidebar">
       <ul class="list-unstyled components">
           <p>Dashboard</p>
-          <li>
+          <li class="active">
               <a href="#"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
           </li>
 
-          <li class="{% if request.resolver_match.url_name == 'vehicle_management' %}active{% endif %}">
+          <li>
               <a href="#">
                   <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
-                  <span class="badge badge-light badge-pill">24</span>
+                  <span class="badge badge-light badge-pill">{{ total_mobility }}</span>
               </a>
           </li>
 
           <li>
               <a href="#">
                   <span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
-                  <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">100+</span>
               </a>
           </li>
           <li>
@@ -64,7 +63,7 @@
               </a>
           </li>
           <li><a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span></a></li>
-          
+
           <p class="mt-4">Monitoring</p>
           <li><a href="#"><i class="fas fa-desktop"></i> <span class="sidebar-item-label">PAR Monitoring</span></a></li>
           <li><a href="#"><i class="fas fa-clipboard-check"></i> <span class="sidebar-item-label">Inspection Monitoring</span></a></li>
@@ -77,7 +76,7 @@
               <i class="fas fa-user-shield mr-2"></i> User Management
           </a>
       </div>
-  </nav>
+    </nav>
 
     <!-- ── Main ────────────────────────────────────────────────────────────── -->
     <main>
@@ -85,154 +84,107 @@
       <!-- ── Stat Cards ──────────────────────────────────────────────────── -->
       <div class="stat-cards">
 
+        <!-- Total Assets -->
         <div class="stat-card">
           <div class="stat-top">
-            <div class="stat-icon blue">&#x1F4BC;</div>
+            <div class="stat-icon blue"><i class="fas fa-boxes"></i></div>
             <div>
               <div class="stat-label">Total Assets</div>
               <div class="stat-value">{{ total_assets }}</div>
             </div>
           </div>
+          <div class="stat-bar-wrap"><div class="stat-bar blue" style="width:100%"></div></div>
+        </div>
+
+        <!-- Total Firearms -->
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon orange"><i class="fas fa-crosshairs"></i></div>
+            <div>
+              <div class="stat-label">Total Firearms</div>
+              <div class="stat-value">{{ total_firearms }}</div>
+            </div>
+          </div>
           <div class="stat-bar-wrap">
-            <div class="stat-bar blue" style="width:100%"></div>
+            <div class="stat-bar orange"
+              style="width:{% if total_assets %}{% widthratio total_firearms total_assets 100 %}{% else %}0{% endif %}%"></div>
           </div>
         </div>
 
+        <!-- Total Mobility -->
         <div class="stat-card">
           <div class="stat-top">
-            <div class="stat-icon green">&#x2705;</div>
+            <div class="stat-icon green"><i class="fas fa-car"></i></div>
             <div>
-              <div class="stat-label">Issued Items</div>
-              <div class="stat-value">{{ issued_items }}</div>
+              <div class="stat-label">Total Mobility</div>
+              <div class="stat-value">{{ total_mobility }}</div>
             </div>
           </div>
           <div class="stat-bar-wrap">
             <div class="stat-bar green"
-              style="width: {% if total_assets %}{% widthratio issued_items total_assets 100 %}{% else %}0{% endif %}%">
+              style="width:{% if total_assets %}{% widthratio total_mobility total_assets 100 %}{% else %}0{% endif %}%"></div>
+          </div>
+        </div>
+
+        <!-- Total Communication Devices -->
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon red"><i class="fas fa-broadcast-tower"></i></div>
+            <div>
+              <div class="stat-label">Communication Devices</div>
+              <div class="stat-value">{{ total_communications }}</div>
             </div>
           </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar red"
+              style="width:{% if total_assets %}{% widthratio total_communications total_assets 100 %}{% else %}0{% endif %}%"></div>
+          </div>
+        </div>
 
-          <div class="stat-card">
-            <div class="stat-top">
-              <div class="stat-icon teal">&#x1F4E6;</div>
-              <div>
-                <div class="stat-label">Available Items</div>
-                <div class="stat-value">{{ available_items }}</div>
-              </div>
-            </div>
-            <div class="stat-bar-wrap">
-              <div class="stat-bar teal"
-                style="{% if total_assets %}width:{{ available_items|floatformat:0 }}%{% else %}width:0%{% endif %}">
-              </div>
+        <!-- Total Investigative Equipment -->
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon gray"><i class="fas fa-microscope"></i></div>
+            <div>
+              <div class="stat-label">Investigative Equip.</div>
+              <div class="stat-value">{{ total_investigative }}</div>
             </div>
           </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar gray"
+              style="width:{% if total_assets %}{% widthratio total_investigative total_assets 100 %}{% else %}0{% endif %}%"></div>
+          </div>
+        </div>
 
-          <div class="stat-card">
-            <div class="stat-top">
-              <div class="stat-icon red">&#x26A0;&#xFE0F;</div>
-              <div>
-                <div class="stat-label">Low Stock</div>
-                <div class="stat-value">{{ low_stock }}</div>
-              </div>
-            </div>
-            <div class="stat-bar-wrap">
-              <div class="stat-bar red"
-                style="{% if total_assets %}width:{{ low_stock|floatformat:0 }}%{% else %}width:0%{% endif %}"></div>
+        <!-- Total BER Items -->
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon purple"><i class="fas fa-recycle"></i></div>
+            <div>
+              <div class="stat-label">Total BER Items</div>
+              <div class="stat-value">{{ total_ber }}</div>
             </div>
           </div>
-
-          <div class="stat-card">
-            <div class="stat-top">
-              <div class="stat-icon orange">&#x1F5A5;&#xFE0F;</div>
-              <div>
-                <div class="stat-label">BER Items</div>
-                <div class="stat-value">{{ ber_items }}</div>
-              </div>
-            </div>
-            <div class="stat-bar-wrap">
-              <div class="stat-bar orange"
-                style="{% if total_assets %}width:{{ ber_items|floatformat:0 }}%{% else %}width:0%{% endif %}"></div>
-            </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar purple"
+              style="width:{% if total_assets %}{% widthratio total_ber total_assets 100 %}{% else %}0{% endif %}%"></div>
           </div>
+        </div>
 
-          <div class="stat-card">
-            <div class="stat-top">
-              <div class="stat-icon purple">&#x1F5D1;&#xFE0F;</div>
-              <div>
-                <div class="stat-label">Disposal Items</div>
-                <div class="stat-value">{{ disposal_items }}</div>
-              </div>
-            </div>
-            <div class="stat-bar-wrap">
-              <div class="stat-bar purple"
-              style="width: {% if total_assets %}{{ disposal_items|floatformat:0 }}{% else %}0{% endif %}%">
-              </div>
-            </div>
-          </div>
+      </div><!-- /stat-cards -->
 
-        </div><!-- /stat-cards -->
+      <!-- ── Two-column widgets ───────────────────────────────────────────── -->
+      <div class="two-col">
 
-        <!-- ── Two-column widgets ───────────────────────────────────────────── -->
-        <div class="two-col">
-
-          <!-- Assets / Activity -->
-          <div class="widget">
-            <div class="widget-header">
-              <span class="widget-title">Recent Assets</span>
-            </div>
-            <div class="activity-list">
-              {% for act in activities %}
-              <div class="activity-item">
-                <div class="av-sm">{{ act.initials }}</div>
-                <div class="activity-body">
-                  <div class="activity-text">
-                    <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
-                  </div>
-                  <div class="activity-change">{{ act.change }}</div>
-                  <div class="activity-meta">{{ act.timestamp }}</div>
-                </div>
-                {% if act.unread %}<span class="dot"></span>{% endif %}
-              </div>
-              {% empty %}
-              <p class="empty-msg">No recent asset records.</p>
-              {% endfor %}
-            </div>
-            <button class="view-all">View all</button>
-          </div>
-
-          <!-- Notifications -->
-          <div class="widget">
-            <div class="widget-header">
-              <span class="widget-title">Notifications</span>
-              <span class="notif-count">{{ notification_count }}</span>
-              <button class="read-btn">Mark read</button>
-            </div>
-            <div class="activity-list">
-              {% for act in activities %}
-              <div class="activity-item">
-                <div class="av-sm">{{ act.initials }}</div>
-                <div class="activity-body">
-                  <div class="activity-text">
-                    <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
-                  </div>
-                  <div class="activity-change">{{ act.change }}</div>
-                  <div class="activity-meta">{{ act.timestamp }}</div>
-                </div>
-                {% if act.unread %}<span class="dot"></span>{% endif %}
-              </div>
-              {% empty %}
-              <p class="empty-msg">No notifications.</p>
-              {% endfor %}
-            </div>
-            <button class="view-all">View all</button>
-          </div>
-
-        </div><!-- /two-col -->
-
-        <!-- ── Recent Activities (full-width) ──────────────────────────────── -->
+        <!-- Assets Feed -->
         <div class="widget">
           <div class="widget-header">
-            <span class="widget-title">Recent Activities</span>
+            <span class="widget-title">Assets</span>
+            <div class="widget-actions">
+              <button class="icon-btn" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+              <button class="icon-btn" title="Filter"><i class="fas fa-sliders-h"></i></button>
+              <button class="icon-btn" title="Export"><i class="fas fa-download"></i></button>
+            </div>
           </div>
           <div class="activity-list">
             {% for act in activities %}
@@ -242,21 +194,77 @@
                 <div class="activity-text">
                   <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
                 </div>
-                <div class="activity-change">{{ act.change }}</div>
                 <div class="activity-meta">{{ act.timestamp }}</div>
               </div>
               {% if act.unread %}<span class="dot"></span>{% endif %}
             </div>
             {% empty %}
-            <p class="empty-msg">No activity yet.</p>
+            <p class="empty-msg">No recent asset records.</p>
             {% endfor %}
           </div>
+          <button class="view-all">View all</button>
         </div>
+
+        <!-- Notifications -->
+        <div class="widget">
+          <div class="widget-header">
+            <span class="widget-title">Notifications</span>
+            <span class="notif-badge">{{ notification_count }}</span>
+            <button class="read-btn">Read</button>
+            <div class="widget-actions ml-auto">
+              <button class="icon-btn" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+              <button class="icon-btn" title="Filter"><i class="fas fa-sliders-h"></i></button>
+              <button class="icon-btn" title="Export"><i class="fas fa-download"></i></button>
+            </div>
+          </div>
+          <div class="activity-list">
+            {% for act in activities %}
+            <div class="activity-item">
+              <div class="av-sm">{{ act.initials }}</div>
+              <div class="activity-body">
+                <div class="activity-text">
+                  <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
+                </div>
+                <div class="activity-meta">{{ act.timestamp }}</div>
+              </div>
+              {% if act.unread %}<span class="dot"></span>{% endif %}
+            </div>
+            {% empty %}
+            <p class="empty-msg">No notifications.</p>
+            {% endfor %}
+          </div>
+          <button class="view-all">View all</button>
+        </div>
+
+      </div><!-- /two-col -->
+
+      <!-- ── Recent Activities (full-width) ──────────────────────────────── -->
+      <div class="widget">
+        <div class="widget-header">
+          <span class="widget-title">Recent Activities</span>
+        </div>
+        <div class="activity-list">
+          {% for act in activities %}
+          <div class="activity-item">
+            <div class="av-sm">{{ act.initials }}</div>
+            <div class="activity-body">
+              <div class="activity-text">
+                <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
+              </div>
+              <div class="activity-meta">{{ act.timestamp }}</div>
+            </div>
+            {% if act.unread %}<span class="dot"></span>{% endif %}
+          </div>
+          {% empty %}
+          <p class="empty-msg">No activity yet.</p>
+          {% endfor %}
+        </div>
+      </div>
 
     </main>
   </div><!-- /layout -->
 
-  <script src="{% static 'js/dashboard.js' %}"></script>
+  <script src="{% static 'dashboard/dashboard.js' %}"></script>
 </body>
 
 </html>
