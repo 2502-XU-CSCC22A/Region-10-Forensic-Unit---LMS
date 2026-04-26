@@ -16,6 +16,7 @@ urlpatterns = [
     path('disposal/', include('disposal.urls'), name='disposal'),
     path('login/', include ('login.urls'), name='login'),
     path('mobility/', include('mobility.urls'), name='mobility'),
+    path('communications/', include('communications.urls')),
     path('', home_view, name='home'), 
         
 

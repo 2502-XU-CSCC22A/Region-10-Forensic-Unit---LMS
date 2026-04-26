@@ -2,6 +2,20 @@ from django.db import models
 from django.conf import settings
 from datetime import date
 
+class Personnel(models.Model):
+    # Matches PersonnelID PK from your diagram
+    personnel_id = models.BigAutoField(primary_key=True, db_column='PersonnelID')
+    name = models.CharField(max_length=255, db_column='Name')
+    rank = models.CharField(max_length=100, db_column='Rank')
+    badge_number = models.CharField(max_length=50, db_column='Badge_Number', unique=True)
+    department = models.CharField(max_length=100, db_column='Department')
+
+    class Meta:
+        db_table = 'Personnel'
+
+    def __str__(self):
+        return f"{self.rank} {self.name}"
+
 class AssetStatus(models.Model):
     status_id = models.BigAutoField(primary_key=True, db_column='StatusID')
     status_name = models.CharField(max_length=50, db_column='Status_Name', unique=True)  # ← add this
@@ -31,7 +45,7 @@ class PARRecord(models.Model):
     # issued_to_id: The personnel/staff receiving the asset
     # Note: If you have a Personnel model, link it here. Otherwise, it links to User.
     issued_to = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
+        Personnel,
         on_delete=models.PROTECT,
         db_column='Issued_to_ID',
         related_name='received_assets'

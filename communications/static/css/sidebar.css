@@ -1,0 +1,80 @@
+aside {
+  width: var(--sidebar-w);
+  background: var(--navy);
+  min-height: calc(100vh - var(--header-h));
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  bottom: 0;
+  overflow-y: auto;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-section-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, .4);
+  padding: 16px 20px 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px 20px;
+  color: rgba(255, 255, 255, .75);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background .2s, color .2s, border-color .2s;
+  position: relative;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, .07);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: var(--accent);
+  color: #fff;
+  border-left-color: #93c5fd;
+}
+
+.nav-icon {
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent-2);
+  color: #fff;
+  border-radius: 12px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.nav-item.active .nav-badge {
+  background: rgba(255, 255, 255, .25);
+}
+
+.nav-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  margin: 8px 0;
+}
+
+aside .bottom-nav {
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+}

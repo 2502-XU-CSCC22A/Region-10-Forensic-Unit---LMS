@@ -1,0 +1,292 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Regional Forensic Unit 10 LMS &#8211; Firearms</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/communications.css' %}" />
+
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --navy: #0d2155;
+            --navy-mid: #1a3478;
+            --navy-light: #1e3d8f;
+            --accent: #2563eb;
+            --accent-2: #3b82f6;
+            --sidebar-w: 220px;
+            --header-h: 72px;
+            --red: #ef4444;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --bg: #f1f5f9;
+            --white: #ffffff;
+            --card-bg: #ffffff;
+            --row-alt: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: var(--header-h);
+            background: var(--white);
+            border-bottom: 3px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px 0 0;
+            box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 0 20px;
+            margin: 8px 20px 8px 12px;
+            border-radius: 6px;
+            height: 54px;
+        }
+
+        .header-logo {
+            width: 46px;
+            height: 46px;
+            background: var(--navy);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.1;
+            padding: 4px;
+            letter-spacing: .5px;
+        }
+
+        .header-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--navy);
+            letter-spacing: .5px;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 8px;
+            padding: 8px 16px;
+            min-width: 170px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--bg);
+            border-radius: 50%;
+            border: 2px solid var(--border);
+        }
+
+        .user-info {
+            line-height: 1.3;
+        }
+
+        .user-role {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--accent);
+        }
+
+        .user-greet {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .layout {
+            display: flex;
+            padding-top: var(--header-h);
+            min-height: 100vh;
+        }
+
+        main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            padding: 28px 28px 40px;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+
+    <header>
+        <div class="header-brand">
+            <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
+            <span class="header-title">Regional Forensic Unit 10 LMS</span>
+        </div>
+        <div class="header-user">
+            <div class="user-avatar"></div>
+            <div class="user-info">
+                <div class="user-role">Logistics Officer</div>
+                <div class="user-greet">Welcome!</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="layout">
+
+        {% include 'sidebar.html' %}
+
+        <main>
+
+            <div class="stat-cards">
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon blue">&#x1F52B;</div>
+                        <div>
+                            <div class="stat-label">Total Communications</div>
+                            <div class="stat-value" id="totalCount">&#8212;</div>
+                        </div>
+                    </div>
+                    <div class="stat-bar-wrap">
+                        <div class="stat-bar blue" id="totalBar" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon green">&#x2705;</div>
+                        <div>
+                            <div class="stat-label">Issued Communications</div>
+                            <div class="stat-value" id="issuedCount">&#8212;</div>
+                        </div>
+                    </div>
+                    <div class="stat-bar-wrap">
+                        <div class="stat-bar green" id="issuedBar" style="width:0%"></div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-top">
+                        <div class="stat-icon red">&#x1F4C4;</div>
+                        <div>
+                            <div class="stat-label">Pending BER</div>
+                            <div class="stat-value" id="pendingCount">&#8212;</div>
+                        </div>
+                    </div>
+                    <div class="stat-bar-wrap">
+                        <div class="stat-bar red" id="pendingBar" style="width:0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-section">
+                <div class="table-header">From Issuances Table</div>
+
+                <div class="table-controls">
+                    <div class="search-wrap">
+                        <span class="search-icon">&#x1F50D;</span>
+                        <input type="text" id="searchInput" placeholder="Search by name, serial, station&#x2026;"
+                            oninput="filterTable()" />
+                    </div>
+                    <select id="statusFilter" class="btn btn-outline" style="font-size:13px;padding:7px 12px;"
+                        onchange="filterTable()">
+                        <option value="">All Status</option>
+                        <option value="SERVICEABLE">Serviceable</option>
+                        <option value="UNSERVICEABLE">Unserviceable</option>
+                        <option value="LOST">Lost</option>
+                    </select>
+                    <button id="addRecordBtn" class="btn btn-primary">＋ Add Record</button>
+                    <button class="btn btn-outline" onclick="exportCSV()">&#x2B07; Export CSV</button>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>IMEI / Serial</th>
+                                <th>Frequency Range</th>
+                                <th>Stock</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="table-footer">
+                    <span id="rowInfo">Loading&#x2026;</span>
+                    <div class="pagination" id="pagination"></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+        <button class="close-modal" id="closeModalBtn">&#x2715;</button>
+        <h3 id="modalTitle">Firearm Details</h3>
+        <div id="modalBody"></div>
+        <div class="modal-actions">
+            <button class="btn btn-outline" id="closeModalBtn2">Close</button>
+            <button class="btn btn-primary" id="modalSaveBtn">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="{% static 'js/communications.js' %}"></script>

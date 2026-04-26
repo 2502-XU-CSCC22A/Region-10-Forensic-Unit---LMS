@@ -16,8 +16,8 @@ if (not os.environ.get('PYTHONHTTPSVERIFY', '') and
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Matches your .env key exactly
 SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
 
@@ -68,21 +68,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
+# Database Configuration
+# We use the DATABASE_URL from your .env. 
+# Since your URL already has sslmode=require, we don't need to force it here.
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        ssl_require=True
+        conn_max_age=0, # Necessary for Supabase Pooler (Port 6543)
     )
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -91,19 +85,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
