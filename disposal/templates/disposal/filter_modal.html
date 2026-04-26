@@ -8,7 +8,7 @@
             <button class="filter-close-btn" type="button" onclick="closeFilterModal()">&times;</button>
         </div>
 
-        <form method="GET" action="{% url 'disposal_list' %}">
+        <form method="GET" action="{% url 'disposal:disposal_list' %}">
             <div class="filter-modal-body">
 
                 <div class="filter-section">
@@ -64,7 +64,7 @@
                     radios.forEach(radio => radio.checked = false);
                     
                     // 2. Redirect to the base page without parameters
-                    window.location.href = "{% url 'disposal_list' %}";
+                    window.location.href = "{% url 'disposal:disposal_list' %}";
                 }
             </script>
             

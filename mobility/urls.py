@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = 'mobility'
+
 urlpatterns = [
     # Main Dashboard & Detailed List
     path('', views.vehicle_management, name='vehicle_management'),

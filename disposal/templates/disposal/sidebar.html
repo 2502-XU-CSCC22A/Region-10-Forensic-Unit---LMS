@@ -2,7 +2,7 @@
   <ul class="list-unstyled components">
     <p>Dashboard</p>
     <li>
-      <a href="#"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
+      <a href="{% url 'dashboard:dashboard_view'%}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
     </li>
 
     <li>
@@ -23,17 +23,11 @@
     </li>
 
     <p class="mt-4">Monitoring</p>
-    <li>
-      <a href="#"><i class="fas fa-desktop"></i> <span class="sidebar-item-label">PAR Monitoring</span></a>
-    </li>
-    <li>
-      <a href="#"><i class="fas fa-clipboard-check"></i> <span class="sidebar-item-label">Inspection Monitoring</span></a>
-    </li>
-    <li>
+    <li class="active">
       <a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span></a>
     </li>
     <li>
-      <a href="#"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
+      <a href="{% url 'disposal:history_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
     </li>
   </ul>
 

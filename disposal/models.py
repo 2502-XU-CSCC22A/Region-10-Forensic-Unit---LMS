@@ -54,3 +54,34 @@ class DisposalItem(Asset):
 
     def __str__(self):
         return f"Disposal: {self.property_no} - {self.reason[:20]}"
+    
+class DisposalActivityLog(models.Model):
+    ACTION_CHOICES = [
+        ('REMOVE', 'Finalized Removal'),
+        ('UPDATE', 'Updated Disposal Info'),
+        ('CREATE', 'Flagged for Disposal'),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name='disposal_logs'
+    )
+
+    asset = models.ForeignKey(
+        Asset, 
+        on_delete=models.SET_NULL, 
+        null=True
+    )
+    
+    description = models.TextField()
+    disposal_reason = models.TextField(null=True, blank=True)
+    action_type = models.CharField(max_length=10, choices=ACTION_CHOICES, default='REMOVE')
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.action_type} - {self.timestamp.strftime('%Y-%m-%d')}"

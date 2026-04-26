@@ -2,49 +2,52 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 from config.models import Asset, AssetStatus
+from django.db.models import Q
+from mobility.models import Vehicle
+from disposal.models import DisposalItem
 
-@login_required
 def dashboard_view(request):
-
-    def count_status(name):
-        return Asset.objects.filter(
-            status__status_name__iexact=name
-        ).count()
-
-    total_assets    = Asset.objects.count()
-    issued_items    = count_status('Issued')
-    available_items = count_status('Serviceable')
-    low_stock       = count_status('Low Stock')
-    ber_items       = count_status('BER')
-    disposal_items  = count_status('For Disposal')
+    query = Q()
+    plate_no = request.GET.get('plate_no')
+    if plate_no:
+        query &= Q(plate_number__icontains=plate_no) | Q(conduction_number__icontains=plate_no)
+    
+    all_v = Vehicle.objects.all()
+    all_a = Asset.objects.all()
+    all_d = DisposalItem.objects.all()
+    
+    context = {
+        'vehicles': all_v.filter(query),
+        'total_vehicles': all_v.count(),
+        'total_assets': all_a.count(),
+        'total_disposal': all_d.count(),
+    }
 
     recent_assets = (
         Asset.objects
         .select_related('status', 'category')
         .order_by('-id')[:10]
     )
+    
+    def count_status(name):
+        """Count assets whose status_name matches (case-insensitive)."""
+        return AssetStatus.objects.filter(
+            status__Status_Name__iexact=name
+        ).count()
 
     activities = []
     for asset in recent_assets:
         initials = ''.join(w[0].upper() for w in asset.model.split()[:2]) or 'A'
         activities.append({
             'initials':  initials,
-            'actor':     asset.property_no,
+            'actor':     'Logistics Officer',
             'action':    'recorded asset',
-            'item':      asset.model,
-            'change':    asset.status.status_name if asset.status else '—',
+            'item':      f'{asset.category.category_name} ID {asset.property_no}',
+            'change':    asset.status.Status_Name if asset.status else '—',
             'timestamp': asset.date_acquired.strftime('%b %d, %Y'),
-            'unread':    False,
+            'unread':    True,
+            'activities':           activities,
+        'notification_count':   min(len(activities), 99),
         })
-
-    context = {
-        'total_assets':       total_assets,
-        'issued_items':       issued_items,
-        'available_items':    available_items,
-        'low_stock':          low_stock,
-        'ber_items':          ber_items,
-        'disposal_items':     disposal_items,
-        'activities':         activities,
-        'notification_count': min(total_assets, 99),
-    }
-    return render(request, 'Dashboard/dashboard.html', context)
+        
+    return render(request, 'dashboard/dashboard.html', context)

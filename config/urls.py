@@ -12,10 +12,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # ── Feature Pages ─────────────────────────────────────────────────────────────
-    path('dashboard/', dashboard_view, name='dashboard'),
-    path('disposal/', include('disposal.urls')),
-    path('login/', include ('login.urls')),
-    path('mobility/', include('mobility.urls')),
+    path('dashboard/', include('dashboard.urls'), name='dashboard'),
+    path('disposal/', include('disposal.urls'), name='disposal'),
+    path('login/', include ('login.urls'), name='login'),
+    path('mobility/', include('mobility.urls'), name='mobility'),
     path('', home_view, name='home'), 
         
 

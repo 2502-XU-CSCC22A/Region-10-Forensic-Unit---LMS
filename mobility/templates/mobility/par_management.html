@@ -34,7 +34,7 @@
 
 <div class="d-flex justify-content-between align-items-center">
     <h3 class="section-title">Property Acknowledgement Receipt (PAR)</h3>
-    <a href="{% url 'vehicle_management' %}" class="btn btn-sm btn-outline-secondary">
+    <a href="{% url 'mobility:vehicle_management' %}" class="btn btn-sm btn-outline-secondary">
         <i class="fas fa-arrow-left"></i> Back to Dashboard
     </a>
 </div>
@@ -119,11 +119,11 @@
                     <td>{{ par.date_issued|date:"M d, Y" }}</td>
                     <td class="text-right">
                         <div class="d-flex justify-content-end align-items-center">
-                            <a href="{% url 'print_par' par.pk %}" target="_blank" class="btn btn-sm btn-outline-info btn-action mr-2" title="Print Receipt">
+                            <a href="{% url 'mobility:print_par' par.pk %}" target="_blank" class="btn btn-sm btn-outline-info btn-action mr-2" title="Print Receipt">
                                 <i class="fas fa-print"></i>
                             </a>
 
-                            <form action="{% url 'delete_par' par.pk %}" method="POST" 
+                            <form action="{% url 'mobility:delete_par' par.pk %}" method="POST" 
                                   onsubmit="return confirm('Are you sure you want to delete this PAR record?');" 
                                   style="display:inline;">
                                 {% csrf_token %}

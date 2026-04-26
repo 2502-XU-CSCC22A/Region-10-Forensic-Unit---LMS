@@ -29,13 +29,21 @@
                 <div class="user-profile">
                     <div class="avatar"></div>
                     <div class="user-info">
-                        <span class="user-name">Logistics Officer</span>
-                        <span class="welcome-text">Welcome!</span>
-                    </div>
+                        <div class="font-weight-bold small text-dark">{{ user.get_full_name|default:user.username }}</div>
+                        <div class="text-muted small">Logistics Officer</div>
+                      </div>
                 </div>
             </header>
 
             <main class="main-content">
+
+                <div class="stat-grid">
+                    <div class="f-card c-blue"><div class="f-icon i-blue"><i class="fas fa-car"></i></div><div class="f-info"><small>Total Expired</small><h4>{{ total_vehicles }}</h4></div></div>
+                    <div class="f-card c-blue"><div class="f-icon i-blue"><i class="fas fa-car"></i></div><div class="f-info"><small>Expired Firearms</small><h4>{{ with_pms }}</h4></div></div>
+                    <div class="f-card c-orange"><div class="f-icon i-orange"><i class="fas fa-car"></i></div><div class="f-info"><small>Expired Mobility</small><h4>{{ without_pms }}</h4></div></div>
+                    <div class="f-card c-red"><div class="f-icon i-red"><i class="fas fa-wrench"></i></div><div class="f-info"><small>Expired Communications</small><h4>{{ for_pms }}</h4></div></div>
+                    <div class="f-card c-orange"><div class="f-icon i-orange"><i class="fas fa-box"></i></div><div class="f-info"><small>Expired Investigative Equipment</small><h4>{{ for_registration_renewal }}</h4></div></div>
+                </div>
 
                 <div class="summary-container">
                     <div class="summary-alert">
@@ -48,13 +56,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="stat-grid">
-                    <div class="f-card c-blue"><div class="f-icon i-blue"><i class="fas fa-car"></i></div><div class="f-info"><small>Total Expired</small><h4>{{ total_vehicles }}</h4></div></div>
-                    <div class="f-card c-blue"><div class="f-icon i-blue"><i class="fas fa-car"></i></div><div class="f-info"><small>Expired Firearms</small><h4>{{ with_pms }}</h4></div></div>
-                    <div class="f-card c-orange"><div class="f-icon i-orange"><i class="fas fa-car"></i></div><div class="f-info"><small>Expired Mobility</small><h4>{{ without_pms }}</h4></div></div>
-                    <div class="f-card c-red"><div class="f-icon i-red"><i class="fas fa-wrench"></i></div><div class="f-info"><small>Expired Communications</small><h4>{{ for_pms }}</h4></div></div>
-                    <div class="f-card c-orange"><div class="f-icon i-orange"><i class="fas fa-box"></i></div><div class="f-info"><small>Expired Investigative Equipment</small><h4>{{ for_registration_renewal }}</h4></div></div>
-                </div>
+
                 <div class="action-bar">
                     <button class="btn-outline" onclick="toggleFilterModal()"><img
                             src="{% static 'img/filter.svg' %}">Filter</button>
@@ -64,7 +66,6 @@
                         </button>
                     </a>
                 </div>
-
 
                 <div class="table-container">
                     <table>

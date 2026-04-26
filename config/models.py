@@ -3,16 +3,13 @@ from django.conf import settings
 from datetime import date
 
 class AssetStatus(models.Model):
-    # Use BigAutoField for the primary key to match Supabase's int8
-    status_id = models.BigAutoField(primary_key=True, db_column='StatusID') 
-    status_name = models.CharField(max_length=50, db_column='StatusName', unique=True)
+    status_id = models.BigAutoField(primary_key=True, db_column='StatusID')
+    status_name = models.CharField(max_length=50, db_column='Status_Name', unique=True)  # ← add this
 
     class Meta:
         db_table = 'Asset_Status'
-
-    def __str__(self):
-        return self.status_name
-
+        managed  = False 
+        
 class PARRecord(models.Model):
 
     par_id = models.AutoField(primary_key=True, db_column='ParID')
@@ -74,14 +71,11 @@ class Asset(models.Model):
     serial_no = models.CharField(max_length=100, unique=True)
     model = models.CharField(max_length=100)
     
-    # NEW: Link to independent AssetStatus table
-    # We use db_column='StatusID' to match the Foreign Key column in Supabase
     status = models.ForeignKey(
-        AssetStatus, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True,
-        db_column='StatusID', 
+        'AssetStatus', 
+        on_delete=models.CASCADE, 
+        db_column='StatusID',   # Matches the column in public.config_asset
+        to_field='status_id',   # Points to your BigAutoField in AssetStatus
         related_name='assets'
     )
 
