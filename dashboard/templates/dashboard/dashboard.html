@@ -9,24 +9,21 @@
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}" />
   <link rel="stylesheet" href="{% static 'dashboard/sidebar.css' %}" />
 </head>
 
 <body>
 
-  <!-- ── Header ──────────────────────────────────────────────────────────────── -->
+  <!-- ── Header ── -->
   <header>
     <div class="header-brand">
       <img src="{% static 'img/RFU10_Logo.png' %}" alt="RFU10 Logo" class="header-logo-img" />
       <span class="header-title">Regional Forensic Unit 10 LMS</span>
     </div>
     <div class="header-user">
-      <div class="user-avatar"></div>
+      <div class="user-avatar"><i class="fas fa-user-circle fa-2x" style="color:#3b82f6;"></i></div>
       <div class="user-info">
         <div class="user-role">{{ user.get_full_name|default:user.username }}</div>
         <div class="user-greet">Welcome!</div>
@@ -34,153 +31,107 @@
     </div>
   </header>
 
-  <!-- ── Layout ──────────────────────────────────────────────────────────────── -->
+  <!-- ── Layout ── -->
   <div class="layout">
 
-    <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+    <!-- ── Sidebar ── -->
     <nav id="sidebar">
       <ul class="list-unstyled components">
-          <p>Dashboard</p>
-          <li class="active">
-              <a href="#"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
-          </li>
-
-          <li>
-              <a href="#">
-                  <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
-                  <span class="badge badge-light badge-pill">{{ total_mobility }}</span>
-              </a>
-          </li>
-
-          <li>
-              <a href="#">
-                  <span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
-              </a>
-          </li>
-          <li>
-              <a href="#">
-                  <span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
-              </a>
-          </li>
-          <li><a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span></a></li>
-
-          <p class="mt-4">Monitoring</p>
-          <li><a href="#"><i class="fas fa-desktop"></i> <span class="sidebar-item-label">PAR Monitoring</span></a></li>
-          <li><a href="#"><i class="fas fa-clipboard-check"></i> <span class="sidebar-item-label">Inspection Monitoring</span></a></li>
-          <li><a href="#"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span></a></li>
-          <li><a href="#"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a></li>
-      </ul>
-
-      <div class="p-3" style="position: absolute; bottom: 10px; width: 100%;">
-          <a href="#" class="btn btn-link btn-block text-white-50 text-decoration-none text-left small">
-              <i class="fas fa-user-shield mr-2"></i> User Management
+        <p>Dashboard</p>
+        <li class="active">
+          <a href="#"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
+        </li>
+        <li>
+          <a href="#">
+            <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
+            <span class="badge badge-light badge-pill">{{ total_mobility }}</span>
           </a>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></a>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></a>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span></a>
+        </li>
+
+        <p class="mt-4">Monitoring</p>
+        <li><a href="#"><i class="fas fa-desktop"></i> <span class="sidebar-item-label">PAR Monitoring</span></a></li>
+        <li><a href="#"><i class="fas fa-clipboard-check"></i> <span class="sidebar-item-label">Inspection Monitoring</span></a></li>
+        <li><a href="#"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span></a></li>
+        <li><a href="#"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a></li>
+      </ul>
+      <div class="sidebar-bottom">
+        <a href="#"><i class="fas fa-user-shield"></i> <span class="sidebar-item-label">User Management</span></a>
       </div>
     </nav>
 
-    <!-- ── Main ────────────────────────────────────────────────────────────── -->
+    <!-- ── Main ── -->
     <main>
 
-      <!-- ── Stat Cards ──────────────────────────────────────────────────── -->
+      <!-- ── Stat Cards Row ── -->
       <div class="stat-cards">
 
-        <!-- Total Assets -->
         <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon blue"><i class="fas fa-boxes"></i></div>
-            <div>
-              <div class="stat-label">Total Assets</div>
-              <div class="stat-value">{{ total_assets }}</div>
-            </div>
-          </div>
-          <div class="stat-bar-wrap"><div class="stat-bar blue" style="width:100%"></div></div>
-        </div>
-
-        <!-- Total Firearms -->
-        <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon orange"><i class="fas fa-crosshairs"></i></div>
-            <div>
-              <div class="stat-label">Total Firearms</div>
-              <div class="stat-value">{{ total_firearms }}</div>
-            </div>
-          </div>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar orange"
-              style="width:{% if total_assets %}{% widthratio total_firearms total_assets 100 %}{% else %}0{% endif %}%"></div>
+          <div class="stat-icon-wrap blue"><i class="fas fa-boxes"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ total_assets }}</div>
+            <div class="stat-label">Total Assets</div>
           </div>
         </div>
 
-        <!-- Total Mobility -->
         <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon green"><i class="fas fa-car"></i></div>
-            <div>
-              <div class="stat-label">Total Mobility</div>
-              <div class="stat-value">{{ total_mobility }}</div>
-            </div>
-          </div>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar green"
-              style="width:{% if total_assets %}{% widthratio total_mobility total_assets 100 %}{% else %}0{% endif %}%"></div>
+          <div class="stat-icon-wrap orange"><i class="fas fa-crosshairs"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ total_firearms }}</div>
+            <div class="stat-label">Total Firearms</div>
           </div>
         </div>
 
-        <!-- Total Communication Devices -->
         <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon red"><i class="fas fa-broadcast-tower"></i></div>
-            <div>
-              <div class="stat-label">Communication Devices</div>
-              <div class="stat-value">{{ total_communications }}</div>
-            </div>
-          </div>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar red"
-              style="width:{% if total_assets %}{% widthratio total_communications total_assets 100 %}{% else %}0{% endif %}%"></div>
+          <div class="stat-icon-wrap green"><i class="fas fa-car"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ total_mobility }}</div>
+            <div class="stat-label">Total Mobility</div>
           </div>
         </div>
 
-        <!-- Total Investigative Equipment -->
         <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon gray"><i class="fas fa-microscope"></i></div>
-            <div>
-              <div class="stat-label">Investigative Equip.</div>
-              <div class="stat-value">{{ total_investigative }}</div>
-            </div>
-          </div>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar gray"
-              style="width:{% if total_assets %}{% widthratio total_investigative total_assets 100 %}{% else %}0{% endif %}%"></div>
+          <div class="stat-icon-wrap red"><i class="fas fa-broadcast-tower"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ total_communications }}</div>
+            <div class="stat-label">Communication Devices</div>
           </div>
         </div>
 
-        <!-- Total BER Items -->
         <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon purple"><i class="fas fa-recycle"></i></div>
-            <div>
-              <div class="stat-label">Total BER Items</div>
-              <div class="stat-value">{{ total_ber }}</div>
-            </div>
+          <div class="stat-icon-wrap gray"><i class="fas fa-microscope"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ total_investigative }}</div>
+            <div class="stat-label">Investigative Equip.</div>
           </div>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar purple"
-              style="width:{% if total_assets %}{% widthratio total_ber total_assets 100 %}{% else %}0{% endif %}%"></div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon-wrap purple"><i class="fas fa-recycle"></i></div>
+          <div class="stat-info">
+            <div class="stat-value">{{ total_ber }}</div>
+            <div class="stat-label">Total BER Items</div>
           </div>
         </div>
 
       </div><!-- /stat-cards -->
 
-      <!-- ── Two-column widgets ───────────────────────────────────────────── -->
+      <!-- ── Two-column widgets ── -->
       <div class="two-col">
 
-        <!-- Assets Feed -->
+        <!-- Assets widget -->
         <div class="widget">
           <div class="widget-header">
             <span class="widget-title">Assets</span>
-            <div class="widget-actions">
+            <div class="widget-header-actions">
               <button class="icon-btn" title="Refresh"><i class="fas fa-sync-alt"></i></button>
               <button class="icon-btn" title="Filter"><i class="fas fa-sliders-h"></i></button>
               <button class="icon-btn" title="Export"><i class="fas fa-download"></i></button>
@@ -202,16 +153,16 @@
             <p class="empty-msg">No recent asset records.</p>
             {% endfor %}
           </div>
-          <button class="view-all">View all</button>
+          <a href="#" class="view-all-link">View all</a>
         </div>
 
-        <!-- Notifications -->
+        <!-- Notifications widget -->
         <div class="widget">
           <div class="widget-header">
             <span class="widget-title">Notifications</span>
             <span class="notif-badge">{{ notification_count }}</span>
             <button class="read-btn">Read</button>
-            <div class="widget-actions ml-auto">
+            <div class="widget-header-actions">
               <button class="icon-btn" title="Refresh"><i class="fas fa-sync-alt"></i></button>
               <button class="icon-btn" title="Filter"><i class="fas fa-sliders-h"></i></button>
               <button class="icon-btn" title="Export"><i class="fas fa-download"></i></button>
@@ -233,12 +184,12 @@
             <p class="empty-msg">No notifications.</p>
             {% endfor %}
           </div>
-          <button class="view-all">View all</button>
+          <a href="#" class="view-all-link">View all</a>
         </div>
 
       </div><!-- /two-col -->
 
-      <!-- ── Recent Activities (full-width) ──────────────────────────────── -->
+      <!-- ── Recent Activities full-width ── -->
       <div class="widget">
         <div class="widget-header">
           <span class="widget-title">Recent Activities</span>
@@ -266,5 +217,4 @@
 
   <script src="{% static 'dashboard/dashboard.js' %}"></script>
 </body>
-
 </html>
