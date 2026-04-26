@@ -5,11 +5,14 @@ from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
 from .views import home_view
 from login.views import login_view, verify_token_view, dashboard_view, logout_view
+from dashboard.views import dashboard_view
 
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
 
+    # ── Feature Pages ─────────────────────────────────────────────────────────────
+    path('dashboard/', dashboard_view, name='dashboard'),
     path('disposal/', include('disposal.urls')),
     path('login/', include ('login.urls')),
     path('', home_view, name='home'), 
@@ -25,9 +28,6 @@ urlpatterns = [
     path('login/verify/<str:token>/', verify_token_view, name='verify_token'),
     # Logout
     path('logout/', logout_view, name='logout'),
-
-    # ── Dashboard ─────────────────────────────────────────────────────────────
-    path('dashboard/', dashboard_view, name='dashboard'),
 
     # ── Password Reset (Django built-ins) ─────────────────────────────────────
     path('reset-password/', auth_views.PasswordResetView.as_view(

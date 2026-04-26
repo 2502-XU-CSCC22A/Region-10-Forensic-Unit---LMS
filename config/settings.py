@@ -1,3 +1,4 @@
+
 import os
 from pathlib import Path
 import dj_database_url
@@ -7,8 +8,8 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Matches your .env key exactly
 SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 # Fixed: This now correctly handles the lowercase "true" in your .env
 DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
@@ -22,8 +23,9 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions', 
     'disposal',
-    'config',
     'login',
+    'config',
+    'dashboard',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mobility',
@@ -60,15 +62,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database Configuration
-# We use the DATABASE_URL from your .env. 
-# Since your URL already has sslmode=require, we don't need to force it here.
+
+# Database
+# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
-        conn_max_age=0, # Necessary for Supabase Pooler (Port 6543)
+        conn_max_age=600,
+        ssl_require=True
     )
 }
+
+
+# Password validation
+# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -77,10 +85,19 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+
+# Internationalization
+# https://docs.djangoproject.com/en/6.0/topics/i18n/
+
 LANGUAGE_CODE = 'en-us'
+
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
+
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
@@ -96,9 +113,13 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 # ── Email ─────────────────────────────────────────────────────────────────────
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+EMAIL_BACKEND = os.environ.get(
+    'EMAIL_BACKEND',
+    'django.core.mail.backends.console.EmailBackend'   # safe default for dev
+)
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS') 
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@rfu10.gov.ph')
