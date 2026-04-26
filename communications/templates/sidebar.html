@@ -2,24 +2,24 @@
   <div class="nav-section-label">Dashboard</div>
 
   <a class="nav-item {% if active_page == 'home' %}active{% endif %}"
-     href="#">
+     href="{% url 'dashboard:dashboard_view' %}">
     <span class="nav-icon">&#x1F3E0;</span> Home
   </a>
 
   <a class="nav-item {% if active_page == 'mobility' %}active{% endif %}"
-     href="#">
+     href="{% url 'mobility:vehicle_management' %}">
     <span class="nav-icon">&#x1F697;</span> Mobility
     <span class="nav-badge">24</span>
   </a>
 
   <a class="nav-item {% if active_page == 'firearms' %}active{% endif %}"
-     href="{% url 'firearms:index' %}">
+     href="#">
     <span class="nav-icon">&#x1F52B;</span> Firearms
     <span class="nav-badge">100+</span>
   </a>
 
   <a class="nav-item {% if active_page == 'communications' %}active{% endif %}"
-     href="#">
+     href="{% url 'communications:communications_list' %}">
     <span class="nav-icon">&#x1F4E1;</span> Communications
   </a>
 
@@ -31,18 +31,8 @@
   <hr class="nav-divider"/>
   <div class="nav-section-label">Monitoring</div>
 
-  <a class="nav-item {% if active_page == 'par' %}active{% endif %}"
-     href="#">
-    <span class="nav-icon">&#x1F4CB;</span> PAR Monitoring
-  </a>
-
-  <a class="nav-item {% if active_page == 'inspection' %}active{% endif %}"
-     href="#">
-    <span class="nav-icon">&#x1F50E;</span> Inspection Monitoring
-  </a>
-
   <a class="nav-item {% if active_page == 'ber' %}active{% endif %}"
-     href="#">
+     href="{% url 'disposal:disposal_list' %}">
     <span class="nav-icon">&#x1F5C2;&#xFE0F;</span> BER &amp; Disposal
   </a>
 
