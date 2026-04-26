@@ -14,12 +14,6 @@ if (not os.environ.get('PYTHONHTTPSVERIFY', '') and
     getattr(ssl, '_create_unverified_context', None)):
     ssl._create_default_https_context = ssl._create_unverified_context
 
-# --- SSL BYPASS FOR WINDOWS/GMAIL ERRORS ---
-# This forces the entire environment to trust the connection, fixing the _ssl.c:1028 error
-if (not os.environ.get('PYTHONHTTPSVERIFY', '') and 
-    getattr(ssl, '_create_unverified_context', None)):
-    ssl._create_default_https_context = ssl._create_unverified_context
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
