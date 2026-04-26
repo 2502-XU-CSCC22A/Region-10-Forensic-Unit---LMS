@@ -252,3 +252,49 @@ main {
   main        { padding: 16px; }
   .header-title { font-size: 18px; }
 }
+/* ── Additional stat card colors ─────────────────────────────────────────── */
+.stat-icon.gray   { background: #f1f5f9; color: #64748b; }
+.stat-bar.gray    { background: linear-gradient(90deg, #64748b, #94a3b8); }
+
+/* ── Stat icon font-awesome sizing ──────────────────────────────────────── */
+.stat-icon i { font-size: 18px; }
+.stat-icon.blue   i { color: #3b82f6; }
+.stat-icon.orange i { color: #f59e0b; }
+.stat-icon.green  i { color: #10b981; }
+.stat-icon.red    i { color: #ef4444; }
+.stat-icon.gray   i { color: #64748b; }
+.stat-icon.purple i { color: #8b5cf6; }
+
+/* ── Header logo image ───────────────────────────────────────────────────── */
+.header-logo-img {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  object-fit: contain;
+}
+
+/* ── Notification badge ──────────────────────────────────────────────────── */
+.notif-badge {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  margin-left: 6px;
+}
+
+/* ── Widget header icon buttons ──────────────────────────────────────────── */
+.icon-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted); font-size: 13px; padding: 4px 6px;
+  border-radius: 4px; transition: background .15s, color .15s;
+}
+.icon-btn:hover { background: var(--border); color: var(--text); }
+
+/* ── Widget actions group ────────────────────────────────────────────────── */
+.widget-actions { display: flex; align-items: center; gap: 2px; }
+
+/* Stat grid — 6 cards in one row on wide screens */
+@media (min-width: 1200px) {
+  .stat-cards { grid-template-columns: repeat(6, 1fr); }
+}
