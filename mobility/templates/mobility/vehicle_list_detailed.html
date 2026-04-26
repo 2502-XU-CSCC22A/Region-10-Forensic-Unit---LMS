@@ -1,0 +1,101 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Same Theme as Dashboard */
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
+    .f-card { background: white; border-radius: 12px; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #4e73df; }
+    .f-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 18px; background: #4e73df; color: white; }
+    .f-info h4 { margin: 0; font-size: 1.3rem; font-weight: 700; color: #1e293b; }
+    .f-info small { color: #64748b; font-size: 0.7rem; font-weight: 600; display: block; line-height: 1.2; }
+    
+    .section-title { font-weight: 700; color: #1a2b6d; margin: 35px 0 15px 0; }
+
+    /* Wide Table Styling from Reference */
+    .table-detailed { font-size: 0.75rem; background: white; }
+    .table-detailed thead th { 
+        background-color: #f8f9fc; 
+        text-transform: uppercase; 
+        color: #4e73df; 
+        letter-spacing: 0.5px;
+        border-top: none;
+        vertical-align: middle;
+    }
+    .table-detailed td { vertical-align: middle; color: #4a5568; padding: 12px 8px; }
+    .text-pms-none { color: #e53e3e; font-style: italic; font-weight: 500; }
+    .scroll-wrapper { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="section-title mb-0">Detailed Vehicle Assets</h3>
+    <a href="{% url 'vehicle_management' %}" class="btn btn-sm btn-outline-primary shadow-sm">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<div class="stat-grid">
+    <div class="f-card"><div class="f-icon"><i class="fas fa-car"></i></div><div class="f-info"><small>Total Assets</small><h4>{{ vehicles.count }}</h4></div></div>
+</div>
+
+<div class="scroll-wrapper">
+    <table class="table table-hover table-detailed mb-0">
+        <thead>
+            <tr>
+                <th>Kind</th>
+                <th>Plate NR</th>
+                <th>Conduction NR</th>
+                <th>Make</th>
+                <th>Model</th>
+                <th>Engine NR</th>
+                <th>Chassis NR</th>
+                <th>Unit</th>
+                <th>Subunit</th>
+                <th>Latest Odo</th>
+                <th>For PMS?</th>
+                <th class="text-center">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehicle in vehicles %}
+            <tr>
+                <td class="font-weight-bold" style="width: 100px;">{{ vehicle.kind }}</td>
+                <td>{{ vehicle.plate_number|default:"" }}</td>
+                <td>{{ vehicle.conduction_number|default:"" }}</td>
+                <td>{{ vehicle.make }}</td>
+                <td>{{ vehicle.model }}</td>
+                <td>{{ vehicle.engine_number }}</td>
+                <td>{{ vehicle.chassis_number }}</td>
+                <td>PNP FG</td> <td><small>{{ vehicle.subunit|default:"REGIONAL CRIME LABORATORY OFFICE 10" }}</small></td>
+                <td>{{ vehicle.latest_odo|default:"" }}</td>
+                <td>
+                    {% if vehicle.status == 'No Record' %}
+                        <span class="text-pms-none">No PM data recorded</span>
+                    {% else %}
+                        {{ vehicle.status }}
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-primary dropdown-toggle shadow-sm" style="font-size: 0.7rem;" data-toggle="dropdown">
+                            Actions
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right shadow">
+                            <a class="dropdown-item" href="{% url 'edit_vehicle' vehicle.pk %}"><i class="fas fa-edit mr-2 text-primary"></i> Edit</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" href="{% url 'delete_vehicle' vehicle.pk %}"><i class="fas fa-trash mr-2"></i> Delete</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="12" class="text-center py-5 text-muted">No records found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-3 text-muted">
+    <small>Showing 1 to {{ vehicles.count }} entries</small>
+</div>
+{% endblock %}

@@ -3,124 +3,240 @@
 
 {% block content %}
 <style>
-    /* Card Grid from Figma Prototype */
+    /* Card Grid Consistency */
     .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-    .f-card { background: white; border-radius: 12px; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    
+    /* Hover effect for clickable cards */
+    .f-card-link { text-decoration: none !important; transition: transform 0.2s; cursor: pointer; }
+    .f-card-link:hover { transform: translateY(-3px); }
+    
+    .f-card { background: white; border-radius: 12px; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); height: 100%; }
     .f-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 18px; }
     .f-info h4 { margin: 0; font-size: 1.3rem; font-weight: 700; color: #1e293b; }
     .f-info small { color: #64748b; font-size: 0.7rem; font-weight: 600; display: block; line-height: 1.2; }
 
-    /* Figma Prototype Colors */
+    /* Colors matching your dashboard UI */
     .c-blue { border: 1px solid #4e73df; } .i-blue { background: #4e73df; color: white; }
     .c-orange { border: 1px solid #f6ad55; } .i-orange { background: #f6ad55; color: white; }
     .c-red { border: 1px solid #e53e3e; } .i-red { background: #e53e3e; color: white; }
     .c-green { border: 1px solid #48bb78; } .i-green { background: #48bb78; color: white; }
     
     .section-title { font-weight: 700; color: #1a2b6d; margin: 35px 0 15px 0; }
-    
-    /* Compressed Form Styles to match reference image */
-    .form-row-compact { margin-bottom: 10px; }
-    .form-group-compact label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
-    .card-form { background-color: #f8f9fc; border-radius: 8px; }
+
+    /* Clean Input Box Spacing */
+    .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .compact-group { margin-bottom: 8px; }
+    .compact-group label { 
+        display: block; 
+        font-size: 0.72rem; 
+        font-weight: 700; 
+        color: #64748b; 
+        text-transform: uppercase; 
+        margin-bottom: 2px;
+        letter-spacing: 0.3px;
+    }
+    .compact-group input, .compact-group select { 
+        width: 100%; 
+        padding: 6px 10px; 
+        border-radius: 6px; 
+        border: 1px solid #d1d5db;
+        font-size: 0.85rem;
+    }
+    .card-form { background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; }
+
+    /* Table Styling */
+    .table-registry thead { background-color: #f8f9fc; }
+    .table-registry th { font-size: 0.75rem; text-transform: uppercase; color: #4e73df; letter-spacing: 0.5px; }
 </style>
 
 <div class="stat-grid">
-    <div class="f-card c-blue"><div class="f-icon i-blue"><i class="fas fa-car"></i></div><div class="f-info"><small>Total Vehicles</small><h4>{{ total_vehicles }}</h4></div></div>
-    <div class="f-card c-blue"><div class="f-icon i-blue"><i class="fas fa-car"></i></div><div class="f-info"><small>With PMS Record</small><h4>{{ with_pms }}</h4></div></div>
-    <div class="f-card c-orange"><div class="f-icon i-orange"><i class="fas fa-car"></i></div><div class="f-info"><small>Without PMS Record</small><h4>{{ without_pms }}</h4></div></div>
-    <div class="f-card c-red"><div class="f-icon i-red"><i class="fas fa-wrench"></i></div><div class="f-info"><small>For PMS</small><h4>{{ for_pms }}</h4></div></div>
-    <div class="f-card c-orange"><div class="f-icon i-orange"><i class="fas fa-box"></i></div><div class="f-info"><small>For Registration Renewal</small><h4>{{ for_registration_renewal }}</h4></div></div>
-    <div class="f-card c-green"><div class="f-icon i-green"><i class="fas fa-shield-alt"></i></div><div class="f-info"><small>For Insurance Renewal</small><h4>{{ for_insurance_renewal }}</h4></div></div>
-    <div class="f-card c-green"><div class="f-icon i-green"><i class="fas fa-wrench"></i></div><div class="f-info"><small>Upcoming Repairs</small><h4>{{ upcoming_repairs }}</h4></div></div>
-    <div class="f-card c-green"><div class="f-icon i-green"><i class="fas fa-cog"></i></div><div class="f-info"><small>Upcoming PMS</small><h4>{{ upcoming_pms }}</h4></div></div>
+    <a href="{% url 'vehicle_list_detailed' %}" class="f-card-link">
+        <div class="f-card c-blue">
+            <div class="f-icon i-blue"><i class="fas fa-car"></i></div>
+            <div class="f-info"><small>Total Vehicles</small><h4>{{ total_vehicles }}</h4></div>
+        </div>
+    </a>
+
+    <div class="f-card c-blue">
+        <div class="f-icon i-blue"><i class="fas fa-check-circle"></i></div>
+        <div class="f-info"><small>With PMS Record</small><h4>{{ with_pms }}</h4></div>
+    </div>
+
+    <div class="f-card c-orange">
+        <div class="f-icon i-orange"><i class="fas fa-exclamation-triangle"></i></div>
+        <div class="f-info"><small>Without PMS Record</small><h4>{{ without_pms }}</h4></div>
+    </div>
+
+    <div class="f-card c-red">
+        <div class="f-icon i-red"><i class="fas fa-wrench"></i></div>
+        <div class="f-info"><small>For PMS</small><h4>{{ for_pms }}</h4></div>
+    </div>
+
+    <div class="f-card c-orange">
+        <div class="f-icon i-orange"><i class="fas fa-id-card"></i></div>
+        <div class="f-info"><small>For Registration</small><h4>{{ for_registration_renewal }}</h4></div>
+    </div>
+
+    <div class="f-card c-green">
+        <div class="f-icon i-green"><i class="fas fa-shield-alt"></i></div>
+        <div class="f-info"><small>For Insurance</small><h4>{{ for_insurance_renewal }}</h4></div>
+    </div>
+
+    <div class="f-card c-green">
+        <div class="f-icon i-green"><i class="fas fa-tools"></i></div>
+        <div class="f-info"><small>Upcoming Repairs</small><h4>{{ upcoming_repairs }}</h4></div>
+    </div>
+
+    <div class="f-card c-green">
+        <div class="f-icon i-green"><i class="fas fa-calendar-alt"></i></div>
+        <div class="f-info"><small>Upcoming PMS</small><h4>{{ upcoming_pms }}</h4></div>
+    </div>
+</div>
+
+<div class="mb-4 d-flex justify-content-end">
+    <a href="{% url 'par_management' %}" class="btn btn-outline-primary mr-2 shadow-sm"><i class="fas fa-file-signature"></i> PAR Records</a>
+    <a href="{% url 'activity_log' %}" class="btn btn-outline-dark shadow-sm"><i class="fas fa-history"></i> Activity Log</a>
 </div>
 
 <hr>
 
-<h3 class="section-title">List of Vehicles</h3>
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Vehicle ID</th>
-                        <th>Model</th>
-                        <th>Year</th>
-                        <th>Status</th>
-                        <th>Engine Number</th>
-                        <th>Chassis Number</th>
-                        <th>Registration Renewal</th>
-                        <th>Insurance Renewal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for vehicle in vehicles %}
-                    <tr>
-                        <td>{{ vehicle.vehicle_id }}</td>
-                        <td>{{ vehicle.model }}</td>
-                        <td>{{ vehicle.year }}</td>
-                        <td><span class="badge badge-info">{{ vehicle.status }}</span></td>
-                        <td>{{ vehicle.engine_number }}</td>
-                        <td>{{ vehicle.chassis_number }}</td>
-                        <td>{{ vehicle.registration_renewal_date }}</td>
-                        <td>{{ vehicle.insurance_renewal_date }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr><td colspan="8" class="text-center text-muted py-4">No vehicles recorded yet.</td></tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+<div class="d-flex justify-content-between align-items-center">
+    <h3 class="section-title">Vehicle Registry</h3>
+    <form method="GET" class="form-inline">
+        <input type="text" name="plate_no" class="form-control form-control-sm mr-2" placeholder="Plate Number...">
+        <button type="submit" class="btn btn-sm btn-primary">Search</button>
+    </form>
+</div>
+
+<div class="card shadow-sm border-0 mb-5">
+    <div class="table-responsive">
+        <table class="table table-hover table-registry mb-0">
+            <thead>
+                <tr>
+                    <th>Kind</th>
+                    <th>Plate / Conduction</th>
+                    <th>Make / Model</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vehicle in vehicles %}
+                <tr>
+                    <td><small class="font-weight-bold text-muted">{{ vehicle.kind }}</small></td>
+                    <td><strong>{{ vehicle.plate_number|default:vehicle.conduction_number }}</strong></td>
+                    <td>{{ vehicle.make }} {{ vehicle.model }}</td>
+                    <td>
+                        {% if vehicle.status == 'For PMS' or vehicle.status == 'Maintenance' or vehicle.status == 'Repair' %}
+                            <span class="badge badge-danger shadow-sm" style="background-color: #e53e3e; color: white;">{{ vehicle.status }}</span>
+                        {% elif "Without PMS" in vehicle.status or "For Registration" in vehicle.status %}
+                            <span class="badge badge-warning shadow-sm" style="background-color: #f6ad55; color: white;">{{ vehicle.status }}</span>
+                        {% elif vehicle.status == 'Active' %}
+                            <span class="badge badge-primary shadow-sm" style="background-color: #4e73df; color: white;">{{ vehicle.status }}</span>
+                        {% elif "Insurance" in vehicle.status or "Renewed" in vehicle.status or "Upcoming" in vehicle.status %}
+                            <span class="badge badge-success shadow-sm" style="background-color: #48bb78; color: white;">{{ vehicle.status }}</span>
+                        {% else %}
+                            <span class="badge badge-secondary shadow-sm">{{ vehicle.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light border dropdown-toggle" data-toggle="dropdown">Manage</button>
+                            <div class="dropdown-menu shadow">
+                                <a class="dropdown-item" href="{% url 'edit_vehicle' vehicle.pk %}">
+                                    <i class="fas fa-edit mr-2 text-primary"></i> Edit Asset
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-danger" 
+                                   href="{% url 'delete_vehicle' vehicle.pk %}" 
+                                   onclick="return confirm('Are you sure you want to delete this vehicle asset?');">
+                                    <i class="fas fa-trash mr-2"></i> Delete Asset
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center py-4 text-muted">No vehicles found matching your criteria.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
 <h3 class="section-title">Add New Vehicle Asset</h3>
-<div class="card shadow-sm border-0 card-form p-4 mb-5">
+<div class="card shadow-sm card-form p-4 mb-5">
+    {% if form.errors %}
+    <div class="alert alert-danger py-2 mb-3 shadow-sm" style="border-left: 5px solid #dc3545;">
+        <strong style="font-size: 0.9rem; color: #721c24;">Validation Errors Found:</strong>
+        <ul class="mb-0 mt-1" style="font-size: 0.85rem; color: #721c24;">
+            {% for field, errors in form.errors.items %}
+                <li><strong>{{ field|title }}:</strong> {{ errors|striptags }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    
     <form method="POST">
         {% csrf_token %}
-        
-        <div class="form-row form-row-compact">
-            <div class="form-group col-md-3 form-group-compact">
+        <div class="form-grid">
+            <div class="compact-group">
                 <label>Vehicle ID</label>
                 {{ form.vehicle_id }}
             </div>
-            <div class="form-group col-md-3 form-group-compact">
+            <div class="compact-group">
+                <label>Kind / Classification</label>
+                {{ form.kind }}
+            </div>
+            <div class="compact-group">
+                <label>Make</label>
+                {{ form.make }}
+            </div>
+            <div class="compact-group">
                 <label>Model</label>
                 {{ form.model }}
             </div>
-            <div class="form-group col-md-3 form-group-compact">
+            <div class="compact-group">
                 <label>Year</label>
                 {{ form.year }}
             </div>
-            <div class="form-group col-md-3 form-group-compact">
+            <div class="compact-group">
+                <label>Plate Number</label>
+                {{ form.plate_number }}
+            </div>
+            <div class="compact-group">
+                <label>Conduction Number</label>
+                {{ form.conduction_number }}
+            </div>
+            <div class="compact-group">
                 <label>Status</label>
                 {{ form.status }}
             </div>
-        </div>
-
-        <div class="form-row form-row-compact">
-            <div class="form-group col-md-3 form-group-compact">
+            <div class="compact-group">
                 <label>Engine Number</label>
                 {{ form.engine_number }}
             </div>
-            <div class="form-group col-md-3 form-group-compact">
+            <div class="compact-group">
                 <label>Chassis Number</label>
                 {{ form.chassis_number }}
             </div>
-            <div class="form-group col-md-3 form-group-compact">
-                <label>LTO Registration Renewal</label>
+            <div class="compact-group">
+                <label>Latest Odometer</label>
+                {{ form.latest_odo }}
+            </div>
+            <div class="compact-group">
+                <label>Reg. Renewal Date</label>
                 {{ form.registration_renewal_date }}
             </div>
-            <div class="form-group col-md-3 form-group-compact">
-                <label>Insurance Renewal</label>
+            <div class="compact-group">
+                <label>Ins. Renewal Date</label>
                 {{ form.insurance_renewal_date }}
             </div>
         </div>
 
-        <div class="d-flex justify-content-end mt-3">
-            <button type="submit" class="btn btn-primary px-5 shadow-sm" style="background-color: #1a2b6d; border: none;">
-                <i class="fas fa-plus-circle mr-2"></i> Save Vehicle Asset
+        <div class="d-flex justify-content-end mt-4">
+            <button type="submit" class="btn btn-primary px-5 shadow-sm" style="background-color: #1a2b6d; border: none; border-radius: 8px; font-weight: 600;">
+                <i class="fas fa-plus-circle mr-2"></i> Save Asset
             </button>
         </div>
     </form>
