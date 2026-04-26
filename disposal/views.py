@@ -6,7 +6,6 @@ import csv
 from django.http import HttpResponse
 from .models import DisposalItem
 
-
 def export_disposal_csv(request):
     # 1. Apply the SAME filters as your list view
     items = DisposalItem.objects.select_related('asset_ptr', 'asset_ptr__category').all()

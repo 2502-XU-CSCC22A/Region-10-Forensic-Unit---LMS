@@ -2,9 +2,16 @@
 import os
 from pathlib import Path
 import dj_database_url
+import ssl
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# --- SSL BYPASS FOR WINDOWS/GMAIL ERRORS ---
+# This forces the entire environment to trust the connection, fixing the _ssl.c:1028 error
+if (not os.environ.get('PYTHONHTTPSVERIFY', '') and 
+    getattr(ssl, '_create_unverified_context', None)):
+    ssl._create_default_https_context = ssl._create_unverified_context
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -123,3 +130,6 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@rfu10.gov.ph')
+
+# Critical for fixing the certificate verify failed error
+EMAIL_SSL_CONTEXT = ssl._create_unverified_context()

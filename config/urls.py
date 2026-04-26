@@ -2,21 +2,22 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
-from django.contrib.auth import views as auth_views
+from django.shortcuts import render
 from .views import home_view
+from django.contrib.auth import views as auth_views
 from login.views import login_view, verify_token_view, dashboard_view, logout_view
 from dashboard.views import dashboard_view
-
 urlpatterns = [
     # Admin
     path('admin/', admin.site.urls),
-
+    
     # ── Feature Pages ─────────────────────────────────────────────────────────────
     path('dashboard/', dashboard_view, name='dashboard'),
     path('disposal/', include('disposal.urls')),
     path('login/', include ('login.urls')),
+    path('mobility/', include('mobility.urls')),
     path('', home_view, name='home'), 
-    path('mobility/', include('mobility.urls')), # Dashboard will be at /mobility/
+        
 
     # Home / Landing page
     path('', TemplateView.as_view(template_name='Home/home.html'), name='home'),

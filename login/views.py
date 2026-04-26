@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth import login as auth_login
 
 from .models import LoginToken
 
@@ -65,7 +66,7 @@ def verify_token_view(request, token):
         return redirect('login')
 
     remember = request.session.pop('_pending_remember', False)
-    login(request, user)
+    auth_login(request, user)
 
     if remember:
         request.session.set_expiry(1_209_600)   # 2 weeks
