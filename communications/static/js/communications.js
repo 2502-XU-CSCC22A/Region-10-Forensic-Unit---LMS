@@ -1,48 +1,80 @@
+console.log("COMM JS LOADED");
+
+/* ---------------- SAFE SUPABASE INIT ---------------- */
 window.supabaseClient = window.supabaseClient || window.supabase.createClient(
   "https://vamjajitzyspdyfxisac.supabase.co",
   "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54"
 );
 
-const supabase = window.supabaseClient;
+const sb = window.supabaseClient;
 
-// state
+/* ---------------- STATE ---------------- */
 let communications = [];
 let filtered = [];
 let currentPage = 1;
 const pageSize = 5;
-let sortKey = null;
-let sortDir = 1;
 let editingId = null;
+
+/* ---------------- HELPERS ---------------- */
+function getValue(id) {
+  return document.getElementById(id)?.value?.trim() || "";
+}
+
+function todayDate() {
+  return new Date().toISOString().split("T")[0];
+}
+
+function generatePropertyNo() {
+  return "PN-" + Date.now();
+}
 
 /* ---------------- FETCH DATA ---------------- */
 async function fetchData() {
-  const { data, error } = await supabase
+  const { data, error } = await sb
     .from("communications_communication")
-    .select("*");
+    .select("*")
+    .order("asset_ptr_id", { ascending: false });
 
   if (error) {
-    console.error(error);
+    console.error("FETCH ERROR:", error);
+    alert("Failed to load communications.");
     return;
   }
 
   communications = data.map((item) => ({
     id: item.asset_ptr_id,
-    type: item.type,
-    serial: item.imei_serial,
-    frequency: item.frequency_range,
-    stock: item.stock_level,
+    type: item.type || "",
+    serial: item.imei_serial || "",
+    frequency: item.frequency_range || "",
+    stock: item.stock_level || 0,
   }));
 
   filtered = [...communications];
+  currentPage = 1;
+
   renderTable();
   renderPagination();
+  updateStats();
 }
 
-/* ---------------- TABLE RENDER ---------------- */
+/* ---------------- TABLE ---------------- */
 function renderTable() {
   const tbody = document.getElementById("tableBody");
 
-  tbody.innerHTML = filtered.map(c => `
+  const start = (currentPage - 1) * pageSize;
+  const pageItems = filtered.slice(start, start + pageSize);
+
+  if (pageItems.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center;">No records found</td>
+      </tr>
+    `;
+    document.getElementById("rowInfo").textContent = "No records";
+    return;
+  }
+
+  tbody.innerHTML = pageItems.map(c => `
     <tr>
       <td>${c.type}</td>
       <td>${c.serial}</td>
@@ -54,12 +86,14 @@ function renderTable() {
     </tr>
   `).join("");
 
-  // attach event listeners AFTER rendering
   document.querySelectorAll(".edit-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       openActionModal(btn.dataset.id);
     });
   });
+
+  document.getElementById("rowInfo").textContent =
+    `Showing ${start + 1}-${Math.min(start + pageSize, filtered.length)} of ${filtered.length}`;
 }
 
 /* ---------------- PAGINATION ---------------- */
@@ -77,56 +111,48 @@ function renderPagination() {
     b.onclick = () => {
       currentPage = i;
       renderTable();
+      renderPagination();
     };
 
     el.appendChild(b);
   }
 }
 
+/* ---------------- STATS ---------------- */
+function updateStats() {
+  document.getElementById("totalCount").textContent = communications.length;
+  document.getElementById("issuedCount").textContent = communications.length;
+  document.getElementById("pendingCount").textContent = 0;
+
+  document.getElementById("totalBar").style.width = "100%";
+  document.getElementById("issuedBar").style.width = "100%";
+  document.getElementById("pendingBar").style.width = "0%";
+}
+
 /* ---------------- FILTER ---------------- */
 function filterTable() {
   const q = document.getElementById("searchInput").value.toLowerCase();
-  const sf = document.getElementById("statusFilter").value;
 
-  filtered = communications.filter((c) => {
-    const textMatch =
-      (c.type || "").toLowerCase().includes(q) ||
-      (c.serial || "").toLowerCase().includes(q) ||
-      (c.frequency || "").toLowerCase().includes(q);
-
-    const statusMatch = !sf || c.status === sf;
-
-    return textMatch && statusMatch;
-  });
+  filtered = communications.filter((c) =>
+    c.type.toLowerCase().includes(q) ||
+    c.serial.toLowerCase().includes(q) ||
+    c.frequency.toLowerCase().includes(q)
+  );
 
   currentPage = 1;
   renderTable();
   renderPagination();
 }
 
-/* ---------------- SORT ---------------- */
-function sortTable(key) {
-  sortDir = sortKey === key ? sortDir * -1 : 1;
-  sortKey = key;
-
-  filtered.sort((a, b) => {
-    const av = (a[key] || "").toString().toLowerCase();
-    const bv = (b[key] || "").toString().toLowerCase();
-    return av < bv ? -sortDir : av > bv ? sortDir : 0;
-  });
-
-  renderTable();
-}
-
 /* ---------------- MODAL ---------------- */
 function inputField(label, id, val = "", type = "text") {
   return `
     <div style="margin-bottom:10px">
-      <label for="${id}">${label}</label>
+      <label>${label}</label>
       <input id="${id}" type="${type}" value="${val}"
-        style="width:100%;padding:7px 10px;border:1px solid var(--border);
-        border-radius:6px;margin-top:3px"/>
-    </div>`;
+        style="width:100%;padding:7px;border:1px solid #ccc;border-radius:6px;margin-top:3px"/>
+    </div>
+  `;
 }
 
 function buildForm(c = {}) {
@@ -140,15 +166,11 @@ function buildForm(c = {}) {
 
 function openActionModal(id) {
   editingId = id;
+  const c = communications.find(x => x.id == id);
 
-  const c = communications.find((x) => x.id === id);
-
-  document.getElementById("modalTitle").textContent =
-    "Edit Communications Record";
-
+  document.getElementById("modalTitle").textContent = "Edit Record";
   document.getElementById("modalBody").innerHTML = buildForm(c);
-
-  document.getElementById("modalSaveBtn").textContent = "Save Changes";
+  document.getElementById("modalSaveBtn").textContent = "Save";
 
   document.getElementById("modalOverlay").classList.add("open");
 }
@@ -156,62 +178,80 @@ function openActionModal(id) {
 function openAddModal() {
   editingId = null;
 
-  const title = document.getElementById('modalTitle');
-  const body = document.getElementById('modalBody');
-  const btn = document.getElementById('modalSaveBtn');
-  const overlay = document.getElementById('modalOverlay');
+  document.getElementById("modalTitle").textContent = "Add Record";
+  document.getElementById("modalBody").innerHTML = buildForm();
+  document.getElementById("modalSaveBtn").textContent = "Add";
 
-  if (!title || !body || !btn || !overlay) {
-    console.error("Modal elements missing in HTML");
-    return;
-  }
-
-  title.textContent = 'Add New Communications Record';
-  body.innerHTML = buildForm();
-  btn.textContent = 'Add Record';
-  overlay.classList.add('open');
+  document.getElementById("modalOverlay").classList.add("open");
 }
 
 function closeModal() {
   document.getElementById("modalOverlay").classList.remove("open");
-  editingId = null;
 }
 
 /* ---------------- SAVE ---------------- */
 async function saveRecord() {
-  const get = (id) => document.getElementById(id)?.value?.trim() || "";
+  const type = getValue("c_type");
+  const serial = getValue("c_serial");
+  const frequency = getValue("c_frequency");
+  const stock = parseInt(getValue("c_stock")) || 0;
 
-  const recordData = {
-  type: get("c_type"),
-  imei_serial: get("c_serial"),
-  frequency_range: get("c_frequency"),
-  stock_level: parseInt(get("c_stock")) || 0,
-};
+  console.log("TYPE:", type);
+  console.log("SERIAL:", serial);
 
-  if (!recordData.type || !recordData.imei_serial) {
-    alert("Type and Serial are required.");
+  if (!type || !serial) {
+    alert("Type and IMEI / Serial are required.");
     return;
   }
 
   if (editingId) {
-    const { error } = await supabase
+    const { error } = await sb
       .from("communications_communication")
-      .update(recordData)
+      .update({
+        type: type,
+        imei_serial: serial,
+        frequency_range: frequency,
+        stock_level: stock,
+      })
       .eq("asset_ptr_id", editingId);
 
     if (error) {
-      console.error(error);
-      alert("Update failed");
+      console.error("UPDATE ERROR:", error);
+      alert(error.message);
       return;
     }
   } else {
-    const { error } = await supabase
-      .from("communications_communication")
-      .insert([recordData]);
+    const { data: parentData, error: parentError } = await sb
+      .from("config_asset")
+      .insert([{
+        date_acquired: todayDate(),
+        property_no: generatePropertyNo(),
+        serial_no: serial,
+        model: type,
+        category_id: 2
+      }])
+      .select("id")
+      .single();
 
-    if (error) {
-      console.error(error);
-      alert("Insert failed");
+    if (parentError) {
+      console.error("PARENT SAVE ERROR:", parentError);
+      alert(parentError.message);
+      return;
+    }
+
+    const { error: childError } = await sb
+      .from("communications_communication")
+      .insert([{
+        asset_ptr_id: parentData.id,
+        type: type,
+        imei_serial: serial,
+        frequency_range: frequency,
+        stock_level: stock
+      }]);
+
+    if (childError) {
+      console.error("CHILD SAVE ERROR:", childError);
+      alert(childError.message);
       return;
     }
   }
@@ -220,7 +260,7 @@ async function saveRecord() {
   closeModal();
 }
 
-/* ---------------- EXPORT CSV ---------------- */
+/* ---------------- EXPORT ---------------- */
 function exportCSV() {
   const headers = ["TYPE", "SERIAL", "FREQUENCY", "STOCK"];
 
@@ -242,13 +282,16 @@ function exportCSV() {
 document.addEventListener("DOMContentLoaded", () => {
   fetchData();
 
-  const btn = document.getElementById("addRecordBtn");
-  if (btn) {
-    btn.addEventListener("click", openAddModal);
-  }
+  document.getElementById("addRecordBtn")?.addEventListener("click", openAddModal);
+  document.getElementById("modalSaveBtn")?.addEventListener("click", saveRecord);
+  document.getElementById("closeModalBtn")?.addEventListener("click", closeModal);
+  document.getElementById("closeModalBtn2")?.addEventListener("click", closeModal);
 });
 
+/* ---------------- GLOBAL ---------------- */
 window.openAddModal = openAddModal;
 window.openActionModal = openActionModal;
 window.closeModal = closeModal;
 window.saveRecord = saveRecord;
+window.filterTable = filterTable;
+window.exportCSV = exportCSV;
