@@ -32,8 +32,8 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions', 
-    'disposal',
     'firearms',
+    'config',
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
@@ -120,3 +120,5 @@ STATICFILES_DIRS = [
 
     ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' 

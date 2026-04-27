@@ -94,7 +94,7 @@
 
 </head>
 <body>
-
+{% csrf_token %}
 <header>
   <div class="header-brand">
     <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
@@ -142,7 +142,7 @@
         <div class="stat-top">
           <div class="stat-icon red">&#x1F4C4;</div>
           <div>
-            <div class="stat-label">Pending BER</div>
+            <div class="stat-label">Validated PAR</div>
             <div class="stat-value" id="pendingCount">&#8212;</div>
           </div>
         </div>
@@ -205,15 +205,28 @@
 
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
-    <button class="close-modal" onclick="closeModal()">&#x2715;</button>
-    <h3 id="modalTitle">Firearm Details</h3>
-    <div id="modalBody"></div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal()">Close</button>
-      <button class="btn btn-primary" id="modalSaveBtn" onclick="saveRecord()">Save</button>
+    <div>
+    
+      <button type="button" class="close-modal" onclick="closeModal()">&#x2715;</button>
+      <h3 id="modalTitle">Firearm Details</h3>
+      
+      <div id="modalBody">
+        </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Close</button>
+        <button type="button" class="btn btn-primary" id="modalSaveBtn" onclick="saveRecord()">Save to Database</button>
+      </div>
     </div>
   </div>
 </div>
+
+<script id="supabase-data" type="application/json">
+  [ {% for f in firearms %} ... {% endfor %} ]
+</script>
+<script>
+  const supabaseData = JSON.parse(document.getElementById('supabase-data').textContent);
+</script>
 
 <script src="{% static 'firearms/js/firearms_main.js' %}"></script>
 </body>

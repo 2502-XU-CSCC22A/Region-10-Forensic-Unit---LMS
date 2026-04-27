@@ -1,40 +1,70 @@
-let firearms = [
-  { id:1, name:"ARIANA GRANDE",  unit:"PNP FG", subunit:"REGIONAL CRIME", station:"ILIGAN CITY CRIME", issuingUnit:"PNP FG", faid:"SFA201993432343", serialNo:"P5667", makeModel:"PIETRO BERRETA / PISTOL/9MM",   status:"SERVICEABLE",   validated:"VALIDATED" },
-  { id:2, name:"PETE DAVIDSON",  unit:"PNP FG", subunit:"REGIONAL CRIME", station:"CDO CITY CRIME",    issuingUnit:"PNP FG", faid:"SFA201993434343", serialNo:"P4297", makeModel:"PIETRO BERRETA / PISTOL/9MM",   status:"SERVICEABLE",   validated:"VALIDATED" },
-  { id:3, name:"JOHN REYES",     unit:"PNP FG", subunit:"FIELD UNIT",     station:"CAGAYAN DE ORO",    issuingUnit:"PNP FG", faid:"SFA202193441212", serialNo:"G1023", makeModel:"GLOCK 17 / PISTOL/9MM",         status:"SERVICEABLE",   validated:"VALIDATED" },
-  { id:4, name:"MARIA SANTOS",   unit:"PNP FG", subunit:"REGIONAL CRIME", station:"MALAYBALAY CITY",   issuingUnit:"PNP FG", faid:"SFA202293451020", serialNo:"S8831", makeModel:"SIG SAUER / PISTOL/9MM",        status:"SERVICEABLE",   validated:"VALIDATED" },
-  { id:5, name:"CARLO MENDEZ",   unit:"PNP FG", subunit:"FIELD UNIT",     station:"BUTUAN CITY",       issuingUnit:"PNP FG", faid:"SFA202193460055", serialNo:"B2200", makeModel:"BERETTA M9 / PISTOL/9MM",       status:"UNSERVICEABLE", validated:"PENDING"   },
-  { id:6, name:"LIZA SOBERANO",  unit:"PNP FG", subunit:"CRIME LAB",      station:"ILIGAN CITY CRIME", issuingUnit:"PNP FG", faid:"SFA202393470088", serialNo:"L0312", makeModel:"SPRINGFIELD XD / PISTOL/.45",  status:"SERVICEABLE",   validated:"VALIDATED" },
-  { id:7, name:"JOSE DELA CRUZ", unit:"PNP FG", subunit:"REGIONAL CRIME", station:"CDO CITY CRIME",    issuingUnit:"PNP FG", faid:"SFA202093480019", serialNo:"J7741", makeModel:"COLT 1911 / PISTOL/.45",       status:"SERVICEABLE",   validated:"VALIDATED" },
-  { id:8, name:"ANNA FAJARDO",   unit:"PNP FG", subunit:"CRIME LAB",      station:"BUTUAN CITY",       issuingUnit:"PNP FG", faid:"SFA202193490003", serialNo:"A4410", makeModel:"GLOCK 19 / PISTOL/9MM",        status:"UNSERVICEABLE", validated:"PENDING"   },
-];
+const API = {
+  list:   '/firearms/api/list/',
+  create: '/firearms/api/create/',
+  update: (id) => `/firearms/api/update/${id}/`,
+  delete: (id) => `/firearms/api/delete/${id}/`,
+};
 
-let nextId      = 9;
-let filtered    = [...firearms];
+let allFirearms = [];
+let filtered    = [];
 let currentPage = 1;
 const pageSize  = 5;
 let sortKey     = null;
 let sortDir     = 1;
 let editingId   = null;
 
+function getCookie(name) {
+  const val   = `; ${document.cookie}`;
+  const parts = val.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+
+async function apiPost(url, data) {
+  const res = await fetch(url, {
+    method:  'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken':  getCookie('csrftoken'),
+    },
+    body: JSON.stringify(data),
+  });
+  return res.json();
+}
+
+async function loadFirearms() {
+  try {
+    const res  = await fetch(API.list);
+    const data = await res.json();
+    allFirearms = data.firearms || [];
+    filterTable();
+  } catch (err) {
+    console.error('Failed to load firearms:', err);
+    document.getElementById('tableBody').innerHTML =
+      `<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--red)">
+         Failed to load data. Check your connection.
+       </td></tr>`;
+  }
+}
+
 function updateStats() {
-  const total     = firearms.length;
-  const validated = firearms.filter(f => f.validated === 'VALIDATED').length;
-  const pending   = firearms.filter(f => f.validated === 'PENDING').length;
-  const pct       = v => Math.max(4, Math.round((v / total) * 100)) + '%';
+  const total     = allFirearms.length;
+  const validated = allFirearms.filter(f => f.validated === 'VALIDATED').length;
+  const pending   = allFirearms.filter(f => f.validated === 'PENDING').length;
+  const pct       = v => Math.max(4, Math.round((v / (total || 1)) * 100)) + '%';
 
-  document.getElementById('totalCount').textContent   = total;
-  document.getElementById('issuedCount').textContent  = validated;
-  document.getElementById('pendingCount').textContent = pending;
-
-  document.getElementById('totalBar').style.width   = '100%';
-  document.getElementById('issuedBar').style.width  = pct(validated);
-  document.getElementById('pendingBar').style.width = pct(pending);
+  document.getElementById('totalCount').textContent  = total;
+  document.getElementById('issuedCount').textContent = validated;
+  document.getElementById('pendingCount').textContent= pending;
+  document.getElementById('totalBar').style.width    = '100%';
+  document.getElementById('issuedBar').style.width   = pct(validated);
+  document.getElementById('pendingBar').style.width  = pct(pending);
 }
 
 function statusBadge(s) {
-  if (s === 'SERVICEABLE')   return `<span class="badge badge-green">${s}</span>`;
-  if (s === 'UNSERVICEABLE') return `<span class="badge badge-red">${s}</span>`;
+  if (s === 'Serviceable')   return `<span class="badge badge-green">${s}</span>`;
+  if (s === 'Unserviceable') return `<span class="badge badge-red">${s}</span>`;
+  if (s === 'Lost')          return `<span class="badge badge-orange">${s}</span>`;
   return `<span class="badge badge-orange">${s}</span>`;
 }
 
@@ -62,12 +92,16 @@ function renderTable() {
           <td>${f.makeModel}</td>
           <td>${statusBadge(f.status)}</td>
           <td>${validatedBadge(f.validated)}</td>
-          <td><button class="action-btn" onclick="openActionModal(${f.id})">Action ▸</button></td>
+          <td>
+            <button class="action-btn" onclick="openActionModal(${f.id})">Edit ▸</button>
+            <button class="action-btn" style="background:#ef4444;margin-left:4px"
+                    onclick="deleteRecord(${f.id})">Del</button>
+          </td>
         </tr>`).join('')
     : `<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted)">No records found.</td></tr>`;
 
   document.getElementById('rowInfo').textContent =
-    `Showing ${Math.min(start + 1, filtered.length)}–${Math.min(start + pageSize, filtered.length)} of ${filtered.length}`;
+    `Showing ${filtered.length ? start + 1 : 0}–${Math.min(start + pageSize, filtered.length)} of ${filtered.length}`;
 
   renderPagination();
   updateStats();
@@ -77,7 +111,6 @@ function renderPagination() {
   const pages = Math.ceil(filtered.length / pageSize);
   const el    = document.getElementById('pagination');
   el.innerHTML = '';
-
   for (let i = 1; i <= pages; i++) {
     const b       = document.createElement('button');
     b.className   = 'page-btn' + (i === currentPage ? ' active' : '');
@@ -91,9 +124,9 @@ function filterTable() {
   const q  = document.getElementById('searchInput').value.toLowerCase();
   const sf = document.getElementById('statusFilter').value;
 
-  filtered = firearms.filter(f => {
+  filtered = allFirearms.filter(f => {
     const textMatch   = [f.name, f.serialNo, f.station, f.faid, f.makeModel, f.subunit]
-                          .some(v => v.toLowerCase().includes(q));
+                          .some(v => (v || '').toLowerCase().includes(q));
     const statusMatch = !sf || f.status === sf;
     return textMatch && statusMatch;
   });
@@ -118,11 +151,11 @@ function applySortFiltered() {
   });
 }
 
-function inputField(label, id, val = '', type = 'text') {
+function inputField(label, id, val = '') {
   return `
     <div style="margin-bottom:10px">
       <label class="modal-label" for="${id}">${label}</label>
-      <input id="${id}" type="${type}" value="${val}"
+      <input id="${id}" type="text" value="${val}"
         style="width:100%;padding:7px 10px;border:1px solid var(--border);
                border-radius:6px;font-size:13px;font-family:inherit;margin-top:3px"/>
     </div>`;
@@ -145,22 +178,22 @@ function selectField(label, id, options, val = '') {
 
 function buildForm(f = {}) {
   return (
-    inputField('Name',                    'f_name',        f.name        || '')       +
-    inputField('Unit',                    'f_unit',        f.unit        || 'PNP FG') +
-    inputField('Subunit',                 'f_subunit',     f.subunit     || '')       +
-    inputField('Station',                 'f_station',     f.station     || '')       +
-    inputField('Issuing Unit',            'f_issuingUnit', f.issuingUnit || 'PNP FG') +
-    inputField('FAID',                    'f_faid',        f.faid        || '')       +
-    inputField('Serial No.',              'f_serialNo',    f.serialNo    || '')       +
-    inputField('Make / Model / Kind / Caliber', 'f_makeModel', f.makeModel || '')    +
-    selectField('Status',    'f_status',    ['SERVICEABLE', 'UNSERVICEABLE', 'LOST'], f.status    || 'SERVICEABLE') +
+    inputField('Name (Assigned To)',            'f_name',        f.name        || '') +
+    inputField('Unit',                          'f_unit',        f.unit        !== 'N/A' ? f.unit        || 'PNP FG' : 'PNP FG') +
+    inputField('Subunit',                       'f_subunit',     f.subunit     !== 'N/A' ? f.subunit     || '' : '') +
+    inputField('Station',                       'f_station',     f.station     !== 'N/A' ? f.station     || '' : '') +
+    inputField('Issuing Unit',                  'f_issuingUnit', f.issuingUnit !== 'N/A' ? f.issuingUnit || 'PNP FG' : 'PNP FG') +
+    inputField('FAID / Serial',                 'f_faid',        f.faid        !== 'N/A' ? f.faid        || '' : '') +
+    inputField('Serial No.',                    'f_serialNo',    f.serialNo    !== 'N/A' ? f.serialNo    || '' : '') +
+    inputField('Make / Model / Kind / Caliber', 'f_makeModel',   f.makeModel   !== 'N/A' ? f.makeModel   || '' : '') +
+    selectField('Status',    'f_status',    ['Serviceable', 'Unserviceable', 'Lost'], f.status    || 'SERVICEABLE') +
     selectField('Validated', 'f_validated', ['VALIDATED', 'PENDING'],                 f.validated || 'PENDING')
   );
 }
 
 function openActionModal(id) {
   editingId = id;
-  const f   = firearms.find(x => x.id === id);
+  const f   = allFirearms.find(x => x.id === id);
   document.getElementById('modalTitle').textContent   = 'Edit Firearm Record';
   document.getElementById('modalBody').innerHTML      = buildForm(f);
   document.getElementById('modalSaveBtn').textContent = 'Save Changes';
@@ -180,7 +213,7 @@ function closeModal() {
   editingId = null;
 }
 
-function saveRecord() {
+async function saveRecord() {
   const get  = id => document.getElementById(id)?.value?.trim() || '';
   const data = {
     name:        get('f_name'),
@@ -195,24 +228,47 @@ function saveRecord() {
     validated:   get('f_validated'),
   };
 
-  if (!data.name || !data.serialNo) {
-    alert('Name and Serial No. are required.');
-    return;
-  }
+  if (!data.name) { alert('Name is required.'); return; }
 
-  if (editingId) {
-    const idx     = firearms.findIndex(f => f.id === editingId);
-    firearms[idx] = { ...firearms[idx], ...data };
-  } else {
-    firearms.push({ id: nextId++, ...data });
-  }
+  const btn       = document.getElementById('modalSaveBtn');
+  btn.disabled    = true;
+  btn.textContent = 'Saving…';
 
-  filterTable();
-  closeModal();
+  try {
+    const url    = editingId ? API.update(editingId) : API.create;
+    const result = await apiPost(url, data);
+
+    if (result.success) {
+      closeModal();
+      await loadFirearms();
+    } else {
+      alert('Error: ' + result.error);
+    }
+  } catch (err) {
+    alert('Network error. Please try again.');
+    console.error(err);
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = editingId ? 'Save Changes' : 'Add Record';
+  }
+}
+
+async function deleteRecord(id) {
+  if (!confirm('Delete this firearm record? This cannot be undone.')) return;
+  try {
+    const result = await apiPost(API.delete(id), {});
+    if (result.success) {
+      await loadFirearms();
+    } else {
+      alert('Error: ' + result.error);
+    }
+  } catch (err) {
+    alert('Network error.');
+  }
 }
 
 function exportCSV() {
-  const headers = ['NAME','UNIT','SUBUNIT','STATION','ISSUING UNIT','FAID','SERIAL NO.','MAKE/MODEL/KIND/CALIBER','STATUS','VALIDATED'];
+  const headers = ['NAME','UNIT','SUBUNIT','STATION','ISSUING UNIT','FAID','SERIAL NO.','MAKE/MODEL','STATUS','VALIDATED'];
   const rows    = filtered.map(f =>
     [f.name, f.unit, f.subunit, f.station, f.issuingUnit,
      f.faid, f.serialNo, f.makeModel, f.status, f.validated]
@@ -229,5 +285,5 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('modalOverlay').addEventListener('click', e => {
     if (e.target === document.getElementById('modalOverlay')) closeModal();
   });
-  filterTable();
+  loadFirearms();
 });
