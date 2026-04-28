@@ -11,3 +11,9 @@ def communications_list(request):
     # Fetch all records from Supabase to show in the table
     items = Communication.objects.all() 
     return render(request, 'communications.html', {'items': items})
+
+def par_monitoring(request):
+    return render(request, 'par_monitoring.html')
+
+def activity_logs(request):
+    return render(request, 'activity_logs.html')

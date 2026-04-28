@@ -41,13 +41,15 @@ async function fetchData() {
     return;
   }
 
-  communications = data.map((item) => ({
-    id: item.asset_ptr_id,
-    type: item.type || "",
-    serial: item.imei_serial || "",
-    frequency: item.frequency_range || "",
-    stock: item.stock_level || 0,
-  }));
+  communications = data
+    .map((item) => ({
+      id: item.asset_ptr_id,
+      type: item.type || "",
+      serial: item.imei_serial || "",
+      frequency: item.frequency_range || "",
+      stock: item.stock_level || 0,
+    }))
+    .filter((item) => item.stock > 0);
 
   filtered = [...communications];
   currentPage = 1;
@@ -205,6 +207,9 @@ async function saveRecord() {
   }
 
   if (editingId) {
+    const oldRecord = communications.find(c => c.id == editingId);
+    const oldStock = oldRecord ? oldRecord.stock : null;
+
     const { error } = await sb
       .from("communications_communication")
       .update({
@@ -220,6 +225,27 @@ async function saveRecord() {
       alert(error.message);
       return;
     }
+
+    // Save to activity log only if stock changed
+    if (oldStock !== stock) {
+      const { error: logError } = await sb
+        .from("communications_activitylog")
+        .insert([{
+          communication_id: editingId,
+          action: "Stock Updated",
+          old_stock: oldStock,
+          new_stock: stock,
+          details: `${type} stock changed from ${oldStock} to ${stock}`
+        }]);
+
+      if (logError) {
+        console.error("ACTIVITY LOG ERROR:", logError);
+        alert("Stock updated, but activity log failed: " + logError.message);
+        return;
+      }
+    }
+
+
   } else {
     const { data: parentData, error: parentError } = await sb
       .from("config_asset")
