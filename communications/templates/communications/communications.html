@@ -7,9 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Regional Forensic Unit 10 LMS &#8211; Firearms</title>
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
-        rel="stylesheet" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/communications.css' %}" />
@@ -185,7 +187,7 @@
 
     <div class="layout">
 
-        {% include 'sidebar.html' %}
+        {% include 'communications/sidebar.html' %}
 
         <main>
 
@@ -278,7 +280,7 @@
 <div class="modal-overlay" id="modalOverlay">
     <div class="modal">
         <button class="close-modal" id="closeModalBtn">&#x2715;</button>
-        <h3 id="modalTitle">Firearm Details</h3>
+        <h3 id="modalTitle">Communications Details</h3>
         <div id="modalBody"></div>
         <div class="modal-actions">
             <button class="btn btn-outline" id="closeModalBtn2">Close</button>

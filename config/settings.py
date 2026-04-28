@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'login',
     'config',
     'dashboard',
+    'communications',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mobility',

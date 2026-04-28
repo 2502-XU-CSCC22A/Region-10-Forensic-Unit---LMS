@@ -77,6 +77,7 @@ body {
 }
 
 .user-name {
+    color: #2563eb;
     font-size: 14px;
     line-height: 1.2;
 }

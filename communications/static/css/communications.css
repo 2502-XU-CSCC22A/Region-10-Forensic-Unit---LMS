@@ -47,7 +47,7 @@
 }
 
 .stat-value {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 36px;
   font-weight: 700;
   color: var(--text);
@@ -83,7 +83,7 @@
   background: #d9e4f7;
   padding: 14px 24px;
   text-align: center;
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: var(--navy);
@@ -161,7 +161,7 @@ th {
   padding: 11px 14px;
   text-align: left;
   font-weight: 700;
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 13px;
   color: var(--navy);
   letter-spacing: .4px;
@@ -278,7 +278,7 @@ tbody tr:hover           { background: #eff6ff; }
 }
 
 .modal h3 {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 20px;
   font-weight: 700;
   color: var(--navy);

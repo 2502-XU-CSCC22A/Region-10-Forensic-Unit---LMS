@@ -3,7 +3,6 @@ from django.conf import settings
 from datetime import date
 
 class Personnel(models.Model):
-    # Matches PersonnelID PK from your diagram
     personnel_id = models.BigAutoField(primary_key=True, db_column='PersonnelID')
     name = models.CharField(max_length=255, db_column='Name')
     rank = models.CharField(max_length=100, db_column='Rank')
@@ -26,15 +25,13 @@ class AssetStatus(models.Model):
         
 class PARRecord(models.Model):
 
-    par_id = models.AutoField(primary_key=True, db_column='ParID')
+    par_id = models.BigAutoField(primary_key=True, db_column='ParID')
     par_number = models.CharField(max_length=100, db_column='PAR_Number', unique=True)
     date_issued = models.DateField(db_column='Date_Issued', default=date.today)
     return_date = models.DateField(db_column='Return_Date', null=True, blank=True)
     condition_on_issuance = models.TextField(db_column='Condition_on_Issuance')
     is_active = models.BooleanField(db_column='Is_Active', default=True)
 
-    # Foreign Keys linking to other tables
-    # asset_id: Links to the specific equipment being issued
     asset = models.ForeignKey(
         'Asset', 
         on_delete=models.CASCADE, 
@@ -42,8 +39,6 @@ class PARRecord(models.Model):
         related_name='par_records'
     )
     
-    # issued_to_id: The personnel/staff receiving the asset
-    # Note: If you have a Personnel model, link it here. Otherwise, it links to User.
     issued_to = models.ForeignKey(
         Personnel,
         on_delete=models.PROTECT,
@@ -51,7 +46,6 @@ class PARRecord(models.Model):
         related_name='received_assets'
     )
 
-    # user_id: The Logistics Officer/Supervisor processing the PAR
     processed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -79,7 +73,6 @@ class Category(models.Model):
 
 
 class Asset(models.Model):
-    # Core attributes from your diagram
     date_acquired = models.DateField()
     property_no = models.CharField(max_length=100, unique=True)
     serial_no = models.CharField(max_length=100, unique=True)
@@ -88,12 +81,11 @@ class Asset(models.Model):
     status = models.ForeignKey(
         'AssetStatus', 
         on_delete=models.CASCADE, 
-        db_column='StatusID',   # Matches the column in public.config_asset
-        to_field='status_id',   # Points to your BigAutoField in AssetStatus
+        db_column='StatusID',   
+        to_field='status_id',   
         related_name='assets'
     )
 
-    # The connection to the Category table
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='assets')
 
     def __str__(self):
