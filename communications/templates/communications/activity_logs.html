@@ -1,0 +1,237 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Activity Logs</title>
+
+  <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/communications.css' %}">
+
+  <style>
+    main {
+      margin-left: 290px;
+      padding: 120px 48px 40px;
+      background: #f1f5f9;
+      min-height: 100vh;
+    }
+
+    .activity-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 36px;
+    }
+
+    .activity-title h1 {
+      font-family: 'Rajdhani', sans-serif;
+      color: #0d2155;
+      font-size: 34px;
+      margin-bottom: 4px;
+    }
+
+    .activity-title p {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    .filter-buttons {
+      display: flex;
+      border: 1px solid #2563eb;
+      border-radius: 999px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .filter-buttons button {
+      border: none;
+      padding: 8px 18px;
+      font-weight: 600;
+      cursor: pointer;
+      background: white;
+      color: #2563eb;
+    }
+
+    .filter-buttons button.active {
+      background: #2563eb;
+      color: white;
+    }
+
+    .activity-list {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .log-card {
+      background: white;
+      border-left: 4px solid #22c55e;
+      padding: 20px 24px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .log-card.updated {
+      border-left-color: #2563eb;
+    }
+
+    .log-card.moved {
+      border-left-color: #f97316;
+    }
+
+    .log-card.deleted {
+      border-left-color: #ef4444;
+    }
+
+    .log-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      color: white;
+      background: #22c55e;
+      margin-bottom: 8px;
+    }
+
+    .log-badge.updated {
+      background: #2563eb;
+    }
+
+    .log-badge.moved {
+      background: #f97316;
+    }
+
+    .log-badge.deleted {
+      background: #ef4444;
+    }
+
+    .log-main h3 {
+      font-size: 17px;
+      color: #1e293b;
+      margin-bottom: 5px;
+    }
+
+    .log-main p {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .log-date {
+      text-align: right;
+      color: #64748b;
+      font-size: 13px;
+      min-width: 170px;
+    }
+
+    .return-link {
+      display: block;
+      text-align: center;
+      margin-top: 30px;
+      color: #64748b;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .return-link:hover {
+      color: #2563eb;
+    }
+  </style>
+</head>
+
+<body>
+
+{% include 'sidebar.html' %}
+
+<main>
+  <div class="activity-header">
+    <div class="activity-title">
+      <h1>Activity History</h1>
+      <p>Tracking system modifications, additions, and updates</p>
+    </div>
+
+    <div class="filter-buttons">
+      <button class="active">Last 7 Days</button>
+      <button>Last 30 Days</button>
+    </div>
+  </div>
+
+  <div class="activity-list" id="activityLogList">
+    <p>Loading activity logs...</p>
+  </div>
+
+  <a href="{% url 'communications_list' %}" class="return-link">
+    ← Return to Dashboard
+  </a>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+<script>
+  const sb = window.supabase.createClient(
+    "https://vamjajitzyspdyfxisac.supabase.co",
+    "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54"
+  );
+
+  function getLogType(action) {
+    const text = action.toLowerCase();
+
+    if (text.includes("moved") || text.includes("ber")) return "moved";
+    if (text.includes("deleted")) return "deleted";
+    if (text.includes("updated")) return "updated";
+
+    return "created";
+  }
+
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  }
+
+  async function loadActivityLogs() {
+    const { data, error } = await sb
+      .from("communications_activitylog")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    const list = document.getElementById("activityLogList");
+
+    if (error) {
+      console.error(error);
+      list.innerHTML = "<p>Failed to load activity logs.</p>";
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      list.innerHTML = "<p>No activity logs yet.</p>";
+      return;
+    }
+
+    list.innerHTML = data.map(log => {
+      const type = getLogType(log.action);
+
+      return `
+        <div class="log-card ${type}">
+          <div class="log-main">
+            <span class="log-badge ${type}">${log.action}</span>
+            <h3>${log.details || "Activity recorded"}</h3>
+            <p>Action performed by system administrator.</p>
+          </div>
+
+          <div class="log-date">
+            <div>${formatDate(log.created_at)}</div>
+            <div>Old Stock: ${log.old_stock ?? "-"}</div>
+            <div>New Stock: ${log.new_stock ?? "-"}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  document.addEventListener("DOMContentLoaded", loadActivityLogs);
+</script>
+
+</body>
+</html>

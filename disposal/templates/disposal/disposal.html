@@ -156,7 +156,7 @@
           <button class="btn-outline" onclick="toggleFilterModal()"><img src="{% static 'img/filter.svg' %}" />Filter</button>
           <a href="{% url 'disposal:export_disposal_csv' %}?{{ request.GET.urlencode }}">
             <button type="button" class="btn-outline">
-              <img src="{% static 'img/download.svg' %}" />
+              <img src="{% static 'disposal:img/download.svg' %}" />
               Download
             </button>
           </a>

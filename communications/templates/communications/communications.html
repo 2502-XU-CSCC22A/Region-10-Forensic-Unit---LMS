@@ -249,8 +249,8 @@
                         <option value="LOST">Lost</option>
                     </select>
                     <button id="addRecordBtn" class="btn btn-primary">＋ Add Record</button>
-                    <a href="{% url 'par_monitoring' %}" class="btn btn-outline">📋 PAR Records</a>
-                    <a href="{% url 'activity_logs' %}" class="btn btn-outline">📊 Activity Logs</a>
+                    <a href="{% url 'communications:par_monitoring' %}" class="btn btn-outline">📋 PAR Records</a>
+                    <a href="{% url 'communications:activity_logs' %}" class="btn btn-outline">📊 Activity Logs</a>
                     <button class="btn btn-outline" onclick="exportCSV()">&#x2B07; Export CSV</button>
                 </div>
 
