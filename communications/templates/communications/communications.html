@@ -32,7 +32,7 @@
             --navy-light: #1e3d8f;
             --accent: #2563eb;
             --accent-2: #3b82f6;
-            --sidebar-w: 220px;
+            --sidebar-w: 290px;
             --header-h: 72px;
             --red: #ef4444;
             --text: #1e293b;
@@ -249,6 +249,8 @@
                         <option value="LOST">Lost</option>
                     </select>
                     <button id="addRecordBtn" class="btn btn-primary">＋ Add Record</button>
+                    <a href="{% url 'par_monitoring' %}" class="btn btn-outline">📋 PAR Records</a>
+                    <a href="{% url 'activity_logs' %}" class="btn btn-outline">📊 Activity Logs</a>
                     <button class="btn btn-outline" onclick="exportCSV()">&#x2B07; Export CSV</button>
                 </div>
 
@@ -277,18 +279,18 @@
     </div>
 
     <!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-        <button class="close-modal" id="closeModalBtn">&#x2715;</button>
-        <h3 id="modalTitle">Communications Details</h3>
-        <div id="modalBody"></div>
-        <div class="modal-actions">
-            <button class="btn btn-outline" id="closeModalBtn2">Close</button>
-            <button class="btn btn-primary" id="modalSaveBtn">Save</button>
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <button class="close-modal" id="closeModalBtn">&#x2715;</button>
+            <h3 id="modalTitle">Communications Details</h3>
+            <div id="modalBody"></div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="closeModalBtn2">Close</button>
+                <button class="btn btn-primary" id="modalSaveBtn">Save</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- SCRIPTS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-<script src="{% static 'js/communications.js' %}"></script>
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="{% static 'js/communications.js' %}"></script>

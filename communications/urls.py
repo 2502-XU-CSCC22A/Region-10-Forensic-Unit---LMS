@@ -5,5 +5,7 @@ app_name= 'communications'
 
 urlpatterns = [
     path('', views.communications_list, name='communications_list'),
-    
+
+    path('par/', views.par_monitoring, name='par_monitoring'),
+    path('reports/', views.activity_logs, name='activity_logs'),
 ]

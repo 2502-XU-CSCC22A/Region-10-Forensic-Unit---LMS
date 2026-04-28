@@ -1,60 +1,82 @@
-<aside>
-  <div class="nav-section-label">Dashboard</div>
+<nav id="sidebar">
+  <ul class="list-unstyled components">
+    <p>Dashboard</p>
+    <li>
+      <!-- ❌ dashboard:home → ✅ remove namespace -->
+      <a href="{% url 'communications_list' %}">
+        <i class="fas fa-home"></i>
+        <span class="sidebar-item-label">Home</span>
+      </a>
+    </li>
 
-  <a class="nav-item {% if active_page == 'home' %}active{% endif %}"
-     href="#">
-    <span class="nav-icon">&#x1F3E0;</span> Home
-  </a>
+    <li>
+      <!-- ❌ mobility:vehicle_management → keep ONLY if you actually registered namespace -->
+      <a href="#">
+        <span>
+          <i class="fas fa-car"></i>
+          <span class="sidebar-item-label">Mobility</span>
+        </span>
+        <span class="badge badge-light badge-pill">{{ total_vehicles|default:'0' }}</span>
+      </a>
+    </li>
 
-  <a class="nav-item {% if active_page == 'mobility' %}active{% endif %}"
-     href="#">
-    <span class="nav-icon">&#x1F697;</span> Mobility
-    <span class="nav-badge">24</span>
-  </a>
+    <li>
+      <a href="#">
+        <span>
+          <i class="fas fa-crosshairs"></i>
+          <span class="sidebar-item-label">Firearms</span>
+        </span>
+      </a>
+    </li>
 
-  <a class="nav-item {% if active_page == 'firearms' %}active{% endif %}"
-     href="{% url 'firearms:index' %}">
-    <span class="nav-icon">&#x1F52B;</span> Firearms
-    <span class="nav-badge">100+</span>
-  </a>
+    <li>
+      <!-- ❌ communications:communications_list → remove namespace -->
+      <a href="{% url 'communications_list' %}">
+        <span>
+          <i class="fas fa-broadcast-tower"></i>
+          <span class="sidebar-item-label">Communications</span>
+        </span>
+      </a>
+    </li>
 
-  <a class="nav-item {% if active_page == 'communications' %}active{% endif %}"
-     href="#">
-    <span class="nav-icon">&#x1F4E1;</span> Communications
-  </a>
+    <li>
+      <a href="#">
+        <i class="fas fa-microscope"></i>
+        <span class="sidebar-item-label">Investigative Equipment</span>
+      </a>
+    </li>
 
-  <a class="nav-item {% if active_page == 'investigative' %}active{% endif %}"
-     href="#">
-    <span class="nav-icon">&#x1F50D;</span> Investigative Equipment
-  </a>
+    <p class="mt-4">Monitoring</p>
 
-  <hr class="nav-divider"/>
-  <div class="nav-section-label">Monitoring</div>
+    <li class="active">
+      <!-- ❌ disposal:disposal_list → remove namespace -->
+      <a href="#">
+        <i class="fas fa-recycle"></i>
+        <span class="sidebar-item-label">BER & Disposal</span>
+      </a>
+    </li>
 
-  <a class="nav-item {% if active_page == 'par' %}active{% endif %}"
-     href="#">
-    <span class="nav-icon">&#x1F4CB;</span> PAR Monitoring
-  </a>
+    <li>
+      <!-- ❌ disposal:history_log → replace with your actual reports -->
+      <a href="{% url 'activity_logs' %}">
+        <i class="fas fa-file-invoice"></i>
+        <span class="sidebar-item-label">Reports</span>
+      </a>
+    </li>
 
-  <a class="nav-item {% if active_page == 'inspection' %}active{% endif %}"
-     href="#">
-    <span class="nav-icon">&#x1F50E;</span> Inspection Monitoring
-  </a>
+    <!-- ✅ ADD PAR Monitoring (since you need it) -->
+    <li>
+      <a href="{% url 'par_monitoring' %}">
+        <i class="fas fa-clipboard-list"></i>
+        <span class="sidebar-item-label">PAR Monitoring</span>
+      </a>
+    </li>
 
-  <a class="nav-item {% if active_page == 'ber' %}active{% endif %}"
-     href="#">
-    <span class="nav-icon">&#x1F5C2;&#xFE0F;</span> BER &amp; Disposal
-  </a>
+  </ul>
 
-  <a class="nav-item {% if active_page == 'reports' %}active{% endif %}"
-     href="#">
-    <span class="nav-icon">&#x1F4C1;</span> Reports
-  </a>
-
-  <div class="bottom-nav">
-    <a class="nav-item {% if active_page == 'users' %}active{% endif %}"
-       href="#">
-      <span class="nav-icon">&#x1F464;</span> User Management
+  <div class="p-3" style="position: absolute; bottom: 10px; width: 100%;">
+    <a href="#" class="btn btn-link btn-block text-white-50 text-decoration-none text-left small">
+      <i class="fas fa-user-shield mr-2"></i> User Management
     </a>
   </div>
-</aside>
+</nav>

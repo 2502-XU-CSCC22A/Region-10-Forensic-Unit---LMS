@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'firearms',
     'config',
     'login',
-    'config',
+    'disposal',
     'dashboard',
     'communications',
     'django.contrib.messages',
