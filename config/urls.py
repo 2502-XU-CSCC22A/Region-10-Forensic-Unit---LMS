@@ -5,6 +5,8 @@ from django.views.generic import TemplateView
 from django.shortcuts import render
 from .views import home_view
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 from login.views import login_view, verify_token_view, dashboard_view, logout_view
 from dashboard.views import dashboard_view
 urlpatterns = [
@@ -19,6 +21,8 @@ urlpatterns = [
     path('communications/', include('communications.urls'), name='communications'),
     path('firearms/', include('firearms.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('users/', include('usermanagement.urls')),
+    path('usermanagement/', include('usermanagement.urls')), 
     path('', home_view, name='home'), 
     # Home / Landing page
     path('', TemplateView.as_view(template_name='Home/home.html'), name='home'),

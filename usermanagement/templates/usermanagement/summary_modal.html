@@ -1,0 +1,23 @@
+{% load static %}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
+
+<div id="berModal" class="summary-modal-overlay">
+  <div class="summary-modal-content">
+    <button class="summary-close-btn" type="button" onclick="closeBerModal()">&times;</button>
+    
+    <header class="summary-modal-header">
+      <h2>ITEMS READY FOR REMOVAL (BER)</h2>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All Items</button>
+        <button class="filter-btn" data-filter="firearm">Firearms</button>
+        <button class="filter-btn" data-filter="communication">Comms</button>
+        <button class="filter-btn" data-filter="investigative">Investigative</button>
+      </div>
+      <p id="itemCount">0 Items Total</p>
+    </header>
+
+    <div id="itemsGrid" class="items-grid">
+      </div>
+  </div>
+</div>
