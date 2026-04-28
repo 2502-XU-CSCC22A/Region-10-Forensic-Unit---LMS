@@ -17,9 +17,9 @@ urlpatterns = [
     path('login/', include ('login.urls'), name='login'),
     path('mobility/', include('mobility.urls'), name='mobility'),
     path('communications/', include('communications.urls'), name='communications'),
+    path('firearms/', include('firearms.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('', home_view, name='home'), 
-        
-
     # Home / Landing page
     path('', TemplateView.as_view(template_name='Home/home.html'), name='home'),
 
