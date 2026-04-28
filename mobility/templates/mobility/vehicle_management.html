@@ -127,13 +127,13 @@
                     <td><strong>{{ vehicle.plate_number|default:vehicle.conduction_number }}</strong></td>
                     <td>{{ vehicle.make }} {{ vehicle.model }}</td>
                     <td>
-                        {% if vehicle.status == 'For PMS' or vehicle.status == 'Maintenance' or vehicle.status == 'Repair' %}
+                        {% if vehicle.status == 'For PMS' or vehicle.status == 'For Repair' %}
                             <span class="badge badge-danger shadow-sm" style="background-color: #e53e3e; color: white;">{{ vehicle.status }}</span>
-                        {% elif "Without PMS" in vehicle.status or "For Registration" in vehicle.status %}
+                        {% elif vehicle.status == 'No Maintenance Record' or vehicle.status == 'For Registration' %}
                             <span class="badge badge-warning shadow-sm" style="background-color: #f6ad55; color: white;">{{ vehicle.status }}</span>
-                        {% elif vehicle.status == 'Active' %}
+                        {% elif vehicle.status == 'Good Condition' %}
                             <span class="badge badge-primary shadow-sm" style="background-color: #4e73df; color: white;">{{ vehicle.status }}</span>
-                        {% elif "Insurance" in vehicle.status or "Renewed" in vehicle.status or "Upcoming" in vehicle.status %}
+                        {% elif vehicle.status == 'For Insurance' %}
                             <span class="badge badge-success shadow-sm" style="background-color: #48bb78; color: white;">{{ vehicle.status }}</span>
                         {% else %}
                             <span class="badge badge-secondary shadow-sm">{{ vehicle.status }}</span>
