@@ -5,6 +5,7 @@ from datetime import date
 from config.models import Personnel
 
 class DisposalItem(Asset): 
+    last_sync = models.DateTimeField(auto_now=True)
     disposal_reason = models.TextField(
         db_column='disposal_reason', 
         help_text="Reason for disposal/BER",

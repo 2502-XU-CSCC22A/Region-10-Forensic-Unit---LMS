@@ -1,14 +1,15 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from datetime import timedelta
 import csv
 from django.http import HttpResponse
-from django.db.models import Q
-from mobility.models import Vehicle
-from config.models import Asset, AssetStatus
-from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from django.db.models import Q, Count
+from mobility.models import Vehicle
+from config.models import Asset, AssetStatus, Personnel
 from .models import DisposalItem, DisposalActivityLog
+from django.core.paginator import Paginator
 
 def export_disposal_csv(request):
     items = DisposalItem.objects.select_related('asset_ptr', 'asset_ptr__category').all()
@@ -28,7 +29,6 @@ def export_disposal_csv(request):
             item.asset_ptr.model,
             item.asset_ptr.serial_no,
             item.asset_ptr.category.category_name,
-            item.expiry_date,
             item.disposal_reason
         ])
 
@@ -39,10 +39,47 @@ from .models import Asset, DisposalItem
 from config.models import Personnel  # Ensure this import is correct
 
 def disposal_list(request):
-    items = DisposalItem.objects.select_related('processed_by', 'asset_ptr').all()
+    all_items = DisposalItem.objects.filter(status_id = 4).order_by('-disposal_date')
+    
+    paginator = Paginator(all_items, 15)
+    page_number = request.GET.get('page')
+    disposal_items = paginator.get_page(page_number)
     
     logs = DisposalActivityLog.objects.all().order_by('-timestamp')
-
+    
+    last_item = DisposalItem.objects.order_by('-last_sync').first()
+    sync_time = last_item.last_sync if last_item else None
+    
+    today = timezone.now().date()
+  
+    ber_today_count = DisposalItem.objects.filter(
+        disposal_date__date=today
+    ).count()
+    
+    comms_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+        asset_ptr__category__category_name='communications'
+    ).count()
+    
+    mobility_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+        asset_ptr__category__category_name='mobility'
+    ).count()
+    
+    firearms_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+        asset_ptr__category__category_name='firearms'
+    ).count()
+    
+    inves_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+        asset_ptr__category__category_name='investigative_equipment'
+    ).count()
+    
+    total_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+    ).count()
+    
     if request.method == "POST":
         asset_id = request.POST.get('asset_id')
         reason = request.POST.get('reason')
@@ -59,8 +96,16 @@ def disposal_list(request):
         return redirect('disposal_list')
 
     return render(request, 'disposal/disposal.html', {
-        'disposal_items': items,
-        'logs': logs
+        'logs': logs,
+        'last_sync_time': sync_time,
+        'ber_today_count': ber_today_count,
+        'current_time': timezone.now(),
+        'comms_ber': comms_ber,
+        'firearms_ber': firearms_ber,
+        'mobility_ber': mobility_ber,
+        'inves_ber': inves_ber,
+        'total_ber': total_ber,
+        'disposal_items': disposal_items
     })
 
 def disposal_list_supervisor(request):
@@ -83,7 +128,7 @@ def finalize_removal(request, pk):
         asset = get_object_or_404(Asset, pk=pk)
         reason = "Marked for Disposal via Status Update"
 
-    disposed_status = get_object_or_404(AssetStatus, status_id=5) # Match your field name!
+    disposed_status = get_object_or_404(AssetStatus, status_id=5) 
     asset.status_id = disposed_status
     asset.save()
 

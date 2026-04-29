@@ -91,9 +91,24 @@ body {
     display: flex;
 }
 
+/* --- PH Icons --- */
+
 .ph {
-    width: 25px;
-    height: 25px;
+    font-size: 17px;
+    vertical-align: middle;
+    align-items: center;
+    margin-right: 5px;
+    color: #1a2b6d;
+}
+
+.ph-warning-circle {
+    font-size: 25px;
+    margin-right: 0px;
+    color: #4e73df;
+}
+
+.ph-clock-clockwise {
+    font-size: 17px;
 }
 
 /* --- Sidebar Styles --- */
@@ -223,6 +238,9 @@ body {
     color: var(--text-muted);
 }
 
+.alert-content strong {
+    color: #2563eb;
+}
 /* Action Bar */
 .action-bar {
     display: flex;
@@ -284,12 +302,22 @@ thead {
 
 th {
     font-size: 0.75rem;
+    text-align: center;
+    vertical-align: middle;
+    align-items: center;
     text-transform: uppercase;
     color: #4e73df;
     letter-spacing: 0.5px;
     padding: 15px;
-    font-size: 13px;
+    font-size: 14px;
     border-bottom: 1px solid var(--border-color);
+}
+
+table {
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
 }
 
 table {
@@ -432,6 +460,7 @@ td {
 
 /* ── Stat Cards ──────────────────────────────────────────────────────────── */
 .stat-cards {
+    font-family: 'Inter', sans-serif;
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 20px;
@@ -499,7 +528,7 @@ td {
 }
 
 .stat-value {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 36px;
     font-weight: 700;
     color: var(--text);
