@@ -1,15 +1,7 @@
 h1 {
     font-family: 'Inter', sans-serif;
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 700;
-    color: #1a237e;
-}
-
-.filter-section h1 {
-    font-family: 'Inter', sans-serif;
-    font-size: 24px;
-    font-weight: 700;
-    color: #1a237e;
 }
 
 /* Modal Background Blur */
@@ -20,17 +12,18 @@ h1 {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 9999; 
-    background: rgba(0, 0, 0, 0.5); 
+    z-index: 9999; /* Higher than your sidebar (which is likely around 1000) */
+    background: rgba(0, 0, 0, 0.5); /* Make sure this is dark enough to see */
     backdrop-filter: blur(10px);
     justify-content: center; 
     align-items: center;
 }
 
 #filterModal.active {
-    display: flex; 
+    display: flex; /* This overrides 'none' when the class is added */
 }
 
+/* 3. Your styling remains the same, just ensure class names match your HTML */
 .filter-modal-content {
     background: white;
     width: 600px;
@@ -54,8 +47,8 @@ h1 {
 .filter-modal-header h2 {
     font-family: 'Inter', sans-serif;
     font-size: 24px;
-    font-weight: 700;
-    color: #1a237e;
+    font-weight: 900;
+    color: #000;
 }
 
 .filter-modal-footer {
@@ -96,7 +89,7 @@ h1 {
     display: inline-block;
     padding: 8px 18px;
     border-radius: 20px;
-    background: #f1f5f9;
+    background: #f1f5f9; /* Light grey for unselected */
     color: #64748b;
     font-size: 14px;
     cursor: pointer;
@@ -105,13 +98,14 @@ h1 {
 }
 
 .filter-item input[type="radio"]:checked + .filter-tag {
-    background: #1a237e; 
+    background: #1a237e; /* Your dark blue */
     color: white;
     font-size: 14px;
 }
 
 .filter-tag.active {
-    background: #1a237e; 
+    background: #1a237e; /* Matches your sidebar blue */
+    color: white;
     font-size: 14px;
 }
 
@@ -136,25 +130,6 @@ h1 {
     font-size: 16px;
     cursor: pointer;
     margin-top: 20px;
-}
-
-.filter-btn-reset {
-    font-family: 'Inter', sans-serif;
-    width: 100%;
-    border-color: #3C59DD;
-    color: #1a237e;
-    padding: 16px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-.filter-btn-reset:hover {
-    background: #151b61;
-    border: none;
-    color: #FFFFFF;
 }
 
 .filter-btn-apply:hover {

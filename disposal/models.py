@@ -2,12 +2,13 @@ from django.db import models
 from django.conf import settings
 from config.models import Asset
 from datetime import date
+from config.models import Personnel
 
 class DisposalItem(Asset): 
     disposal_reason = models.TextField(
         db_column='disposal_reason', 
         help_text="Reason for disposal/BER",
-        null=True, 
+        null=False, 
         blank=True,
     )
     disposal_date = models.DateTimeField(
@@ -20,12 +21,6 @@ class DisposalItem(Asset):
         null=True, 
         blank=True
     )
-    expiry_date = models.DateField(
-        db_column='expiry_date', 
-        null=True, 
-        blank=True
-    )
-
     processed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -33,6 +28,12 @@ class DisposalItem(Asset):
         null=True, 
         blank=True,
         related_name='disposed_items'
+    )
+    personnel_assigned = models.ForeignKey(
+        Personnel,
+        on_delete=models.SET_NULL,
+        null=True,
+        db_column='personnel_assigned'
     )
 
     class Meta:
@@ -53,7 +54,7 @@ class DisposalActivityLog(models.Model):
     ACTION_CHOICES = [
         ('REMOVE', 'Finalized Removal'),
         ('UPDATE', 'Updated Disposal Info'),
-        ('CREATE', 'Flagged for Disposal'),
+        ('FLAGGED', 'Flagged for Disposal'),
     ]
 
     user = models.ForeignKey(

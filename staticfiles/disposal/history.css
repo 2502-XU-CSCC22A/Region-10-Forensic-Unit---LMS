@@ -1,0 +1,136 @@
+body {
+    font-family: 'Inter', sans-serif;
+}
+.navbar-header {
+    height: 70px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e0e0e0;
+    width: 100%;
+}
+
+/* Brand Styles (Left) */
+.header-logo {
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #1a2b6d;
+    text-transform: uppercase;
+}
+
+.header-divider {
+    height: 40px;
+    width: 2px;
+    background-color: #1a2b6d;
+    margin: 0 15px;
+}
+
+.header-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a2b6d;
+    margin: 0;
+}
+
+/* User Section Styles (Right) */
+.notification-wrapper i {
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    background-color: #e9ecef;
+    border-radius: 50%;
+    font-size: 1.1rem;
+}
+
+.user-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.user-name {
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.user-role {
+    font-size: 12px;
+    line-height: 1;
+}
+
+/* ------ Main Content ----- */
+.page-title {
+    font-weight: 700;
+    color: #1a2b6d;
+    margin: 20px 0 15px 0;
+}
+
+.filter-btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 15px;
+    border-radius: 20px;
+}
+
+.log-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+/* Border color indicating disposal category/status */
+.log-card-disposal {
+    border-left: 4px solid #e53e3e;
+}
+
+.section-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    color: #1a2b6d;
+    margin: 20px 0 15px 0;
+}
+
+.filter-btn {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 15px;
+    border-radius: 20px;
+}
+
+.log-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+/* Dynamic border colors based on action */
+.log-card-create {
+    border-left: 4px solid #48bb78;
+}
+
+.log-card-update {
+    border-left: 4px solid #4e73df;
+}
+
+.log-card-delete {
+    border-left: 4px solid #e53e3e;
+}
+
+.activity-timeline {
+    font-family: 'Inter', sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.asset-id-badge {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: bold;
+}
+
+.btn-group {
+    font-family: 'Inter', sans-serif;
+}

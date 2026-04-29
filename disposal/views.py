@@ -34,10 +34,34 @@ def export_disposal_csv(request):
 
     return response
 
-def disposal_list(request):
-    items = Asset.objects.filter(status_id = 4)
+from django.shortcuts import render, redirect
+from .models import Asset, DisposalItem
+from config.models import Personnel  # Ensure this import is correct
 
-    return render(request, 'disposal/disposal.html', {'items': items})
+def disposal_list(request):
+    items = DisposalItem.objects.select_related('processed_by', 'asset_ptr').all()
+    
+    logs = DisposalActivityLog.objects.all().order_by('-timestamp')
+
+    if request.method == "POST":
+        asset_id = request.POST.get('asset_id')
+        reason = request.POST.get('reason')
+        personnel_id = request.POST.get('personnel_id') 
+        
+        asset = Asset.objects.get(id=asset_id)
+        personnel = Personnel.objects.get(PersonnelID=personnel_id)
+
+        DisposalItem.objects.create(
+            asset_ptr=asset,
+            processed_by=personnel, 
+            disposal_reason=reason,
+        )
+        return redirect('disposal_list')
+
+    return render(request, 'disposal/disposal.html', {
+        'disposal_items': items,
+        'logs': logs
+    })
 
 def disposal_list_supervisor(request):
     items = Asset.objects.filter(status_id = 4)
