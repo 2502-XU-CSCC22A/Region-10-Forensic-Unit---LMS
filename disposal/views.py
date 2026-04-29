@@ -34,10 +34,6 @@ def export_disposal_csv(request):
 
     return response
 
-from django.shortcuts import render, redirect
-from .models import Asset, DisposalItem
-from config.models import Personnel  # Ensure this import is correct
-
 def disposal_list(request):
     all_items = DisposalItem.objects.filter(status_id = 4).order_by('-disposal_date')
     

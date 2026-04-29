@@ -59,17 +59,14 @@
             
             <script>
                 function resetFilters() {
-                    // 1. Clear all radio buttons
                     const radios = document.querySelectorAll('#filterModal input[type="radio"]');
                     radios.forEach(radio => radio.checked = false);
                     
-                    // 2. Redirect to the base page without parameters
                     window.location.href = "{% url 'disposal:disposal_list' %}";
                 }
             </script>
             
             <style>
-                /* Styling for the Reset button so it doesn't look like the Apply button */
                 .filter-btn-reset {
                     background-color: #f1f5f9;
                     color: #64748b;
