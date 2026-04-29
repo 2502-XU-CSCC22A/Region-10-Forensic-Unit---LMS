@@ -12,7 +12,6 @@
     
     .section-title { font-weight: 700; color: #1a2b6d; margin: 35px 0 15px 0; }
 
-    /* Wide Table Styling from Reference */
     .table-detailed { font-size: 0.75rem; background: white; }
     .table-detailed thead th { 
         background-color: #f8f9fc; 
@@ -81,7 +80,7 @@
                             Actions
                         </button>
                         <div class="dropdown-menu dropdown-menu-right shadow">
-                            <a class="dropdown-item" href="{% url 'edit_vehicle' vehicle.pk %}"><i class="fas fa-edit mr-2 text-primary"></i> Edit</a>
+                            <a class="dropdown-item" href="{% url 'mobility:edit_vehicle' vehicle.pk %}"><i class="fas fa-edit mr-2 text-primary"></i> Edit</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item text-danger" href="{% url 'mobility:delete_vehicle' vehicle.pk %}"><i class="fas fa-trash mr-2"></i> Delete</a>
                         </div>

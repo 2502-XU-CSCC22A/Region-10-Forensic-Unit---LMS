@@ -8,15 +8,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# --- SSL BYPASS FOR WINDOWS/GMAIL ERRORS ---
-# This forces the entire environment to trust the connection, fixing the _ssl.c:1028 error
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and 
     getattr(ssl, '_create_unverified_context', None)):
     ssl._create_default_https_context = ssl._create_unverified_context
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Matches your .env key exactly
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
@@ -30,6 +27,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions', 
     'disposal',
     'login',
+    'config',
+    'firearms',
+    'communications',
+    'dashboard',
     'usermanagement',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -38,7 +39,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',   # serve static in production
+    'whitenoise.middleware.WhiteNoiseMiddleware',   
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -67,13 +68,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database Configuration
-# We use the DATABASE_URL from your .env. 
-# Since your URL already has sslmode=require, we don't need to force it here.
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
-        conn_max_age=0, # Necessary for Supabase Pooler (Port 6543)
+        conn_max_age=0,
     )
 }
 
@@ -105,7 +103,7 @@ LOGOUT_REDIRECT_URL = '/login/'
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
 EMAIL_BACKEND = os.environ.get(
     'EMAIL_BACKEND',
-    'django.core.mail.backends.console.EmailBackend'   # safe default for dev
+    'django.core.mail.backends.console.EmailBackend'   
 )
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = os.environ.get('EMAIL_PORT')
@@ -114,5 +112,4 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@rfu10.gov.ph')
 
-# Critical for fixing the certificate verify failed error
 EMAIL_SSL_CONTEXT = ssl._create_unverified_context()

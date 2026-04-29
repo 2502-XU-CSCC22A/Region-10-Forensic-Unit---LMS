@@ -13,8 +13,8 @@ def dashboard_view(request):
         query &= Q(plate_number__icontains=plate_no) | Q(conduction_number__icontains=plate_no)
     
     all_v = Vehicle.objects.all()
-    all_a = Asset.objects.all()
-    all_d = DisposalItem.objects.all()
+    all_a = Asset.objects.exclude(status_id__in=[5])
+    all_d = DisposalItem.objects.all()  
     
     context = {
         'vehicles': all_v.filter(query),
@@ -32,7 +32,7 @@ def dashboard_view(request):
     def count_status(name):
         """Count assets whose status_name matches (case-insensitive)."""
         return AssetStatus.objects.filter(
-            status__Status_Name__iexact=name
+            status__status_name__iexact=name
         ).count()
 
     activities = []
@@ -43,7 +43,7 @@ def dashboard_view(request):
             'actor':     'Logistics Officer',
             'action':    'recorded asset',
             'item':      f'{asset.category.category_name} ID {asset.property_no}',
-            'change':    asset.status.Status_Name if asset.status else '—',
+            'change':    AssetStatus.status_name if AssetStatus else '—',
             'timestamp': asset.date_acquired.strftime('%b %d, %Y'),
             'unread':    True,
             'activities':           activities,

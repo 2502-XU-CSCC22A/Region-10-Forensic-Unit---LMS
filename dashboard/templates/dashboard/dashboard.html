@@ -1,270 +1,305 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Regional Forensic Unit 10 LMS – Dashboard</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Regional Forensic Unit 10 LMS – Dashboard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}" />
+    <link rel="stylesheet" href="{% static 'dashboard/sidebar.css' %}" />
+  </head>
 
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}" />
-  <link rel="stylesheet" href="{% static 'dashboard/sidebar.css' %}" />
-</head>
-
-<body>
-
-  <!-- ── Header ──────────────────────────────────────────────────────────────── -->
-  <header>
-    <div class="header-brand">
-      <img src="{% static 'img/RFU10_Logo.png' %}" alt="RFU10 Logo" class="header-logo-img" />
-      <span class="header-title">Regional Forensic Unit 10 LMS</span>
-    </div>
-    <div class="header-user">
-      <div class="user-avatar"></div>
-      <div class="user-info">
-        <div class="user-role">{{ user.get_full_name|default:user.username }}</div>
-        <div class="user-greet">Welcome!</div>
+  <body>
+    <!-- ── Header ──────────────────────────────────────────────────────────────── -->
+    <header>
+      <div class="header-brand">
+        <img src="{% static 'img/RFU10_Logo.png' %}" alt="RFU10 Logo" class="header-logo-img" />
+        <span class="header-title">Regional Forensic Unit 10 LMS</span>
       </div>
-    </div>
-  </header>
+      <div class="header-user">
+        <div class="user-avatar"></div>
+        <div class="user-info">
+          <div class="user-role">{{ user.get_full_name|default:user.username }}</div>
+          <div class="user-greet">Welcome!</div>
+        </div>
+      </div>
+    </header>
 
-  <!-- ── Layout ──────────────────────────────────────────────────────────────── -->
-  <div class="layout">
-
-    <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
-    <nav id="sidebar">
-      <ul class="list-unstyled components">
+    <!-- ── Layout ──────────────────────────────────────────────────────────────── -->
+    <div class="layout">
+      <!-- ── Sidebar ─────────────────────────────────────────────────────────── -->
+      <nav id="sidebar">
+        <ul class="list-unstyled components">
           <p>Dashboard</p>
           <li class="active">
-              <a href="{% url 'dashboard:dashboard_view'%}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
+            <a href="{% url 'dashboard:dashboard_view' %}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
           </li>
 
           <li>
-              <a href="{% url 'mobility:vehicle_management' %}">
-                  <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
-                  <span class="badge badge-light badge-pill">{{ total_vehicles }}</span>
-              </a>
+            <a href="{% url 'mobility:vehicle_management' %}">
+              <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
+              <span class="badge badge-light badge-pill">{{ total_vehicles }}</span>
+            </a>
           </li>
 
           <li>
-              <a href="#">
-                  <span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
-              </a>
+            <a href="{% url 'firearms:index' %}"><span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span></a>
           </li>
           <li>
-              <a href="#">
-                  <span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
-              </a>
+            <a href="{% url 'communications:communications_list' %}"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span></a>
           </li>
-          <li><a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span></a></li>
+          <li>
+            <a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span></a>
+          </li>
+          <li>
+            <a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span></a>
+          </li>
 
           <p class="mt-4">Monitoring</p>
-          <li><a href="#"><i class="fas fa-desktop"></i> <span class="sidebar-item-label">PAR Monitoring</span></a></li>
-          <li><a href="#"><i class="fas fa-clipboard-check"></i> <span class="sidebar-item-label">Inspection Monitoring</span></a></li>
-          <li><a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span></a></li>
-          <li><a href="#"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a></li>
-      </ul>
+          <li class="UM">
+                <a href="{% url 'user_management:user_list'%}" class="btn btn-link btn-block text-white-50 text-decoration-none text-left small"><i class="fas fa-user-shield mr-2"></i> User Management</a>
+          </li>
+        </ul>
+      </nav>
 
-      <div class="p-3" style="position: absolute; bottom: 10px; width: 100%;">
-          <a href="#" class="btn btn-link btn-block text-white-50 text-decoration-none text-left small">
-              <i class="fas fa-user-shield mr-2"></i> User Management
-          </a>
-      </div>
-    </nav>
-
-    <!-- ── Main ────────────────────────────────────────────────────────────── -->
-    <main>
-
-      <!-- ── Stat Cards ──────────────────────────────────────────────────── -->
-      <div class="stat-cards">
-
-        <!-- Total Assets -->
-        <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon blue"><i class="fas fa-boxes"></i></div>
-            <div>
-              <div class="stat-value">{{ total_assets }}</div>
-              <div class="stat-label">Total Assets</div>
+      <!-- ── Main ────────────────────────────────────────────────────────────── -->
+      <main>
+        <!-- ── Stat Cards ──────────────────────────────────────────────────── -->
+        <div class="stat-cards">
+          <!-- Total Assets -->
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon blue">
+                <i class="fas fa-boxes"></i>
+              </div>
+              <div>
+                <div class="stat-value">{{ total_assets }}</div>
+                <div class="stat-label">Total Assets</div>
+              </div>
+            </div>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar blue" style="width:100%"></div>
             </div>
           </div>
-          <div class="stat-bar-wrap"><div class="stat-bar blue" style="width:100%"></div></div>
-        </div>
 
-        <!-- Total Firearms -->
-        <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon orange"><i class="fas fa-crosshairs"></i></div>
-            <div>
-              <div class="stat-label">Total Firearms</div>
-              <div class="stat-value"></div>
+          <!-- Total Firearms -->
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon orange">
+                <i class="fas fa-crosshairs"></i>
+              </div>
+              <div>
+                <div class="stat-label">Total Firearms</div>
+                <div class="stat-value"></div>
+              </div>
+            </div>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar orange"
+                style="width:{% if total_assets %}
+                  {% widthratio total_firearms total_assets 100 %}
+                {% else %}
+                  
+                  0
+
+                {% endif %}%"></div>
             </div>
           </div>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar orange"
-              style="width:{% if total_assets %}{% widthratio total_firearms total_assets 100 %}{% else %}0{% endif %}%"></div>
-          </div>
-        </div>
 
-        <!-- Total Mobility -->
-        <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon green"><i class="fas fa-car"></i></div>
-            <div>
-              <div class="stat-value">{{ total_vehicles }}</div>
-              <div class="stat-label">Total Mobility</div>
+          <!-- Total Mobility -->
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon green">
+                <i class="fas fa-car"></i>
+              </div>
+              <div>
+                <div class="stat-value">{{ total_vehicles }}</div>
+                <div class="stat-label">Total Mobility</div>
+              </div>
+            </div>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar green"
+                style="width:{% if total_assets %}
+                  {% widthratio total_mobility total_assets 100 %}
+                {% else %}
+                  
+                  0
+
+                {% endif %}%"></div>
             </div>
           </div>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar green"
-              style="width:{% if total_assets %}{% widthratio total_mobility total_assets 100 %}{% else %}0{% endif %}%"></div>
-          </div>
-        </div>
 
-        <!-- Total Communication Devices -->
-        <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon red"><i class="fas fa-broadcast-tower"></i></div>
-            <div>
-              <div class="stat-value">{{ total_communications }}</div>
-              <div class="stat-label">Communication Devices</div>
+          <!-- Total Communication Devices -->
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon red">
+                <i class="fas fa-broadcast-tower"></i>
+              </div>
+              <div>
+                <div class="stat-value">{{ total_communications }}</div>
+                <div class="stat-label">Communication Devices</div>
+              </div>
+            </div>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar red"
+                style="width:{% if total_assets %}
+                  {% widthratio total_communications total_assets 100 %}
+                {% else %}
+                  
+                  0
+
+                {% endif %}%"></div>
             </div>
           </div>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar red"
-              style="width:{% if total_assets %}{% widthratio total_communications total_assets 100 %}{% else %}0{% endif %}%"></div>
-          </div>
-        </div>
 
-        <!-- Total Investigative Equipment -->
-        <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon gray"><i class="fas fa-microscope"></i></div>
-            <div>
-              <div class="stat-value">{{ total_investigative }}</div>
-              <div class="stat-label">Investigative Equip.</div>
+          <!-- Total Investigative Equipment -->
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon gray">
+                <i class="fas fa-microscope"></i>
+              </div>
+              <div>
+                <div class="stat-value">{{ total_investigative }}</div>
+                <div class="stat-label">Investigative Equip.</div>
+              </div>
+            </div>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar gray"
+                style="width:{% if total_assets %}
+                  {% widthratio total_investigative total_assets 100 %}
+                {% else %}
+                  
+                  0
+
+                {% endif %}%"></div>
             </div>
           </div>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar gray"
-              style="width:{% if total_assets %}{% widthratio total_investigative total_assets 100 %}{% else %}0{% endif %}%"></div>
-          </div>
-        </div>
 
-        <!-- Total BER Items -->
-        <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon purple"><i class="fas fa-recycle"></i></div>
-            <div>
-              <div class="stat-value">{{ total_disposal }}</div>
-              <div class="stat-label">Total BER Items</div>
+          <!-- Total BER Items -->
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon purple">
+                <i class="fas fa-recycle"></i>
+              </div>
+              <div>
+                <div class="stat-value">{{ total_disposal }}</div>
+                <div class="stat-label">Total BER Items</div>
+              </div>
+            </div>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar purple"
+                style="width:{% if total_assets %}
+                  {% widthratio total_ber total_assets 100 %}
+                {% else %}
+                  
+                  0
+
+                {% endif %}%"></div>
             </div>
           </div>
-          <div class="stat-bar-wrap">
-            <div class="stat-bar purple"
-              style="width:{% if total_assets %}{% widthratio total_ber total_assets 100 %}{% else %}0{% endif %}%"></div>
+        </div>
+        <!-- /stat-cards -->
+
+        <!-- ── Two-column widgets ───────────────────────────────────────────── -->
+        <div class="two-col">
+          <!-- Assets Feed -->
+          <div class="widget">
+            <div class="widget-header">
+              <span class="widget-title">Assets</span>
+              <div class="widget-actions">
+                <button class="icon-btn" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+                <button class="icon-btn" title="Filter"><i class="fas fa-sliders-h"></i></button>
+                <button class="icon-btn" title="Export"><i class="fas fa-download"></i></button>
+              </div>
+            </div>
+            <div class="activity-list">
+              {% for act in activities %}
+                <div class="activity-item">
+                  <div class="av-sm">{{ act.initials }}</div>
+                  <div class="activity-body">
+                    <div class="activity-text">
+                      <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
+                    </div>
+                    <div class="activity-meta">{{ act.timestamp }}</div>
+                  </div>
+                  {% if act.unread %}
+                    <span class="dot"></span>
+                  {% endif %}
+                </div>
+              {% empty %}
+                <p class="empty-msg">No recent asset records.</p>
+              {% endfor %}
+            </div>
+            <button class="view-all">View all</button>
+          </div>
+
+          <!-- Notifications -->
+          <div class="widget">
+            <div class="widget-header">
+              <span class="widget-title">Notifications</span>
+              <span class="notif-badge">{{ notification_count }}</span>
+              <button class="read-btn">Read</button>
+              <div class="widget-actions ml-auto">
+                <button class="icon-btn" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+                <button class="icon-btn" title="Filter"><i class="fas fa-sliders-h"></i></button>
+                <button class="icon-btn" title="Export"><i class="fas fa-download"></i></button>
+              </div>
+            </div>
+            <div class="activity-list">
+              {% for act in activities %}
+                <div class="activity-item">
+                  <div class="av-sm">{{ act.initials }}</div>
+                  <div class="activity-body">
+                    <div class="activity-text">
+                      <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
+                    </div>
+                    <div class="activity-meta">{{ act.timestamp }}</div>
+                  </div>
+                  {% if act.unread %}
+                    <span class="dot"></span>
+                  {% endif %}
+                </div>
+              {% empty %}
+                <p class="empty-msg">No notifications.</p>
+              {% endfor %}
+            </div>
+            <button class="view-all">View all</button>
           </div>
         </div>
+        <!-- /two-col -->
 
-      </div><!-- /stat-cards -->
-
-      <!-- ── Two-column widgets ───────────────────────────────────────────── -->
-      <div class="two-col">
-
-        <!-- Assets Feed -->
+        <!-- ── Recent Activities (full-width) ──────────────────────────────── -->
         <div class="widget">
           <div class="widget-header">
-            <span class="widget-title">Assets</span>
-            <div class="widget-actions">
-              <button class="icon-btn" title="Refresh"><i class="fas fa-sync-alt"></i></button>
-              <button class="icon-btn" title="Filter"><i class="fas fa-sliders-h"></i></button>
-              <button class="icon-btn" title="Export"><i class="fas fa-download"></i></button>
-            </div>
+            <span class="widget-title">Recent Activities</span>
           </div>
           <div class="activity-list">
             {% for act in activities %}
-            <div class="activity-item">
-              <div class="av-sm">{{ act.initials }}</div>
-              <div class="activity-body">
-                <div class="activity-text">
-                  <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
+              <div class="activity-item">
+                <div class="av-sm">{{ act.initials }}</div>
+                <div class="activity-body">
+                  <div class="activity-text">
+                    <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
+                  </div>
+                  <div class="activity-meta">{{ act.timestamp }}</div>
                 </div>
-                <div class="activity-meta">{{ act.timestamp }}</div>
+                {% if act.unread %}
+                  <span class="dot"></span>
+                {% endif %}
               </div>
-              {% if act.unread %}<span class="dot"></span>{% endif %}
-            </div>
             {% empty %}
-            <p class="empty-msg">No recent asset records.</p>
+              <p class="empty-msg">No activity yet.</p>
             {% endfor %}
           </div>
-          <button class="view-all">View all</button>
         </div>
+      </main>
+    </div>
+    <!-- /layout -->
 
-        <!-- Notifications -->
-        <div class="widget">
-          <div class="widget-header">
-            <span class="widget-title">Notifications</span>
-            <span class="notif-badge">{{ notification_count }}</span>
-            <button class="read-btn">Read</button>
-            <div class="widget-actions ml-auto">
-              <button class="icon-btn" title="Refresh"><i class="fas fa-sync-alt"></i></button>
-              <button class="icon-btn" title="Filter"><i class="fas fa-sliders-h"></i></button>
-              <button class="icon-btn" title="Export"><i class="fas fa-download"></i></button>
-            </div>
-          </div>
-          <div class="activity-list">
-            {% for act in activities %}
-            <div class="activity-item">
-              <div class="av-sm">{{ act.initials }}</div>
-              <div class="activity-body">
-                <div class="activity-text">
-                  <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
-                </div>
-                <div class="activity-meta">{{ act.timestamp }}</div>
-              </div>
-              {% if act.unread %}<span class="dot"></span>{% endif %}
-            </div>
-            {% empty %}
-            <p class="empty-msg">No notifications.</p>
-            {% endfor %}
-          </div>
-          <button class="view-all">View all</button>
-        </div>
-
-      </div><!-- /two-col -->
-
-      <!-- ── Recent Activities (full-width) ──────────────────────────────── -->
-      <div class="widget">
-        <div class="widget-header">
-          <span class="widget-title">Recent Activities</span>
-        </div>
-        <div class="activity-list">
-          {% for act in activities %}
-          <div class="activity-item">
-            <div class="av-sm">{{ act.initials }}</div>
-            <div class="activity-body">
-              <div class="activity-text">
-                <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
-              </div>
-              <div class="activity-meta">{{ act.timestamp }}</div>
-            </div>
-            {% if act.unread %}<span class="dot"></span>{% endif %}
-          </div>
-          {% empty %}
-          <p class="empty-msg">No activity yet.</p>
-          {% endfor %}
-        </div>
-      </div>
-
-    </main>
-  </div><!-- /layout -->
-
-  <script src="{% static 'dashboard/dashboard.js' %}"></script>
-</body>
-
+    <script src="{% static 'dashboard/dashboard.js' %}"></script>
+  </body>
 </html>

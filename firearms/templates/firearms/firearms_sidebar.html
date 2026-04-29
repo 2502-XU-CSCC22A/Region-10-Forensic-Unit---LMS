@@ -2,16 +2,14 @@
   <ul class="list-unstyled components">
     <p>Dashboard</p>
     <li>
-      <!-- ❌ dashboard:home → ✅ remove namespace -->
-      <a href="{% url 'communications_list' %}">
+      <a href="{% url 'dashboard:dashboard_view' %}">
         <i class="fas fa-home"></i>
         <span class="sidebar-item-label">Home</span>
       </a>
     </li>
 
     <li>
-      <!-- ❌ mobility:vehicle_management → keep ONLY if you actually registered namespace -->
-      <a href="#">
+      <a href="{% url 'mobility:vehicle_management' %}">
         <span>
           <i class="fas fa-car"></i>
           <span class="sidebar-item-label">Mobility</span>
@@ -20,8 +18,8 @@
       </a>
     </li>
 
-    <li>
-      <a href="#">
+    <li class="active">
+      <a href="{% url 'firearms:index' %}">
         <span>
           <i class="fas fa-crosshairs"></i>
           <span class="sidebar-item-label">Firearms</span>
@@ -30,8 +28,7 @@
     </li>
 
     <li>
-      <!-- ❌ communications:communications_list → remove namespace -->
-      <a href="{% url 'communications_list' %}">
+      <a href="{% url 'communications:communications_list' %}">
         <span>
           <i class="fas fa-broadcast-tower"></i>
           <span class="sidebar-item-label">Communications</span>
@@ -48,25 +45,22 @@
 
     <p class="mt-4">Monitoring</p>
 
-    <li class="active">
-      <!-- ❌ disposal:disposal_list → remove namespace -->
-      <a href="#">
+    <li>
+      <a href="{% url 'disposal:disposal_list' %}">
         <i class="fas fa-recycle"></i>
         <span class="sidebar-item-label">BER & Disposal</span>
       </a>
     </li>
 
     <li>
-      <!-- ❌ disposal:history_log → replace with your actual reports -->
-      <a href="{% url 'activity_logs' %}">
+      <a href="#">
         <i class="fas fa-file-invoice"></i>
         <span class="sidebar-item-label">Reports</span>
       </a>
     </li>
 
-    <!-- ✅ ADD PAR Monitoring (since you need it) -->
     <li>
-      <a href="{% url 'par_monitoring' %}">
+      <a href="#">
         <i class="fas fa-clipboard-list"></i>
         <span class="sidebar-item-label">PAR Monitoring</span>
       </a>

@@ -77,7 +77,6 @@
                                 <th><i class="ph ph-headphones"></i> Expiry Date</th>
                                 <th><i class="ph ph-link"></i> Disposal Reason</th>
                                 <th><i class="ph ph-calendar-check"></i> Disposal Date</th>
-                                <th><i class="ph ph-calendar-check"></i> Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -130,7 +129,6 @@
     {% include 'disposal/summary_modal.html' %}
 
     <script>
-        // --- 1. MODAL TOGGLE LOGIC ---
 
         function toggleFilterModal() {
             const modal = document.getElementById('filterModal');
@@ -140,19 +138,16 @@
         }
 
         function toggleBerModal() {
-            const modal = document.getElementById('berModal'); // Make sure this ID is on your overlay div
+            const modal = document.getElementById('berModal'); 
             if (modal) {
                 modal.classList.toggle('active');
 
-                // Optional: If you want to fetch fresh data every time it opens
                 if (modal.classList.contains('active')) {
                     loadBerData();
                 }
             }
         }
 
-        // --- 2. EXPLICIT CLOSE LOGIC ---
-        // Fixed your naming errors here
         function closeFilterModal() {
             const modal = document.getElementById('filterModal');
             modal.classList.remove('active');
@@ -163,7 +158,6 @@
             modal.classList.remove('active');
         }
 
-        // --- 3. OVERLAY CLICK LOGIC ---
         window.onclick = function (event) {
             const filterModal = document.getElementById('filterModal');
             const berModal = document.getElementById('berModal');
@@ -172,7 +166,6 @@
             if (event.target === berModal) berModal.classList.remove('active');
         }
 
-        // --- 4. DATA FETCHING (DJANGO API) ---
         async function loadBerData() {
             const grid = document.getElementById('itemsGrid');
 
@@ -181,15 +174,15 @@
             grid.innerHTML = '<p>Loading items...</p>';
 
             try {
-                // Fetching from your Django URL instead of Supabase directly
+ 
                 const response = await fetch('/disposal/api/ber-items/');
 
                 if (!response.ok) throw new Error("Network response was not ok");
 
                 const data = await response.json();
 
-                allItems = data; // Put the Django data into our global list
-                renderItems('all'); // Show them in the grid
+                allItems = data; 
+                renderItems('all');
 
             } catch (error) {
                 console.error("Fetch error:", error);
@@ -201,7 +194,6 @@
             const unit = document.getElementById('filterUnit').value;
             const commType = document.getElementById('filterCommType').value;
 
-            // Build the URL with parameters
             let url = new URL(window.location.href);
 
             if (unit) url.searchParams.set('unit', unit);
@@ -210,11 +202,8 @@
             if (commType) url.searchParams.set('comm_type', commType);
             else url.searchParams.delete('comm_type');
 
-            // Reload the page with the new filters
             window.location.href = url.toString();
         }
-
-        // --- Inside disposal.html (or your main script file) ---
 
         function renderItems(filter) {
             const grid = document.getElementById('itemsGrid');
@@ -223,17 +212,12 @@
 
             if (!grid) return;
 
-            // 1. Filter the list (using dummy or Supabase data)
             const filtered = (filter === 'all')
                 ? allItems
                 : allItems.filter(item => item.category === filter);
 
-            // 2. Clear the grid
             grid.innerHTML = '';
 
-            // 3. --- UPDATE THE NEW MODAL HEADER ---
-
-            // Set dynamic title
             const titleMap = {
                 'all': 'REMOVED EQUIPMENT (SUMMARY)',
                 'firearm': 'REMOVED FIREARMS',
@@ -242,7 +226,6 @@
             };
             modalTitle.innerText = titleMap[filter];
 
-            // Set dynamic item count
             const unitMap = {
                 'all': 'Items',
                 'firearm': 'Firearms',
@@ -252,11 +235,9 @@
             const unitName = (filtered.length === 1) ? filter : unitMap[filter];
             itemCountText.innerText = `${filtered.length} ${unitName} Removed This Week`;
 
-            // 4. Populate the new cards
             filtered.forEach(item => {
                 const card = document.createElement('div');
 
-                // This keeps the red/blue/yellow border logic from earlier
                 card.className = `firearm-card card-${item.category}`;
 
                 card.innerHTML = `

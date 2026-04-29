@@ -80,7 +80,7 @@
           <div class="stat-top">
             <div class="stat-icon orange"><i class="fas fa-crosshairs"></i></div>
             <div>
-              <div class="stat-label">Expired Firearms</div>
+              <div class="stat-label">BER Firearms</div>
               <div class="stat-value"></div>
             </div>
           </div>
@@ -96,7 +96,7 @@
             <div class="stat-icon green"><i class="fas fa-car"></i></div>
             <div>
               <div class="stat-value">{{ expired_mobility }}</div>
-              <div class="stat-label">Expired Mobility</div>
+              <div class="stat-label">BER Mobility</div>
             </div>
           </div>
           <div class="stat-bar-wrap">
@@ -111,7 +111,7 @@
             <div class="stat-icon red"><i class="fas fa-broadcast-tower"></i></div>
             <div>
               <div class="stat-value">{{ total_communications }}</div>
-              <div class="stat-label">Expired Communication</div>
+              <div class="stat-label">BER Communication</div>
             </div>
           </div>
           <div class="stat-bar-wrap">
@@ -126,7 +126,7 @@
             <div class="stat-icon gray"><i class="fas fa-microscope"></i></div>
             <div>
               <div class="stat-value">{{ total_investigative }}</div>
-              <div class="stat-label">Expired Investigative Equip.</div>
+              <div class="stat-label">BER Investigative Equip.</div>
             </div>
           </div>
           <div class="stat-bar-wrap">
@@ -141,22 +141,22 @@
 
         <div class="summary-container">
           <div class="summary-alert">
-            <img src="{% static 'img/alert.svg' %}" class="alert-icon" />
+            <i class="ph ph-warning-circle"></i>
             <div class="alert-content">
               <p>
                 <strong>Removal Summary:</strong> 5 Firearms were removed today
               </p>
-              <span class="sync-text">Last sync: 4/5/2026 10:04:22 AM •</span>
+              <span class="sync-text">Last sync: •</span>
               <a href="javascript:void(0)" class="learn-more-link" onclick="toggleBerModal()">Learn more</a>
             </div>
           </div>
         </div>
 
         <div class="action-bar">
-          <button class="btn-outline" onclick="toggleFilterModal()"><img src="{% static 'img/filter.svg' %}" />Filter</button>
+          <button class="btn-outline" onclick="toggleFilterModal()"><i class="ph ph-faders"></i>Filter</button>
           <a href="{% url 'disposal:export_disposal_csv' %}?{{ request.GET.urlencode }}">
             <button type="button" class="btn-outline">
-              <img src="{% static 'disposal:img/download.svg' %}" />
+              <i class="ph ph-download"></i>
               Download
             </button>
           </a>

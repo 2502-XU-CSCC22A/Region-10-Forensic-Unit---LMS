@@ -6,7 +6,6 @@
     .section-title { font-weight: 700; color: #1a2b6d; margin: 20px 0 15px 0; }
     .card-form { background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; }
     
-    /* Grid for Issue New Record */
     .par-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     
     .compact-group label { 
@@ -26,12 +25,10 @@
         font-size: 0.85rem;
     }
 
-    /* Table Styling */
     .table-registry thead { background-color: #f8f9fc; }
     .table-registry th { font-size: 0.75rem; text-transform: uppercase; color: #4e73df; letter-spacing: 0.5px; }
     .btn-action { font-size: 0.75rem; font-weight: 600; border-radius: 6px; padding: 4px 8px; }
     
-    /* Icon Colors */
     .btn-edit { color: #4e73df; border-color: #4e73df; }
     .btn-edit:hover { background-color: #4e73df; color: white; }
     .btn-print { color: #36b9cc; border-color: #36b9cc; }
@@ -125,11 +122,11 @@
                     <td>{{ par.date_issued|date:"M d, Y" }}</td>
                     <td class="text-right">
                         <div class="d-flex justify-content-end align-items-center">
-                            <a href="{% url 'edit_par' par.pk %}" class="btn btn-sm btn-outline-primary btn-action mr-2" title="Edit Record">
+                            <a href="{% url 'mobility:edit_par' par.pk %}" class="btn btn-sm btn-outline-primary btn-action mr-2" title="Edit Record">
                                 <i class="fas fa-edit"></i>
                             </a>
 
-                            <a href="{% url 'print_par' par.pk %}" target="_blank" class="btn btn-sm btn-outline-info btn-action mr-2" title="Print Receipt">
+                            <a href="{% url 'mobility:print_par' par.pk %}" target="_blank" class="btn btn-sm btn-outline-info btn-action mr-2" title="Print Receipt">
                                 <i class="fas fa-print"></i>
                             </a>
 

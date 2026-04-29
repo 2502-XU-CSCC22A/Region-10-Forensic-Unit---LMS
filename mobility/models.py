@@ -1,11 +1,9 @@
 from django.db import models
 from django.utils import timezone
 
-# This "Virtual Model" points directly to your Supabase table 'config_asset'
-# We define it here to prevent the "config.Asset has not been loaded" error.
 class ConfigAsset(models.Model):
     class Meta:
-        managed = False  # Django will not try to modify this table
+        managed = False  
         db_table = 'config_asset'
     
     property_no = models.CharField(max_length=100)
@@ -23,7 +21,6 @@ class Vehicle(models.Model):
         ('No Maintenance Record', 'No Maintenance Record'),
     ]
 
-    # Link to the Virtual Model using the column name 'asset_id' found in your Supabase schema
     asset = models.ForeignKey(
         ConfigAsset, 
         db_column='asset_id', 

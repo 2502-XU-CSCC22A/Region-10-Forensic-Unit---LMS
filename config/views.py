@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from usermanagement.models import UserProfile
+
+def home_view(request):
+    return render(request, 'home.html')
 
 def usermanagement(request):
-    users = UserProfile.objects.all()
-    return render(request, 'usermanagement/usermanagement.html', {'users': users})
+    return render(request, 'usermanagement/usermanagement.html')

@@ -8,7 +8,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('communications', '0001_initial'),
-        ('config', '0002_personnel_alter_assetstatus_options_and_more'),
     ]
 
     operations = [

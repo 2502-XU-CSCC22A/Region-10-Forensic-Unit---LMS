@@ -4,11 +4,6 @@ from config.models import Asset
 from datetime import date
 
 class DisposalItem(Asset): 
-    """
-    Inherits from Asset. 
-    In the database, this creates a table with a pointer (AssetID) to the parent Asset table.
-    """
-    # Fields matching your 'Disposal_Log' ERD and Supabase updates
     disposal_reason = models.TextField(
         db_column='disposal_reason', 
         help_text="Reason for disposal/BER",
@@ -31,7 +26,6 @@ class DisposalItem(Asset):
         blank=True
     )
 
-    # Tracking the User (From your ERD Disposal_Log -> UserID)
     processed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -42,7 +36,7 @@ class DisposalItem(Asset):
     )
 
     class Meta:
-        db_table = 'disposal_disposalitems' # Matches your Supabase table name
+        db_table = 'disposal_disposalitems' 
         verbose_name = "Disposal Item"
     
     @property
