@@ -1,0 +1,30 @@
+<div class="modal fade" id="disposalModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title font-weight-bold">
+                    <i class="fas fa-archive mr-2"></i>Finalize Removal
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body py-4 text-center">
+                <div class="mb-3">
+                    <i class="fas fa-exclamation-circle fa-4x text-warning"></i>
+                </div>
+                <h5 class="text-dark">Confirm Archiving</h5>
+                <p class="text-muted">
+                    Are you sure you want to remove this item from the active disposal list? 
+                    This will update the asset status to <strong>Disposed</strong> and create an audit log.
+                </p>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <a id="modalConfirmBtn" href="#" class="btn btn-danger px-4">
+                    Confirm & Archive
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

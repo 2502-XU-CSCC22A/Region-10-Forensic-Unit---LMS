@@ -1,63 +1,143 @@
-from django.shortcuts import render
-from .models import DisposalItem # Make sure this matches your model name
+from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from datetime import timedelta
 import csv
 from django.http import HttpResponse
-from .models import DisposalItem
-
+from django.contrib import messages
+from django.db.models import Q, Count
+from mobility.models import Vehicle
+from config.models import Asset, AssetStatus, Personnel
+from .models import DisposalItem, DisposalActivityLog
+from django.core.paginator import Paginator
 
 def export_disposal_csv(request):
-    # 1. Apply the SAME filters as your list view
     items = DisposalItem.objects.select_related('asset_ptr', 'asset_ptr__category').all()
     
     device_type = request.GET.get('device_type')
     if device_type and device_type != 'all':
         items = items.filter(asset_ptr__category__category_name__iexact=device_type)
     
-    # ... add your other filters (expiry, station) here ...
-
-    # 2. Create the HttpResponse object with CSV header
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = f'attachment; filename="disposal_report_{timezone.now().date()}.csv"'
 
     writer = csv.writer(response)
-    # 3. Write the Header Row
     writer.writerow(['Asset Model', 'Serial Number', 'Category', 'Expiry Date', 'Reason'])
 
-    # 4. Write Data Rows
     for item in items:
         writer.writerow([
             item.asset_ptr.model,
             item.asset_ptr.serial_no,
             item.asset_ptr.category.category_name,
-            item.expiry_date,
             item.disposal_reason
         ])
 
     return response
 
 def disposal_list(request):
-    # 'asset_ptr' is the field Django uses to link DisposalItem to Asset
-    # 'category' is the field on Asset that links to Category
-    items = DisposalItem.objects.select_related('asset_ptr', 'asset_ptr__category').all()
-
-    device_type = request.GET.get('device_type')
-    expiry_status = request.GET.get('expiry_status')
-
-    # Filtering logic
-    if device_type and device_type != 'all':
-        # Path: asset_ptr -> category -> category_name
-        # Use __iexact to handle case-matching automatically
-        items = items.filter(asset_ptr__category__category_name__iexact=device_type)
-
-    if expiry_status == 'Expired':
-        # Match your database column name: 'expiry_date'
-        items = items.filter(expiry_date__lt=timezone.now())
+    all_items = DisposalItem.objects.filter(status_id = 4).order_by('-disposal_date')
+    
+    paginator = Paginator(all_items, 15)
+    page_number = request.GET.get('page')
+    disposal_items = paginator.get_page(page_number)
+    
+    logs = DisposalActivityLog.objects.all().order_by('-timestamp')
+    
+    last_item = DisposalItem.objects.order_by('-last_sync').first()
+    sync_time = last_item.last_sync if last_item else None
+    
+    today = timezone.now().date()
+  
+    ber_today_count = DisposalItem.objects.filter(
+        disposal_date__date=today
+    ).count()
+    
+    comms_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+        asset_ptr__category__category_name='communications'
+    ).count()
+    
+    mobility_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+        asset_ptr__category__category_name='mobility'
+    ).count()
+    
+    firearms_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+        asset_ptr__category__category_name='firearms'
+    ).count()
+    
+    inves_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+        asset_ptr__category__category_name='investigative_equipment'
+    ).count()
+    
+    total_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+    ).count()
+    
+    if request.method == "POST":
+        asset_id = request.POST.get('asset_id')
+        reason = request.POST.get('reason')
+        personnel_id = request.POST.get('personnel_id') 
         
-    elif expiry_status == 'Expired_3Months':
-        today = timezone.now()
-        three_months_later = today + timedelta(days=90)
-        items = items.filter(expiry_date__range=(today, three_months_later))
+        asset = Asset.objects.get(id=asset_id)
+        personnel = Personnel.objects.get(PersonnelID=personnel_id)
 
-    return render(request, 'disposal/disposal_admin.html', {'items': items})
+        DisposalItem.objects.create(
+            asset_ptr=asset,
+            processed_by=personnel, 
+            disposal_reason=reason,
+        )
+        return redirect('disposal_list')
+
+    return render(request, 'disposal/disposal.html', {
+        'logs': logs,
+        'last_sync_time': sync_time,
+        'ber_today_count': ber_today_count,
+        'current_time': timezone.now(),
+        'comms_ber': comms_ber,
+        'firearms_ber': firearms_ber,
+        'mobility_ber': mobility_ber,
+        'inves_ber': inves_ber,
+        'total_ber': total_ber,
+        'disposal_items': disposal_items
+    })
+
+def disposal_list_supervisor(request):
+    items = Asset.objects.filter(status_id = 4)
+
+    return render(request, 'disposal/disposal_supervisor.html', {'items': items})
+
+# --- ACTIVITY LOG ---
+def history_log(request):
+    logs = DisposalActivityLog.objects.all().order_by('-timestamp')
+    return render(request, 'disposal/history.html', {'items': logs})
+
+def finalize_removal(request, pk):
+    disposal_entry = DisposalItem.objects.filter(pk=pk).first()
+    
+    if disposal_entry:
+        asset = disposal_entry.asset_ptr
+        reason = disposal_entry.disposal_reason
+    else:
+        asset = get_object_or_404(Asset, pk=pk)
+        reason = "Marked for Disposal via Status Update"
+
+    disposed_status = get_object_or_404(AssetStatus, status_id=5) 
+    asset.status_id = disposed_status
+    asset.save()
+
+    DisposalActivityLog.objects.create(
+        user=request.user,
+        asset=asset,
+        action_type='REMOVE',
+        disposal_reason=reason,
+        description=f"Finalized disposal for {asset.model} ({asset.serial_no})"
+    )
+
+    if disposal_entry:
+        disposal_entry.delete()
+
+    messages.success(request, f"Asset {asset.serial_no} successfully disposed.")
+    return redirect('disposal:history_log')

@@ -2,17 +2,14 @@ from django.db import models
 from django.conf import settings
 from config.models import Asset
 from datetime import date
+from config.models import Personnel
 
 class DisposalItem(Asset): 
-    """
-    Inherits from Asset. 
-    In the database, this creates a table with a pointer (AssetID) to the parent Asset table.
-    """
-    # Fields matching your 'Disposal_Log' ERD and Supabase updates
+    last_sync = models.DateTimeField(auto_now=True)
     disposal_reason = models.TextField(
         db_column='disposal_reason', 
         help_text="Reason for disposal/BER",
-        null=True, 
+        null=False, 
         blank=True,
     )
     disposal_date = models.DateTimeField(
@@ -25,13 +22,6 @@ class DisposalItem(Asset):
         null=True, 
         blank=True
     )
-    expiry_date = models.DateField(
-        db_column='expiry_date', 
-        null=True, 
-        blank=True
-    )
-
-    # Tracking the User (From your ERD Disposal_Log -> UserID)
     processed_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
@@ -40,9 +30,15 @@ class DisposalItem(Asset):
         blank=True,
         related_name='disposed_items'
     )
+    personnel_assigned = models.ForeignKey(
+        Personnel,
+        on_delete=models.SET_NULL,
+        null=True,
+        db_column='personnel_assigned'
+    )
 
     class Meta:
-        db_table = 'disposal_disposalitems' # Matches your Supabase table name
+        db_table = 'disposal_disposalitems' 
         verbose_name = "Disposal Item"
     
     @property
@@ -54,3 +50,34 @@ class DisposalItem(Asset):
 
     def __str__(self):
         return f"Disposal: {self.property_no} - {self.reason[:20]}"
+    
+class DisposalActivityLog(models.Model):
+    ACTION_CHOICES = [
+        ('REMOVE', 'Finalized Removal'),
+        ('UPDATE', 'Updated Disposal Info'),
+        ('FLAGGED', 'Flagged for Disposal'),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name='disposal_logs'
+    )
+
+    asset = models.ForeignKey(
+        Asset, 
+        on_delete=models.SET_NULL, 
+        null=True
+    )
+    
+    description = models.TextField()
+    disposal_reason = models.TextField(null=True, blank=True)
+    action_type = models.CharField(max_length=10, choices=ACTION_CHOICES, default='REMOVE')
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.action_type} - {self.timestamp.strftime('%Y-%m-%d')}"
