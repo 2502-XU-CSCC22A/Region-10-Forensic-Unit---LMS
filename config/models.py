@@ -85,6 +85,7 @@ class Asset(models.Model):
         to_field='status_id',   
         related_name='assets'
     )
+    office = models.CharField(max_length=100, blank=True, null=True, db_column='Office')
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='assets')
 

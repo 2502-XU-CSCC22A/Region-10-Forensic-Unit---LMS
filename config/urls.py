@@ -10,7 +10,6 @@ from django.conf.urls.static import static
 from login.views import login_view, verify_token_view, dashboard_view, logout_view
 from dashboard.views import dashboard_view
 urlpatterns = [
-    # Admin
     path('admin/', admin.site.urls),
     
     # ── Feature Pages ─────────────────────────────────────────────────────────────
@@ -23,6 +22,7 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('users/', include('usermanagement.urls')),
     path('usermanagement/', include('usermanagement.urls')), 
+    path('investigative/', include('InvestigativeEquipment.urls')),
     path('', home_view, name='home'), 
     # Home / Landing page
     path('', TemplateView.as_view(template_name='Home/home.html'), name='home'),
