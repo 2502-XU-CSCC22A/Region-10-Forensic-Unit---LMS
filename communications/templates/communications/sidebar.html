@@ -2,36 +2,36 @@
   <ul class="list-unstyled components">
     <p>Dashboard</p>
     <li>
-      <a href="{% url 'dashboard:dashboard_view' %}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
+      <a href="{% url 'dashboard:dashboard_view'%}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
     </li>
 
     <li>
       <a href="{% url 'mobility:vehicle_management' %}">
         <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
-        <span class="badge badge-light badge-pill">{{ total_vehicles|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span>
       </a>
     </li>
 
     <li>
-      <a href="#"><span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span></a>
+      <a href="#"><span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
+      <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span></a>
     </li>
     <li class="active">
-      <a href="{% url 'communications:communications_list' %}"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span></a>
+      <a href="{% url 'communications:communications_list' %}"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_comms|default:'0' }}</a>
     </li>
     <li>
-      <a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span></a>
+      <a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</a>
     </li>
-
     <li>
-      <a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span></a>
+      <a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span>
+        <span class="badge badge-light badge-pill">{{ total_ber|default:'0' }}</span></a>
     </li>
 
     <p class="mt-4">Monitoring</p>
-    <li class="{% if request.resolver_match.url_name == 'par_management' %}active{% endif %}">
-      <a href="#"><i class="fas fa-desktop"></i> <span class="sidebar-item-label">PAR Monitoring</span></a>
-    </li>
     <li>
-      <a href="{% url 'communications:activity_logs' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
+      <a href="{% url 'disposal:history_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
     </li>
   </ul>
 

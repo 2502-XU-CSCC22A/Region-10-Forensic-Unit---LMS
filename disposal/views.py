@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.db.models import Q, Count
 from mobility.models import Vehicle
+from communications.models import Communication
 from config.models import Asset, AssetStatus, Personnel
 from .models import DisposalItem, DisposalActivityLog
 from django.core.paginator import Paginator
@@ -40,6 +41,9 @@ def disposal_list(request):
     paginator = Paginator(all_items, 15)
     page_number = request.GET.get('page')
     disposal_items = paginator.get_page(page_number)
+    
+    vehicle_all = Vehicle.objects.count()
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     
     logs = DisposalActivityLog.objects.all().order_by('-timestamp')
     
@@ -101,7 +105,9 @@ def disposal_list(request):
         'mobility_ber': mobility_ber,
         'inves_ber': inves_ber,
         'total_ber': total_ber,
-        'disposal_items': disposal_items
+        'disposal_items': disposal_items,
+        'vehicle_all': vehicle_all,
+        'comms_all': comms_all
     })
 
 def disposal_list_supervisor(request):

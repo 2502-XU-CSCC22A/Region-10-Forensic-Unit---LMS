@@ -8,6 +8,10 @@ from django.contrib import messages
 import smtplib, ssl
 from django.conf import settings
 
+from disposal.models import DisposalItem
+from firearms.models import Firearm
+from communications.models import Communication
+
 # --- MAIN DASHBOARD & VEHICLE ASSET ADDITION ---
 def vehicle_management(request):
     query = Q()
@@ -16,6 +20,9 @@ def vehicle_management(request):
         query &= Q(plate_number__icontains=plate_no) | Q(conduction_number__icontains=plate_no)
     
     all_v = Vehicle.objects.all()
+    all_d = DisposalItem.objects.all()
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
     
     if request.method == 'POST':
         form = VehicleForm(request.POST)
@@ -43,6 +50,9 @@ def vehicle_management(request):
         'for_insurance_renewal': all_v.filter(status='For Insurance').count(),
         'upcoming_repairs': all_v.filter(status='For Repair').count(),
         'upcoming_pms': all_v.filter(status='Upcoming PMS').count(), # Added for your 8th card
+        'total_disposal':     all_d.count(),
+        'total_firearms':     all_f.count(),
+        'total_comms':        all_c.count(),
     }
     return render(request, 'mobility/vehicle_management.html', context)
 

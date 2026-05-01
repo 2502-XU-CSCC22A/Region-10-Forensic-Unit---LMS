@@ -16,16 +16,54 @@
 
   <body>
     <!-- ── Header ──────────────────────────────────────────────────────────────── -->
-    <header>
-      <div class="header-brand">
-        <img src="{% static 'img/RFU10_Logo.png' %}" alt="RFU10 Logo" class="header-logo-img" />
-        <span class="header-title">Regional Forensic Unit 10 LMS</span>
+    <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+      <div class="header-brand d-flex align-items-center">
+        <div class="header-logo">
+          PNP<br />FORENSIC<br />GROUP
+        </div>
+        <div class="header-divider"></div>
+        <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
       </div>
-      <div class="header-user">
-        <div class="user-avatar"></div>
-        <div class="user-info">
-          <div class="user-role">{{ user.get_full_name|default:user.username }}</div>
-          <div class="user-greet">Welcome!</div>
+  
+      <div class="header-user d-flex align-items-center">
+        <div class="notification-wrapper mr-4">
+          <i class="fas fa-bell {% if upcoming_pms > 0 or upcoming_repairs > 0 %}
+              
+              
+              
+              
+              
+              text-danger
+  
+  
+  
+  
+  
+            {% else %}
+              
+              
+              
+              
+              
+              text-muted
+  
+  
+  
+  
+  
+            {% endif %}">
+  
+          </i>
+        </div>
+  
+        <div class="profile-group d-flex align-items-center">
+          <div class="user-avatar d-flex align-items-center justify-content-center">
+            <i class="fas fa-user text-muted"></i>
+          </div>
+          <div class="user-text ml-2">
+            <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
+            <div class="user-role text-muted">Logistics Officer</div>
+          </div>
         </div>
       </div>
     </header>
@@ -37,35 +75,40 @@
         <ul class="list-unstyled components">
           <p>Dashboard</p>
           <li class="active">
-            <a href="{% url 'dashboard:dashboard_view' %}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
+            <a href="{% url 'dashboard:dashboard_view'%}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
           </li>
-
+      
           <li>
             <a href="{% url 'mobility:vehicle_management' %}">
               <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
-              <span class="badge badge-light badge-pill">{{ total_vehicles }}</span>
+              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span>
             </a>
           </li>
-
+      
           <li>
-            <a href="{% url 'firearms:index' %}"><span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span></a>
+            <a href="#"><span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span></a>
           </li>
           <li>
-            <a href="{% url 'communications:communications_list' %}"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span></a>
+            <a href="{% url 'communications:communications_list' %}"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
+              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_comms|default:'0' }}</a>
           </li>
           <li>
-            <a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span></a>
+            <a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
+              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</a>
           </li>
           <li>
-            <a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span></a>
+            <a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span>
+              <span class="badge badge-light badge-pill">{{ total_disposal|default:'0' }}</span></a>
           </li>
-
+      
           <p class="mt-4">Monitoring</p>
-          <li class="UM">
-                <a href="{% url 'user_management:user_list'%}" class="btn btn-link btn-block text-white-50 text-decoration-none text-left small"><i class="fas fa-user-shield mr-2"></i> User Management</a>
-          </li>
-        </ul>
+      
+        <div class="p-3" style="position: absolute; bottom: 10px; width: 100%;">
+          <a href="#" class="btn btn-link btn-block text-white-50 text-decoration-none text-left small"><i class="fas fa-user-shield mr-2"></i> User Management</a>
+        </div>
       </nav>
+      
 
       <!-- ── Main ────────────────────────────────────────────────────────────── -->
       <main>
@@ -94,8 +137,8 @@
                 <i class="fas fa-crosshairs"></i>
               </div>
               <div>
+                <div class="stat-value">{{ total_firearms }}</div>
                 <div class="stat-label">Total Firearms</div>
-                <div class="stat-value"></div>
               </div>
             </div>
             <div class="stat-bar-wrap">
@@ -140,8 +183,8 @@
                 <i class="fas fa-broadcast-tower"></i>
               </div>
               <div>
-                <div class="stat-value">{{ total_communications }}</div>
-                <div class="stat-label">Communication Devices</div>
+                <div class="stat-value">{{ total_comms }}</div>
+                <div class="stat-label">Total Communication</div>
               </div>
             </div>
             <div class="stat-bar-wrap">

@@ -1,51 +1,62 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RFU 10 LMS Dashboard</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RFU 10 LMS Dashboard</title>
+    <link rel="stylesheet" href="{% static 'disposal/disposal_style.css' %}" />
+    <link rel="stylesheet" href="{% static 'disposal/filter_modal.css' %}" />
+    <link rel="stylesheet" href="{% static 'disposal/summary_modal.css' %}" />
+    <link rel="stylesheet" href="{% static 'disposal/sidebar.css' %}" />
 
-  <link rel="stylesheet" href="{% static 'disposal/disposal_style.css' %}" />
-  <link rel="stylesheet" href="{% static 'disposal/filter_modal.css' %}" />
-  <link rel="stylesheet" href="{% static 'disposal/summary_modal.css' %}" />
-  <link rel="stylesheet" href="{% static 'disposal/sidebar.css' %}" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-</head>
-
-<header class="navbar-header d-flex align-items-center justify-content-between px-4">
-  <div class="header-brand d-flex align-items-center">
-    <div class="header-logo">
-      PNP<br />FORENSIC<br />GROUP
+  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+    <div class="header-brand d-flex align-items-center">
+      <div class="header-logo">
+        PNP<br />FORENSIC<br />GROUP
+      </div>
+      <div class="header-divider"></div>
+      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
     </div>
-    <div class="header-divider"></div>
-    <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
-  </div>
 
     <div class="header-user d-flex align-items-center">
       <div class="notification-wrapper mr-4">
         <i class="fas fa-bell {% if upcoming_pms > 0 or upcoming_repairs > 0 %}
             
             
+            
+            
+            
             text-danger
+
+
+
 
 
           {% else %}
             
             
+            
+            
+            
             text-muted
+
+
+
 
 
           {% endif %}">
 
-      </i>
-    </div>
+        </i>
+      </div>
 
       <div class="profile-group d-flex align-items-center">
         <div class="user-avatar d-flex align-items-center justify-content-center">
@@ -84,7 +95,13 @@
                   {% widthratio total_ber total_assets 100 %}
                 {% else %}
                   
+                  
+                  
+                  
                   0
+
+
+
 
                 {% endif %}%"></div>
             </div>
@@ -107,7 +124,13 @@
                   {% widthratio total_firearms total_assets 100 %}
                 {% else %}
                   
+                  
+                  
+                  
                   0
+
+
+
 
                 {% endif %}%"></div>
             </div>
@@ -130,7 +153,13 @@
                   {% widthratio total_mobility total_assets 100 %}
                 {% else %}
                   
+                  
+                  
+                  
                   0
+
+
+
 
                 {% endif %}%"></div>
             </div>
@@ -153,7 +182,13 @@
                   {% widthratio total_communications total_assets 100 %}
                 {% else %}
                   
+                  
+                  
+                  
                   0
+
+
+
 
                 {% endif %}%"></div>
             </div>
@@ -176,7 +211,13 @@
                   {% widthratio total_investigative total_assets 100 %}
                 {% else %}
                   
+                  
+                  
+                  
                   0
+
+
+
 
                 {% endif %}%"></div>
             </div>
@@ -204,19 +245,27 @@
         </div>
 
         <!-- - Buttons - -->
-        <div class="action-bar">
-          <button class="btn-outline" onclick="toggleFilterModal()"><i class="ph ph-faders"></i>Filter</button>
-          <a href="{% url 'disposal:export_disposal_csv' %}?{{ request.GET.urlencode }}">
-            <button type="button" class="btn-outline">
-              <i class="ph ph-download"></i>
-              Download
-            </button>
-          </a>
-        </div>
+        <div class="table-section">
+          <div class="table-header">Disposal Item Table</div>
 
-        <!-- - Table -->
-        <div class="table-container">
-          <table>
+          <div class="table-controls">
+            <div class="search-wrap">
+              <span class="search-icon">&#x1F50D;</span>
+              <input type="text" id="searchInput" placeholder="Search by name, date, personnel&#x2026;" oninput="filterTable()" />
+            </div>
+            <div class="action-bar">
+              <button class="btn-outline" onclick="toggleFilterModal()"><i class="ph ph-faders"></i>Filter</button>
+              <a href="{% url 'disposal:export_disposal_csv' %}?{{ request.GET.urlencode }}">
+                <button type="button" class="btn-outline">
+                  <i class="ph ph-download"></i>
+                  Download
+                </button>
+              </a>
+            </div>
+          </div>
+
+          <!-- - Table -->
+          <table id="disposalTable">
             <thead>
               <tr>
                 <th>
@@ -265,7 +314,7 @@
 
                   <td>{{ item.disposal_reason|truncatewords:10 }}</td>
 
-              <td>{{ item.disposal_date|date:'d/m/Y H:i' }}</td>
+                  <td>{{ item.disposal_date|date:'d/m/Y H:i' }}</td>
 
                   <td class="text-center">
                     <a href="{% url 'disposal:finalize_removal' item.pk %}" class="btn btn-sm btn-danger px-3" onclick="return confirm('Are you sure you want to permanently archive this item? This action cannot be undone.')"><i class="fas fa-trash-alt mr-1"></i></a>
@@ -301,8 +350,8 @@
       </main>
     </div>
 
-  {% include 'disposal/filter_modal.html' %}
-  {% include 'disposal/summary_modal.html' %}
+    {% include 'disposal/filter_modal.html' %}
+    {% include 'disposal/summary_modal.html' %}
 
     <script>
       function toggleFilterModal() {
@@ -412,15 +461,54 @@
           card.className = `firearm-card card-${item.category}`
       
           card.innerHTML = `
-                              <div class="category-tag">${item.category}</div>
-                              
-                              <div class="card-img"></div>
-                              
-                              <h3>${item.title || 'Untitled Item'}</h3>
-                              <p>${item.description || 'No description provided.'}</p>
-                          `
+                                                <div class="category-tag">${item.category}</div>
+                                                
+                                                <div class="card-img"></div>
+                                                
+                                                <h3>${item.title || 'Untitled Item'}</h3>
+                                                <p>${item.description || 'No description provided.'}</p>
+                                            `
           grid.appendChild(card)
         })
+      }
+      
+      function filterTable() {
+        const input = document.getElementById('searchInput')
+        const filter = input.value.toLowerCase()
+      
+        const table = document.querySelector('table')
+        const tr = table.getElementsByTagName('tr')
+      
+        for (let i = 1; i < tr.length; i++) {
+          let rowVisible = false
+          const td = tr[i].getElementsByTagName('td')
+      
+          for (let j = 0; j < td.length; j++) {
+            if (td[j]) {
+              const textValue = td[j].textContent || td[j].innerText
+              if (textValue.toLowerCase().indexOf(filter) > -1) {
+                rowVisible = true
+                break
+              }
+            }
+          }
+      
+          tr[i].style.display = rowVisible ? '' : 'none'
+        }
+        
+        const noResultsMessage = document.getElementById('noResults')
+        const visibleRows = Array.from(tr).filter((row) => row.style.display !== 'none' && row.parentNode.tagName === 'TBODY')
+      
+        if (visibleRows.length === 0) {
+          if (!noResultsMessage) {
+            const msg = document.createElement('p')
+            msg.id = 'noResults'
+            msg.innerText = 'No matching records found.'
+            table.parentNode.appendChild(msg)
+          }
+        } else if (noResultsMessage) {
+          noResultsMessage.remove()
+        }
       }
       
       document.querySelectorAll('.filter-btn').forEach((btn) => {

@@ -241,11 +241,12 @@ body {
 .alert-content strong {
     color: #2563eb;
 }
+
 /* Action Bar */
 .action-bar {
     display: flex;
     gap: 10px;
-    margin-bottom: 20px;
+    align-items: center;
 }
 
 .sync-text {
@@ -296,8 +297,8 @@ a:has(.btn-outline) {
     overflow: hidden;
 }
 
-thead {
-    background-color: #f8f9fc;
+thead tr {
+    background: #e8edf6;
 }
 
 th {
@@ -609,6 +610,71 @@ td {
 
 .stat-icon.purple i {
     color: #8b5cf6;
+}
+
+/* Search Bar and Buttons */
+
+.table-section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .07);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.table-header {
+    background: #d9e4f7;
+    padding: 14px 24px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: .5px;
+    border-bottom: 1px solid var(--border);
+}
+
+.table-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-wrap input {
+    width: 100%;
+    padding: 8px 12px 8px 36px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-size: 13px;
+    font-family: inherit;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color .2s;
+    font-family: 'Inter', sans-serif;
+}
+
+.search-wrap input:focus {
+    border-color: var(--accent);
+}
+
+.search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 14px;
 }
 
 /* Pagination */
