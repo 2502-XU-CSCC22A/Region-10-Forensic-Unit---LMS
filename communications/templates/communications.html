@@ -190,45 +190,72 @@
         <main>
 
             <div class="stat-cards">
+                <!-- Total Communications Items -->
                 <div class="stat-card">
                     <div class="stat-top">
-                        <div class="stat-icon blue">&#x1F52B;</div>
+                        <div class="stat-icon purple">
+                            <i class="fas fa-recycle"></i>
+                        </div>
                         <div>
-                            <div class="stat-label">Total Communications</div>
-                            <div class="stat-value" id="totalCount">&#8212;</div>
+                            <div class="stat-value" id="totalCount">0</div>
+                            <div class="stat-label">Total Communications </div>
                         </div>
                     </div>
                     <div class="stat-bar-wrap">
-                        <div class="stat-bar blue" id="totalBar" style="width:0%"></div>
+                        <div class="stat-bar purple" style="width:{% if total_assets %}
+                  {% widthratio total_ber total_assets 100 %}
+                {% else %}
+                  
+                  0
+
+                {% endif %}%"></div>
                     </div>
                 </div>
 
+                <!-- Issued Communications Items -->
                 <div class="stat-card">
                     <div class="stat-top">
-                        <div class="stat-icon green">&#x2705;</div>
+                        <div class="stat-icon orange">
+                            <i class="fas fa-crosshairs"></i>
+                        </div>
                         <div>
+                            <div class="stat-value" id="issuedCount">0</div>
                             <div class="stat-label">Issued Communications</div>
-                            <div class="stat-value" id="issuedCount">&#8212;</div>
                         </div>
                     </div>
                     <div class="stat-bar-wrap">
-                        <div class="stat-bar green" id="issuedBar" style="width:0%"></div>
+                        <div class="stat-bar orange" style="width:{% if total_assets %}
+                  {% widthratio total_firearms total_assets 100 %}
+                {% else %}
+                  
+                  0
+
+                {% endif %}%"></div>
                     </div>
                 </div>
 
+                <!-- Validated PAR Items -->
                 <div class="stat-card">
                     <div class="stat-top">
-                        <div class="stat-icon red">&#x1F4C4;</div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-car"></i>
+                        </div>
                         <div>
-                            <div class="stat-label">Pending BER</div>
-                            <div class="stat-value" id="pendingCount">&#8212;</div>
+                            <div class="stat-value" id="parCount">0</div>
+                            <div class="stat-label">Validated PAR</div>
                         </div>
                     </div>
                     <div class="stat-bar-wrap">
-                        <div class="stat-bar red" id="pendingBar" style="width:0%"></div>
+                        <div class="stat-bar green" style="width:{% if total_assets %}
+                  {% widthratio total_mobility total_assets 100 %}
+                {% else %}
+                  
+                  0
+
+                {% endif %}%"></div>
                     </div>
                 </div>
-            </div>
+            </div> <!-- /stat-cards -->
 
             <div class="table-section">
                 <div class="table-header">From Issuances Table</div>

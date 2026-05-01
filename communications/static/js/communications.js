@@ -245,7 +245,6 @@ async function saveRecord() {
       }
     }
 
-
   } else {
     const { data: parentData, error: parentError } = await sb
       .from("config_asset")
@@ -254,7 +253,8 @@ async function saveRecord() {
         property_no: generatePropertyNo(),
         serial_no: serial,
         model: type,
-        category_id: 2
+        category_id: 2,
+        "StatusID": 1
       }])
       .select("id")
       .single();
@@ -281,6 +281,15 @@ async function saveRecord() {
       return;
     }
   }
+    
+  const { error: disposalError } = await sb
+  .from("disposal_disposalitems")
+  .insert([{
+    asset_ptr_id: editingId,
+    disposal_reason: "Stock reached zero",
+    disposal_date: new Date().toISOString(),
+    last_sync: new Date().toISOString()
+  }]);
 
   await fetchData();
   closeModal();
