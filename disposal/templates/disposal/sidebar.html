@@ -13,20 +13,31 @@
     </li>
 
     <li>
-      <a href="{% url 'firearms:index' %}"><span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
-      <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ vehicle_all|default:'0' }}</span></a>
+      <a href="{% url 'firearms:index' %}">
+        <span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ vehicle_all|default:'0' }}</span>
+      </a>
     </li>
+
     <li>
-      <a href="{% url 'communications:communications_list' %}"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ comms_all|default:'0' }}</a>
+      <a href="{% url 'communications:communications_list' %}">
+        <span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;"> {{ comms_all|default:'0' }}</span>
+      </a> 
     </li>
+
     <li>
-      <a href="{% url 'InvestigativeEquipment:investigative_view'%}"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</a>
+      <a href="{% url 'InvestigativeEquipment:investigative_view'%}">
+        <i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span>
+      </a> 
     </li>
+
     <li class="active">
-      <a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span>
-        <span class="badge badge-light badge-pill">{{ total_ber|default:'0' }}</span></a>
+      <a href="{% url 'disposal:disposal_list' %}">
+        <i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span>
+        <span class="badge badge-light badge-pill">{{ total_ber|default:'0' }}</span>
+      </a>
     </li>
 
     <p class="mt-4">Monitoring</p>
@@ -34,7 +45,7 @@
       <a href="{% url 'disposal:history_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
     </li>
   
-    <li class = "UM">
+    <li class="UM">
       <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
     </li>
   </ul>

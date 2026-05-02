@@ -328,20 +328,16 @@ body .modal {
   margin-top: 0;
   padding-bottom: 15px;
   border-bottom: 1px solid var(--border);
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
   margin-bottom: 20px;
 }
 
 @keyframes popIn {
   from { transform: scale(.92); opacity: 0; }
   to   { transform: scale(1);   opacity: 1; }
-}
-
-.modal h3 {
-  font-family: 'Inter', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 16px;
 }
 
 .modal-row     { display: flex; gap: 12px; margin-bottom: 10px; }

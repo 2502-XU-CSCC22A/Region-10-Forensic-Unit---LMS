@@ -173,7 +173,7 @@ def manual_email_alert(request):
     else:
         messages.info(request, "No urgent records found.")
         
-    return redirect('vehicle_management')
+    return redirect('mobility:vehicle_management')
 
 # --- ACTIVITY LOG ---
 def activity_log(request):
@@ -181,4 +181,5 @@ def activity_log(request):
     days = 7 if period == 'week' else 30
     cutoff = timezone.now() - timedelta(days=days)
     logs = ActivityLog.objects.filter(timestamp__gte=cutoff).order_by('-timestamp')
-    return render(request, 'mobility/activity_log.html', {'logs': logs, 'period': period})
+    user=request.user,
+    return render(request, 'mobility/activity_log.html', {'logs': logs, 'period': period, 'user': user})
