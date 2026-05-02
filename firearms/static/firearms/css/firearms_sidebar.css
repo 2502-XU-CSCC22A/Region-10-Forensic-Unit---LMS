@@ -1,17 +1,20 @@
 :root {
   --pnp-blue: #1a237e;
-  --sidebar-width: 310px;
+  --sidebar-width: 290px;
   --figma-active: #4338ca;
 }
 
 body {
   background-color: #f8f9fc;
-  overflow-x: hidden;
+  overflow: hidden;
   font-family: 'Inter', sans-serif;
 }
 
 #sidebar {
   width: var(--sidebar-width);
+  height: calc(100vh - 70px);
+  top: 70px;
+  left: 0;
   height: 100vh;
   position: fixed;
   background: #1a2b6d;
@@ -79,12 +82,11 @@ body {
 .sidebar-item-label {
   flex-grow: 1;
   font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  margin: 0;
 }
 
 .UM {
   position: absolute; 
   bottom: 100px;
-  width: 100%;
+  width: 100%; 
+  padding: 0px
 }
