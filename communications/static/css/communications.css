@@ -250,26 +250,50 @@ tbody tr:hover           { background: #eff6ff; }
 .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
 
 
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  background: rgba(0, 0, 0, .45);
-  display: none;
+/* --- Modal --- */
+
+body .modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  z-index: 9999 !important;
+  
+  display: none; 
   align-items: center;
   justify-content: center;
 }
 
-.modal-overlay.open { display: flex; }
+body .modal-overlay.open {
+  display: flex !important;
+}
 
-.modal {
-  background: #fff;
-  border-radius: 14px;
-  padding: 28px 30px;
-  width: 380px;
-  max-width: 95vw;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
-  animation: popIn .2s ease;
+body .modal {
+  background: #fff !important;
+  padding: 24px 30px !important;
+  border-radius: 14px !important;
+  
+  width: 500px !important;     
+  max-width: 95vw !important;
+  max-height: 57vh !important;  
+  
+  overflow-y: auto !important;  
+  overflow-x: hidden !important;
+  
+  position: relative !important;
+  display: block !important;    
+  margin: 0 !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+}
+
+.modal h3 {
+  margin-top: 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 20px;
 }
 
 @keyframes popIn {
