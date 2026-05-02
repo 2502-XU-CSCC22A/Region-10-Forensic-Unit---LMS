@@ -1,6 +1,7 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Activity Logs</title>
@@ -67,7 +68,7 @@
       border-left: 4px solid #22c55e;
       padding: 20px 24px;
       margin-bottom: 18px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
       display: flex;
       justify-content: space-between;
       gap: 20px;
@@ -138,81 +139,203 @@
     .return-link:hover {
       color: #2563eb;
     }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: var(--header-h);
+      background: var(--white);
+      border-bottom: 3px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px 0 0;
+      box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 20px;
+      margin: 8px 20px 8px 12px;
+      border-radius: 6px;
+      height: 54px;
+    }
+
+    .header-logo {
+      width: 46px;
+      height: 46px;
+      background: var(--navy);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.1;
+      padding: 4px;
+      letter-spacing: .5px;
+    }
+
+    .header-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: .5px;
+    }
+
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-radius: 8px;
+      padding: 8px 16px;
+      min-width: 170px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--bg);
+      border-radius: 50%;
+      border: 2px solid var(--border);
+    }
+
+    .user-info {
+      line-height: 1.3;
+    }
+
+    .user-role {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    .user-greet {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .layout {
+      display: flex;
+      padding-top: var(--header-h);
+      min-height: 100vh;
+    }
+
+    main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      padding: 28px 28px 40px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
   </style>
 </head>
 
 <body>
+  <header>
+    <div class="header-brand">
+      <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
+      <span class="header-title">Regional Forensic Unit 10 LMS</span>
+    </div>
+    <div class="header-user">
+      <div class="user-avatar"></div>
+      <div class="user-info">
+        <div class="user-role">Logistics Officer</div>
+        <div class="user-greet">Welcome!</div>
+      </div>
+    </div>
+  </header>
+  {% include 'sidebar.html' %}
 
-{% include 'communications/sidebar.html' %}
+  <main>
+    <div class="activity-header">
+      <div class="activity-title">
+        <h1>Activity History</h1>
+        <p>Tracking system modifications, additions, and updates</p>
+      </div>
 
-<main>
-  <div class="activity-header">
-    <div class="activity-title">
-      <h1>Activity History</h1>
-      <p>Tracking system modifications, additions, and updates</p>
+      <div class="filter-buttons">
+        <button class="active">Last 7 Days</button>
+        <button>Last 30 Days</button>
+      </div>
     </div>
 
-    <div class="filter-buttons">
-      <button class="active">Last 7 Days</button>
-      <button>Last 30 Days</button>
+    <div class="activity-list" id="activityLogList">
+      <p>Loading activity logs...</p>
     </div>
-  </div>
-
-  <div class="activity-list" id="activityLogList">
-    <p>Loading activity logs...</p>
-  </div>
 
   <a href="{% url 'communications:communications_list' %}" class="return-link">
     ← Return to Dashboard
   </a>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-<script>
-  const sb = window.supabase.createClient(
-    "https://vamjajitzyspdyfxisac.supabase.co",
-    "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54"
-  );
+  <script>
+    const sb = window.supabase.createClient(
+      "https://vamjajitzyspdyfxisac.supabase.co",
+      "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54"
+    );
 
-  function getLogType(action) {
-    const text = action.toLowerCase();
+    function getLogType(action) {
+      const text = action.toLowerCase();
 
-    if (text.includes("moved") || text.includes("ber")) return "moved";
-    if (text.includes("deleted")) return "deleted";
-    if (text.includes("updated")) return "updated";
+      if (text.includes("moved") || text.includes("ber")) return "moved";
+      if (text.includes("deleted")) return "deleted";
+      if (text.includes("updated")) return "updated";
 
-    return "created";
-  }
-
-  function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  }
-
-  async function loadActivityLogs() {
-    const { data, error } = await sb
-      .from("communications_activitylog")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    const list = document.getElementById("activityLogList");
-
-    if (error) {
-      console.error(error);
-      list.innerHTML = "<p>Failed to load activity logs.</p>";
-      return;
+      return "created";
     }
 
-    if (!data || data.length === 0) {
-      list.innerHTML = "<p>No activity logs yet.</p>";
-      return;
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString();
     }
 
-    list.innerHTML = data.map(log => {
-      const type = getLogType(log.action);
+    async function loadActivityLogs() {
+      const { data, error } = await sb
+        .from("communications_activitylog")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-      return `
+      const list = document.getElementById("activityLogList");
+
+      if (error) {
+        console.error(error);
+        list.innerHTML = "<p>Failed to load activity logs.</p>";
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        list.innerHTML = "<p>No activity logs yet.</p>";
+        return;
+      }
+
+      list.innerHTML = data.map(log => {
+        const type = getLogType(log.action);
+
+        return `
         <div class="log-card ${type}">
           <div class="log-main">
             <span class="log-badge ${type}">${log.action}</span>
@@ -227,11 +350,12 @@
           </div>
         </div>
       `;
-    }).join("");
-  }
+      }).join("");
+    }
 
-  document.addEventListener("DOMContentLoaded", loadActivityLogs);
-</script>
+    document.addEventListener("DOMContentLoaded", loadActivityLogs);
+  </script>
 
 </body>
+
 </html>

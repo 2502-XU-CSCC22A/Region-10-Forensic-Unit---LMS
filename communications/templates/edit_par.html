@@ -1,0 +1,187 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RFU10 LMS – Edit PAR</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+
+    <style>
+        :root {
+            --navy: #0d2155;
+            --accent: #2563eb;
+            --text: #1e293b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --bg: #f1f5f9;
+            --bg-light: #f8fafc;
+            --sidebar-w: 290px;
+            --header-h: 72px;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
+            background: #fff;
+            border-bottom: 3px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 25px;
+            z-index: 1001;
+        }
+
+        .header-title {
+            font-weight: 700;
+            color: var(--navy);
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .layout {
+            display: flex;
+            padding-top: var(--header-h);
+        }
+
+        main {
+            margin-left: var(--sidebar-w);
+            width: calc(100% - var(--sidebar-w));
+            padding: 30px;
+        }
+
+        .registry-container {
+            padding: 1.5rem;
+        }
+
+        .btn-back {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        .section-title {
+            font-weight: 800;
+            color: var(--navy);
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .form-control, input, select, textarea {
+            border-radius: 8px !important;
+            border: 1px solid var(--border) !important;
+            padding: 0.6rem;
+            width: 100%;
+        }
+
+        .btn-update {
+            background: var(--navy);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <span class="header-title">Regional Forensic Unit 10 LMS</span>
+</header>
+
+<div class="layout">
+
+    {% include 'communications/sidebar.html' %}
+
+    <main>
+        <div class="registry-container">
+
+            <!-- HEADER -->
+            <div class="mb-4">
+                <a href="{% url 'par_monitoring' %}" class="btn-back">
+                    ← Back to PAR Registry
+                </a>
+
+                <h2 class="section-title">Update PAR Record</h2>
+                <p class="text-muted small">
+                    Editing: <strong>{{ record.par_number }}</strong>
+                </p>
+            </div>
+
+            <!-- FORM -->
+            <div class="card p-4 shadow-sm">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        {% for field in form %}
+                            {% if field.name == 'remarks' %}
+                                <div class="col-12 mt-2">
+                                    <label class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                </div>
+                            {% else %}
+                                <div class="col-md-3">
+                                    <label class="form-label">{{ field.label }}</label>
+                                    {{ field }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+
+                        <a href="{% url 'delete_par' record.pk %}" 
+                           class="text-danger"
+                           onclick="return confirm('Delete record?')">
+                           🗑 Delete
+                        </a>
+
+                        <div>
+                            <a href="{% url 'par_monitoring' %}" class="text-muted mr-3">Cancel</a>
+                            <button type="submit" class="btn-update">Update</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+</body>
+</html>

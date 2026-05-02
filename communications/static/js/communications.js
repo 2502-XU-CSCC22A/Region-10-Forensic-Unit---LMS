@@ -124,11 +124,11 @@ function renderPagination() {
 function updateStats() {
   document.getElementById("totalCount").textContent = communications.length;
   document.getElementById("issuedCount").textContent = communications.length;
-  document.getElementById("pendingCount").textContent = 0;
+  document.getElementById("parCount").textContent = 0;
 
   document.getElementById("totalBar").style.width = "100%";
   document.getElementById("issuedBar").style.width = "100%";
-  document.getElementById("pendingBar").style.width = "0%";
+  document.getElementById("parBar").style.width = "0%";
 }
 
 /* ---------------- FILTER ---------------- */
@@ -245,7 +245,6 @@ async function saveRecord() {
       }
     }
 
-
   } else {
     const { data: parentData, error: parentError } = await sb
       .from("config_asset")
@@ -254,7 +253,8 @@ async function saveRecord() {
         property_no: generatePropertyNo(),
         serial_no: serial,
         model: type,
-        category_id: 2
+        category_id: 2,
+        "StatusID": 1
       }])
       .select("id")
       .single();
@@ -281,6 +281,15 @@ async function saveRecord() {
       return;
     }
   }
+
+  const { error: disposalError } = await sb
+  .from("disposal_disposalitems")
+  .insert([{
+    asset_ptr_id: editingId,
+    disposal_reason: "Stock reached zero",
+    disposal_date: new Date().toISOString(),
+    last_sync: new Date().toISOString()
+  }]);
 
   await fetchData();
   closeModal();
