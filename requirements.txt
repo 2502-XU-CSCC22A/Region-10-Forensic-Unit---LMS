@@ -17,4 +17,3 @@ psycopg2-binary==2.9.11
 pylance==0.39.0
 python-dotenv==1.2.1
 
-
