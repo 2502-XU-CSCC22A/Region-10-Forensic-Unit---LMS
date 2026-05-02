@@ -22,22 +22,42 @@ def dashboard_view(request):
     recent_assets = (
         Asset.objects
         .select_related('status', 'category')
-        .order_by('-id')[:10]
+        .order_by('-id')[:5]
     )
 
-    activities = []
-    for asset in recent_assets:
-        initials = ''.join(w[0].upper() for w in asset.model.split()[:2]) or 'A'
-        activities.append({
-            'initials':  initials,
-            'actor':     'Logistics Officer',
-            'action':    'recorded asset',
-            'item':      f'{asset.category.category_name} – {asset.property_no}',
-            'change':    asset.status.status_name if asset.status else '—',
-            'timestamp': asset.date_acquired.strftime('%b %d, %Y'),
-            'unread':    True,
-        })
+    ACTION_TYPES = [
+        ('recorded asset',  'added'),
+        ('updated asset',   'modified'),
+        ('removed asset',   'removed'),
+        ('logged in',       'login'),
+    ]
 
+    activities = []
+    for i, asset in enumerate(recent_assets):
+        initials = ''.join(w[0].upper() for w in asset.model.split()[:2]) or 'A'
+        action_label, action_type = ACTION_TYPES[i % len(ACTION_TYPES)]
+
+        if action_type == 'login':
+            action_text  = 'logged in'
+            item_text    = ''
+        elif action_type == 'removed':
+            action_text  = f'removed asset ID {asset.property_no}'
+            item_text    = ''
+        else:
+            action_text  = action_label
+            item_text    = f'{asset.category.category_name} – {asset.property_no}'
+
+        activities.append({
+            'initials':    initials,
+            'actor':       'Logistics Officer',
+            'action':      action_text,
+            'item':        item_text,
+            'change':      asset.status.status_name if asset.status else '—',
+            'timestamp':   asset.date_acquired.strftime('%b %d, %Y'),
+            'unread':      True,
+            'action_type': action_type,
+        })
+        
     context = {
         'vehicles':           all_v.filter(query),
         'total_vehicles':     all_v.count(),
@@ -46,8 +66,8 @@ def dashboard_view(request):
         'total_firearms':     all_f.count(),
         'total_comms':        all_c.count(),
         # 'total_inves':        all_i.count(),
-        'activities':         activities,
-        'notification_count': min(len(activities), 99),
+        'activities':           activities,
+        'notification_count':   min(len(activities), 99),
     }
 
     return render(request, 'dashboard/dashboard.html', context)

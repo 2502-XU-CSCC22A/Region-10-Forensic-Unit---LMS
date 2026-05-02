@@ -7,8 +7,8 @@
         <button class="summary-close-btn" type="button" onclick="closeBerModal()">&times;</button>
 
         <div class="summary-modal-header">
-            <h1 id="modalTitle">REMOVED FIREARMS</h1>
-            <p id="itemCountText">0 Firearms Removed This Week</p>
+            <h1 id="modalTitle">REMOVED ASSETS</h1>
+            <p id="itemCountText">{{ total_removed }} Assets Removed This Week</p>
         </div>
 
         <div class="filter-bar">
@@ -19,6 +19,15 @@
         </div>
 
         <div id="itemsGrid" class="items-grid">
+            {% for item in diposal_list %}
+            <div class="item-card">
+                <strong>{{ item.asset_id }}</strong>
+                <p>{{ item.asset_model }}</p>
+                <span class="tag">{{ item.get_type_display }}</span> <!-- Assuming a choices field -->
             </div>
+            {% empty %}
+            <p>No assets were removed this week.</p>
+            {% endfor %}
+        </div>
     </div>
 </div>

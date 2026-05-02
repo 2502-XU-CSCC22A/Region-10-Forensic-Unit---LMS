@@ -40,7 +40,6 @@ class Migration(migrations.Migration):
             name='Asset',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_acquired', models.DateField()),
                 ('property_no', models.CharField(max_length=100, unique=True)),
                 ('serial_no', models.CharField(max_length=100, unique=True)),

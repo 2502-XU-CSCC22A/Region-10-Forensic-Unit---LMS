@@ -6,12 +6,15 @@
 
 body {
   background-color: #f8f9fc;
-  overflow-x: hidden;
+  overflow: hidden;
   font-family: 'Inter', sans-serif;
 }
 
 #sidebar {
   width: var(--sidebar-width);
+  height: calc(100vh - 70px);
+  top: 70px;
+  left: 0;
   height: 100vh;
   position: fixed;
   background: #1a2b6d;
@@ -83,7 +86,7 @@ body {
 
 .UM {
   position: absolute; 
-  bottom: 70px; 
+  bottom: 100px;
   width: 100%; 
   padding: 0px
 }

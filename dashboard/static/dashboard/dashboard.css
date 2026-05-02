@@ -28,10 +28,14 @@ body {
 
 /* ── Header ──────────────────────────────────────────────────────────────── */
 .navbar-header {
+  position: fixed;
   height: 70px;
   background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 3px solid var(--accent);
   width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 1001;
 }
 
 /* Brand Styles (Left) */
@@ -95,7 +99,10 @@ body {
 }
 
 main {
+  margin-top: var(--header-h);
   margin-left: var(--sidebar-w);
+  height: calc(100vh - 70px);
+  overflow-y: auto;
   flex: 1;
   padding: 28px 28px 40px;
   display: flex;
@@ -249,6 +256,12 @@ main {
   transition: color .15s;
 }
 .view-all:hover { color: var(--navy); }
+
+.UM {
+  position: absolute; 
+  bottom: -10px; 
+  width: 100%;
+}
 
 /* ── Scrollbar ───────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }

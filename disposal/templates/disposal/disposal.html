@@ -85,25 +85,12 @@
                 <i class="fas fa-recycle"></i>
               </div>
               <div>
-                <div class="stat-value">{{ total_ber|default:'0' }}</div>
+                <div class="stat-value" id="totalBerCount">{{ total_ber|default:'0' }}</div>
                 <div class="stat-label">Total BER Items</div>
               </div>
             </div>
             <div class="stat-bar-wrap">
-              <div class="stat-bar purple"
-                style="width:{% if total_assets %}
-                  {% widthratio total_ber total_assets 100 %}
-                {% else %}
-                  
-                  
-                  
-                  
-                  0
-
-
-
-
-                {% endif %}%"></div>
+              <div class="stat-bar purple" id="totalBerBar" style="width: 0%"></div>
             </div>
           </div>
 
@@ -114,25 +101,12 @@
                 <i class="fas fa-crosshairs"></i>
               </div>
               <div>
-                <div class="stat-value">{{ firearms_ber|default:'0' }}</div>
+                <div class="stat-value" id="firearmsBerCount">{{ firearms_ber|default:'0' }}</div>
                 <div class="stat-label">BER Firearms</div>
               </div>
             </div>
             <div class="stat-bar-wrap">
-              <div class="stat-bar orange"
-                style="width:{% if total_assets %}
-                  {% widthratio total_firearms total_assets 100 %}
-                {% else %}
-                  
-                  
-                  
-                  
-                  0
-
-
-
-
-                {% endif %}%"></div>
+              <div class="stat-bar orange" id="firearmsBerBar" style="width: 0%"></div>
             </div>
           </div>
 
@@ -143,25 +117,12 @@
                 <i class="fas fa-car"></i>
               </div>
               <div>
-                <div class="stat-value">{{ mobility_ber|default:'0' }}</div>
+                <div class="stat-value" id="mobilityBerCount">{{ mobility_ber|default:'0' }}</div>
                 <div class="stat-label">BER Mobility</div>
               </div>
             </div>
             <div class="stat-bar-wrap">
-              <div class="stat-bar green"
-                style="width:{% if total_assets %}
-                  {% widthratio total_mobility total_assets 100 %}
-                {% else %}
-                  
-                  
-                  
-                  
-                  0
-
-
-
-
-                {% endif %}%"></div>
+              <div class="stat-bar green" id="mobilityBerBar" style="width: 0%"></div>
             </div>
           </div>
 
@@ -172,25 +133,12 @@
                 <i class="fas fa-broadcast-tower"></i>
               </div>
               <div>
-                <div class="stat-value">{{ comms_ber|default:'0' }}</div>
+                <div class="stat-value" id="commsBerCount">{{ comms_ber|default:'0' }}</div>
                 <div class="stat-label">BER Communication</div>
               </div>
             </div>
             <div class="stat-bar-wrap">
-              <div class="stat-bar red"
-                style="width:{% if total_assets %}
-                  {% widthratio total_communications total_assets 100 %}
-                {% else %}
-                  
-                  
-                  
-                  
-                  0
-
-
-
-
-                {% endif %}%"></div>
+              <div class="stat-bar red" id="commsBerBar" style="width: 0%"></div>
             </div>
           </div>
 
@@ -201,25 +149,12 @@
                 <i class="fas fa-microscope"></i>
               </div>
               <div>
-                <div class="stat-value">{{ inves_ber|default:'0' }}</div>
+                <div class="stat-value" id="investBerCount">{{ inves_ber|default:'0' }}</div>
                 <div class="stat-label">BER Investigative Equip.</div>
               </div>
             </div>
             <div class="stat-bar-wrap">
-              <div class="stat-bar gray"
-                style="width:{% if total_assets %}
-                  {% widthratio total_investigative total_assets 100 %}
-                {% else %}
-                  
-                  
-                  
-                  
-                  0
-
-
-
-
-                {% endif %}%"></div>
+              <div class="stat-bar gray" id="investBerBar" style="width: 0%"></div>
             </div>
           </div>
         </div> <!-- /stat-cards -->
@@ -353,7 +288,21 @@
     {% include 'disposal/filter_modal.html' %}
     {% include 'disposal/summary_modal.html' %}
 
+    <script src="{% static 'disposal/js/sample.js' %}"></script>
+
     <script>
+      async function fetchDisposalData() {
+        const { data, error } = await supabase
+          .from('disposal_list') 
+          .select('*');
+      
+        if (error) {
+            console.error('Error fetching disposal data:', error);
+        } else {
+            updateDisposalStats(data);
+        }
+      }
+
       function toggleFilterModal() {
         const modal = document.getElementById('filterModal')
         if (modal) {

@@ -6,13 +6,27 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from django.db import connection
+from config.models import Asset
+from mobility.models import Vehicle
+from disposal.models import DisposalItem
+from communications.models import Communication
 from .models import Firearm
 from config.models import Asset, AssetStatus, Category
  
  
 def index(request):
+    
+    vehicle_all = Vehicle.objects.count()
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    disposal_all = DisposalItem.objects.count()
+    firearm_all = Firearm.objects.exclude(status_id__in=[4, 5]).count()
+    
     return render(request, 'firearms/firearms_main.html', {
         'active_page': 'firearms',
+        'vehicle_all': vehicle_all,
+        'comms_all': comms_all,
+        'disposal_all': disposal_all,
+        'firearm_all': firearm_all,
     })
  
  

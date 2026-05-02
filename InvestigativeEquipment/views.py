@@ -1,12 +1,20 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import InvestigativeDetails
 from config.models import Asset, AssetStatus, Category
+from mobility.models import Vehicle
+from disposal.models import DisposalItem
+from communications.models import Communication
+from firearms.models import Firearm
 import datetime
 import uuid
 from django.contrib import messages
 
-
 def investigative_view(request):
+    vehicle_all = Vehicle.objects.count()
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    disposal_all = DisposalItem.objects.count()
+    firearm_all = Firearm.objects.exclude(status_id__in=[4, 5]).count()
+    
     if request.method == "POST":
         action = request.POST.get("action_type")
 
@@ -103,6 +111,11 @@ def investigative_view(request):
         "under_repair": equipment_list.filter(asset_id__status__status_name="Under Repair").count(),
         "selected_category": category,
         "selected_status": status,
+        "active_page": 'firearms',
+        "vehicle_all": vehicle_all,
+        "comms_all": comms_all,
+        "disposal_all": disposal_all,
+        "firearm_all": firearm_all,
     }
 
     return render(request, "investigative.html", context)

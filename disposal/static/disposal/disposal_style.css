@@ -6,6 +6,7 @@
     --text-muted: #64748b;
     --alert-bg: #eff6ff;
     --alert-border: #bfdbfe;
+    --accent: #2563eb;
 }
 
 body,
@@ -29,7 +30,7 @@ body {
 .navbar-header {
     height: 70px;
     background-color: #ffffff;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 3px solid var(--accent);
     width: 100%;
 }
 
@@ -168,6 +169,12 @@ body {
     overflow-y: auto;
     flex-shrink: 0;
 }
+
+.UM {
+    position: absolute; 
+    bottom: 100px;
+    width: 100%;
+  }
 
 /* --- Main Page Containers --- */
 .dashboard-container {
@@ -546,7 +553,7 @@ td {
 .stat-bar {
     height: 100%;
     border-radius: 99px;
-    transition: width .8s ease;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .stat-bar.blue {

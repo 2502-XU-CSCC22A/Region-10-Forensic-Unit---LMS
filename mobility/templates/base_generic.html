@@ -144,6 +144,12 @@
         font-family: 'Inter', sans-serif;
         margin: 0;
       }
+
+      .UM {
+        position: absolute; 
+        bottom: 100px 
+        width: 100%;
+      }
       
       /* --- Main Content Area --- */
       main {
@@ -255,9 +261,9 @@
             <a href="{% url 'mobility:manual_email_alert' %}" class="text-warning"><i class="fas fa-paper-plane"></i> <span class="sidebar-item-label">Send Alerts</span></a>
           </li>
           <li>
-        <div class="p-3" style="position: absolute; bottom: 10px; width: 100%;">
-          <a href="#" class="btn btn-link btn-block text-white-50 text-decoration-none text-left small"><i class="fas fa-user-shield mr-2"></i> User Management</a>
-        </div>
+            <li class = "UM">
+              <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
+            </li>
     </li>
 </ul>
       </nav>

@@ -1,3 +1,41 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --navy: #0d2155;
+  --navy-mid: #1a3478;
+  --navy-light: #1e3d8f;
+  --accent:     #2563eb;
+  --accent-2: #3b82f6;
+  --sidebar-w: 310px;
+  --header-h: 72px;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --bg: #f1f5f9;
+  --white: #ffffff;
+  --card-bg: #ffffff;
+  --red: #ef4444;
+}
+
+/* -- Main Content ---*/
+
+.main-content {
+  flex: 1;
+  background-color: #f4f7fe;
+  overflow-y: auto; /* Only this part scrolls */
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  margin-left: var(--sidebar-width);
+}
+/* --- Stat Cards --- */
+
 .stat-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -323,7 +361,7 @@ td:last-child, th:last-child {
 .navbar-header {
   height: 70px;
   background-color: #ffffff;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 3px solid var(--accent);
   width: 100%;
 }
 

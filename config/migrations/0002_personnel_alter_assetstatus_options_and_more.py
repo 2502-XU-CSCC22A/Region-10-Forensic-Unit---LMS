@@ -44,4 +44,9 @@ class Migration(migrations.Migration):
             name='issued_to',
             field=models.ForeignKey(db_column='Issued_to_ID', on_delete=django.db.models.deletion.PROTECT, related_name='received_assets', to='config.personnel'),
         ),
+         migrations.AddField(
+            model_name='asset',
+            name='office',
+            field=models.CharField(blank=True, db_column='Office', max_length=100, null=True),
+        ),
     ]

@@ -79,15 +79,11 @@ body {
 .sidebar-item-label {
   flex-grow: 1;
   font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  margin: 0;
 }
 
-.sidebar {
-  width: 280px;
-  min-width: 280px;
-  background-color: #1a237e;
-  height: 100vh;
-  overflow-y: auto;
-  flex-shrink: 0;
+.UM {
+  position: absolute; 
+  bottom: 100px;
+  width: 100%; 
+  padding: 0px
 }

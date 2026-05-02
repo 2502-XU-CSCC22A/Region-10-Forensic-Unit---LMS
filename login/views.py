@@ -25,13 +25,8 @@ def password_form_view(request):
 # ── Login ─────────────────────────────────────────────────────────────────────
 
 def login_view(request):
-    """
-    Step 1 – Verify username/password against the database.
-    On success, issue a one-time DB-backed token and redirect to the
-    verify step.
-    """
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('dashboard:dashboard_view')
 
     if request.method == 'POST':
         uname    = request.POST.get('username', '').strip()
@@ -80,63 +75,10 @@ def verify_token_view(request, token):
 
 @login_required
 def dashboard_view(request):
-    """
-    Main dashboard.  Passes summary statistics and activity feed to the
-    template so the numbers in the stat cards are real.
-    """
     from django.contrib.auth.models import User
 
     # ── Stats ─────────────────────────────────────────────────────────────────
-    # These are placeholders — wire them to your real models once you have them.
-    context = {
-        'total_assets'    : 160,
-        'issued_items'    : 67,
-        'available_items' : 88,
-        'low_stock'       : 5,
-        'ber_items'       : 160,
-        'disposal_items'  : 160,
-
-        # Activity feed — replace with QuerySet from your Asset / AuditLog model
-        'activities': [
-            {
-                'initials'  : 'JA',
-                'actor'     : 'Logistics Officer',
-                'action'    : 'removed',
-                'item'      : 'firearm ID 204',
-                'timestamp' : '11 seconds ago',
-                'unread'    : True,
-            },
-            {
-                'initials'  : 'JA',
-                'actor'     : 'Logistics Officer',
-                'action'    : 'issued a new',
-                'item'      : 'vehicle ID VE001',
-                'timestamp' : '52 seconds ago',
-                'unread'    : True,
-            },
-            {
-                'initials'  : 'JA',
-                'actor'     : 'Logistics Officer',
-                'action'    : 'logged in',
-                'item'      : '',
-                'timestamp' : '1 minute ago',
-                'unread'    : True,
-            },
-            {
-                'initials'  : 'JA',
-                'actor'     : 'Logistics Officer',
-                'action'    : 'edited',
-                'item'      : 'firearm ID 067',
-                'timestamp' : '01/24/2026',
-                'change'    : 'Model: Boobie → Model: A$$',
-                'unread'    : True,
-            },
-        ],
-
-        'notification_count': 9,
-        'user': request.user,
-    }
-    return render(request, 'Dashboard/dashboard.html', context)
+    return render(request, 'dashboard/dashboard.html')
 
 
 # ── Logout ────────────────────────────────────────────────────────────────────

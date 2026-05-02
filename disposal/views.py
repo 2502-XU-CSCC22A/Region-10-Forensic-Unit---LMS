@@ -9,6 +9,7 @@ from django.db.models import Q, Count
 from mobility.models import Vehicle
 from communications.models import Communication
 from config.models import Asset, AssetStatus, Personnel
+from InvestigativeEquipment.models import InvestigativeDetails
 from .models import DisposalItem, DisposalActivityLog
 from django.core.paginator import Paginator
 
@@ -51,6 +52,24 @@ def disposal_list(request):
     sync_time = last_item.last_sync if last_item else None
     
     today = timezone.now().date()
+    
+    # last_week = timezone.now() - timedelta(days=7)
+    # # recent_firearms = Vehicle.objects.filter(date_disposed__gte=last_week)
+    # recent_mobility = Vehicle.objects.filter(date_disposed__gte=last_week)
+    # recent_comms = Communication.objects.filter(date_disposed__gte=last_week)
+    # recent_investigative = InvestigativeDetails.objects.filter(date_disposed__gte=last_week)
+    
+    # selected_filter = request.GET.get('asset_type', 'all')
+    
+    # display_items = []
+    # # if selected_filter == 'firearm' or selected_filter == 'all':
+    # #     display_items.extend(recent_firearms)
+    # if selected_filter == 'mobility' or selected_filter == 'all':
+    #     display_items.extend(recent_mobility)
+    # if selected_filter == 'communication' or selected_filter == 'all':
+    #     display_items.extend(recent_comms)
+    # if selected_filter == 'investigative' or selected_filter == 'all':
+    #     display_items.extend(recent_investigative)
   
     ber_today_count = DisposalItem.objects.filter(
         disposal_date__date=today
@@ -107,7 +126,11 @@ def disposal_list(request):
         'total_ber': total_ber,
         'disposal_items': disposal_items,
         'vehicle_all': vehicle_all,
-        'comms_all': comms_all
+        'comms_all': comms_all,
+        # 'recent_mobility': recent_mobility.count(),
+        # 'recent_comms': recent_comms.count(),
+        # 'recent_investigative': recent_investigative.count(),
+        'total_removed': len(disposal_items),
     })
 
 def disposal_list_supervisor(request):

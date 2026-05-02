@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+app_name = "InvestigativeEquipment"
+
 urlpatterns = [
     # The main page that lists everything
     path('', views.investigative_view, name='investigative_view'),

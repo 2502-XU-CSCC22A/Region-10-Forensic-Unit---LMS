@@ -64,7 +64,7 @@
             <ul class="list-unstyled components">
               <p>Dashboard</p>
               <li>
-                <a href="#"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
+                <a href="{% url 'dashboard:dashboard_view' %}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
               </li>
           
               <li>
@@ -75,19 +75,19 @@
               </li>
           
               <li>
-                <a href="#"><span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span></a>
+                <a href="{% url 'firearms:index' %}"><span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span></a>
               </li>
               <li>
-                <a href="#"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span></a>
+                <a href="{% url 'communications:communications_list' %}"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span></a>
               </li>
               <li>
-                <a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span></a>
+                <a href="{% url 'InvestigativeEquipment:investigative_view' %}"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span></a>
               </li>
-          
-              <p class="mt-4">Monitoring</p>
               <li>
                 <a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span></a>
               </li>
+          
+              <p class="mt-4">Monitoring</p>
               <li class="active">
                 <a href="{% url 'disposal:history_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
               </li>
@@ -186,7 +186,7 @@
         </div>
 
         <div class="mt-4 text-center">
-          <a href="{% url 'dashboard' %}" class="btn btn-link text-secondary"><i class="fas fa-arrow-left mr-1"></i> Return to Dashboard</a>
+          <a href="{% url 'dashboard:dashboard_view' %}" class="btn btn-link text-secondary"><i class="fas fa-arrow-left mr-1"></i> Return to Dashboard</a>
         </div>
       </main>
     </div>
