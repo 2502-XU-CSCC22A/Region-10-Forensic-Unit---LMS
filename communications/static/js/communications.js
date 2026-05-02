@@ -124,11 +124,11 @@ function renderPagination() {
 function updateStats() {
   document.getElementById("totalCount").textContent = communications.length;
   document.getElementById("issuedCount").textContent = communications.length;
-  document.getElementById("pendingCount").textContent = 0;
+  document.getElementById("parCount").textContent = 0;
 
   document.getElementById("totalBar").style.width = "100%";
   document.getElementById("issuedBar").style.width = "100%";
-  document.getElementById("pendingBar").style.width = "0%";
+  document.getElementById("parBar").style.width = "0%";
 }
 
 /* ---------------- FILTER ---------------- */
@@ -281,7 +281,7 @@ async function saveRecord() {
       return;
     }
   }
-    
+
   const { error: disposalError } = await sb
   .from("disposal_disposalitems")
   .insert([{

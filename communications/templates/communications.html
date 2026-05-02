@@ -79,38 +79,25 @@
         }
 
         .header-logo {
-            width: 46px;
-            height: 46px;
-            background: var(--navy);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 9px;
-            font-weight: 700;
-            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
             line-height: 1.1;
-            padding: 4px;
-            letter-spacing: .5px;
+            color: #1a2b6d;
+            text-transform: uppercase;
+        }
+
+        .header-divider {
+            height: 40px;
+            width: 2px;
+            background-color: #1a2b6d;
+            margin: 0 15px;
         }
 
         .header-title {
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 26px;
+            font-size: 1.25rem;
             font-weight: 700;
-            color: var(--navy);
-            letter-spacing: .5px;
-        }
-
-        .header-user {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-radius: 8px;
-            padding: 8px 16px;
-            min-width: 170px;
+            color: #1a2b6d;
+            margin: 0;
         }
 
         .user-avatar {
@@ -166,22 +153,40 @@
 
 
 </head>
+ <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+    <div class="header-brand d-flex align-items-center">
+      <div class="header-logo">
+        PNP<br />FORENSIC<br />GROUP
+      </div>
+      <div class="header-divider"></div>
+      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
+    </div>
+
+    <div class="header-user d-flex align-items-center">
+      <div class="notification-wrapper mr-4">
+        <i class="fas fa-bell {% if upcoming_pms > 0 or upcoming_repairs > 0 %}
+            text-danger
+          {% else %}
+            text-muted
+          {% endif %}">
+
+        </i>
+      </div>
+
+      <div class="profile-group d-flex align-items-center">
+        <div class="user-avatar d-flex align-items-center justify-content-center">
+          <i class="fas fa-user text-muted"></i>
+        </div>
+        <div class="user-text ml-2">
+          <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
+          <div class="user-role text-muted">Logistics Officer</div>
+        </div>
+      </div>
+    </div>
+  </header>
 
 <body>
 
-    <header>
-        <div class="header-brand">
-            <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
-            <span class="header-title">Regional Forensic Unit 10 LMS</span>
-        </div>
-        <div class="header-user">
-            <div class="user-avatar"></div>
-            <div class="user-info">
-                <div class="user-role">Logistics Officer</div>
-                <div class="user-greet">Welcome!</div>
-            </div>
-        </div>
-    </header>
 
     <div class="layout">
 
@@ -202,13 +207,7 @@
                         </div>
                     </div>
                     <div class="stat-bar-wrap">
-                        <div class="stat-bar purple" style="width:{% if total_assets %}
-                  {% widthratio total_ber total_assets 100 %}
-                {% else %}
-                  
-                  0
-
-                {% endif %}%"></div>
+                        <div class="stat-bar purple" id="totalBar" style="width:0%;"></div>
                     </div>
                 </div>
 
@@ -224,13 +223,7 @@
                         </div>
                     </div>
                     <div class="stat-bar-wrap">
-                        <div class="stat-bar orange" style="width:{% if total_assets %}
-                  {% widthratio total_firearms total_assets 100 %}
-                {% else %}
-                  
-                  0
-
-                {% endif %}%"></div>
+                        <div class="stat-bar orange" id="issuedBar" style="width:0%;"></div>
                     </div>
                 </div>
 
@@ -246,13 +239,7 @@
                         </div>
                     </div>
                     <div class="stat-bar-wrap">
-                        <div class="stat-bar green" style="width:{% if total_assets %}
-                  {% widthratio total_mobility total_assets 100 %}
-                {% else %}
-                  
-                  0
-
-                {% endif %}%"></div>
+                        <div class="stat-bar green" id="parBar" style="width:0%;"></div>
                     </div>
                 </div>
             </div> <!-- /stat-cards -->
