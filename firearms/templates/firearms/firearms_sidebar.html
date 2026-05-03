@@ -2,20 +2,20 @@
   <ul class="list-unstyled components">
     <p>Dashboard</p>
 
-    <li>
+    <li class="{% if active_page == 'home' %}active{% endif %}">
       <a href="#">
         <i class="fas fa-home"></i>
         <span class="sidebar-item-label">Home</span>
       </a>
     </li>
 
-    <li>
+    <li class="{% if active_page == 'mobility' %}active{% endif %}">
       <a href="#">
         <span>
           <i class="fas fa-car"></i>
           <span class="sidebar-item-label">Mobility</span>
         </span>
-        <span class="badge badge-primary badge-pill">0</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ vehicle_all|default:'0' }}</span>
       </a>
     </li>
 
@@ -25,39 +25,39 @@
           <i class="fas fa-crosshairs"></i>
           <span class="sidebar-item-label">Firearms</span>
         </span>
-        <span class="badge badge-primary badge-pill">0</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ firearm_all|default:'0' }}</span>
       </a>
     </li>
 
-    <li>
+    <li class="{% if active_page == 'communications' %}active{% endif %}">
       <a href="#">
         <span>
           <i class="fas fa-broadcast-tower"></i>
           <span class="sidebar-item-label">Communications</span>
         </span>
-        <span class="badge badge-primary badge-pill">0</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ comms_all|default:'0' }}</span>
       </a>
     </li>
 
-    <li>
+    <li class="{% if active_page == 'investigative' %}active{% endif %}">
       <a href="#">
         <i class="fas fa-microscope"></i>
         <span class="sidebar-item-label">Investigative Equipment</span>
-        <span class="badge badge-primary badge-pill">0</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span>
       </a>
     </li>
 
-    <li>
+    <li class="{% if active_page == 'disposal' %}active{% endif %}">
       <a href="#">
         <i class="fas fa-recycle"></i>
         <span class="sidebar-item-label">BER & Disposal</span>
-        <span class="badge badge-light badge-pill">0</span>
+        <span class="badge badge-light badge-pill">{{ disposal_all|default:'0' }}</span>
       </a>
     </li>
 
     <p class="mt-4">Monitoring</p>
 
-    <li>
+    <li class="{% if active_page == 'reports' %}active{% endif %}">
       <a href="#">
         <i class="fas fa-file-invoice"></i>
         <span class="sidebar-item-label">Reports</span>
