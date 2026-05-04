@@ -73,6 +73,7 @@ class Category(models.Model):
 
 
 class Asset(models.Model):
+
     date_acquired = models.DateField()
     property_no = models.CharField(max_length=100, unique=True)
     serial_no = models.CharField(max_length=100, unique=True)
