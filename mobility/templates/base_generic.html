@@ -161,7 +161,7 @@
                 </li>
 
                 <li class="{% if request.resolver_match.url_name == 'vehicle_management' or request.resolver_match.url_name == 'vehicle_list_detailed' %}active{% endif %}">
-                    <a href="{% url 'vehicle_management' %}">
+                    <a href="{% url 'mobility:vehicle_management' %}">
                         <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
                         <span class="badge badge-light badge-pill">{{ total_vehicles|default:"0" }}</span>
                     </a>
@@ -176,16 +176,16 @@
 
                 <p class="mt-4">Monitoring</p>
                 <li class="{% if request.resolver_match.url_name == 'par_management' %}active{% endif %}">
-                    <a href="{% url 'par_management' %}"><i class="fas fa-desktop"></i> <span class="sidebar-item-label">PAR Monitoring</span></a>
+                    <a href="{% url 'mobility:par_management' %}"><i class="fas fa-desktop"></i> <span class="sidebar-item-label">PAR Monitoring</span></a>
                 </li>
                 
                 <li class="{% if request.resolver_match.url_name == 'activity_log' %}active{% endif %}">
-                    <a href="{% url 'activity_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
+                    <a href="{% url 'mobility:activity_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
                 </li>
                 
                 <p class="mt-4">System Actions</p>
                 <li>
-                    <a href="{% url 'manual_email_alert' %}" class="text-warning">
+                    <a href="{% url 'mobility:manual_email_alert' %}" class="text-warning">
                         <i class="fas fa-paper-plane"></i> <span class="sidebar-item-label">Send Alerts</span>
                     </a>
                 </li>
