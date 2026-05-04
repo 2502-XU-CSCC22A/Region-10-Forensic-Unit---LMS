@@ -18,7 +18,6 @@
 </head>
 
 <body>
-    <!-- Header must be inside body -->
     <header class="navbar-header d-flex align-items-center justify-content-between px-4">
         <div class="header-brand d-flex align-items-center">
             <div class="header-logo">PNP<br />FORENSIC<br />GROUP</div>
@@ -47,6 +46,7 @@
         {% include 'usermanagement/sidebar.html' %}
 
         <main class="main-content">
+
             <div class="table-container">
                 <div class="table-responsive">
                     <table>
@@ -56,38 +56,63 @@
                                 <th>Email</th>
                                 <th>Role</th>
                                 <th>Last Active</th>
+                                {% if current_user_role == "Admin" %}
+                                <th>Action</th>
+                                {% endif %}
                             </tr>
                         </thead>
 
                         <tbody>
-                            {% for user in users %}
+                            {% for u in users %}
                             <tr>
                                 <td class="name-cell">
-                                    {% if user.userprofile.avatar %}
-                                        <img src="{{ user.userprofile.avatar }}" alt="avatar" class="avatar"/>
+                                    {% if u.userprofile.avatar %}
+                                        <img src="{{ u.userprofile.avatar }}" alt="avatar" class="avatar"/>
                                     {% else %}
                                         <div class="avatar-placeholder">
-                                            {{ user.first_name|default:user.username|first }}
+                                            {{ u.first_name|default:u.username|first }}
                                         </div>
                                     {% endif %}
-                                    <span>{{ user.get_full_name|default:user.username }}</span>
+                                    <span>{{ u.get_full_name|default:u.username }}</span>
                                 </td>
 
-                                <td class="email-cell">{{ user.email|default:"—" }}</td>
-                                
-                                <td>{{ user.userprofile.role|default:"—" }}</td>
+                                <td class="email-cell">{{ u.email|default:"—" }}</td>
+
+                                <td>
+                                    {% if current_user_role == "Admin" %}
+                                        <select class="role-select" data-user-id="{{ u.id }}" data-original-role="{{ u.userprofile.role|default:'User' }}">
+                                            <option value="User" {% if u.userprofile.role == "User" or not u.userprofile.role %}selected{% endif %}>User</option>
+                                            <option value="Admin" {% if u.userprofile.role == "Admin" %}selected{% endif %}>Admin</option>
+                                        </select>
+                                    {% else %}
+                                        {{ u.userprofile.role|default:"—" }}
+                                    {% endif %}
+                                </td>
 
                                 <td class="last-active">
-                                    {% if user.last_login %}
-                                        {{ user.last_login|date:"M d, Y H:i" }}
+                                    {% if u.last_login %}
+                                        {{ u.last_login|date:"M d, Y H:i" }}
                                     {% else %}
                                         Never
                                     {% endif %}
                                 </td>
+
+                                {% if current_user_role == "Admin" %}
+                                <td>
+                                    <button 
+                                        class="save-role-btn" 
+                                        data-user-id="{{ u.id }}"
+                                        onclick="saveRole({{ u.id }})"
+                                        disabled
+                                    >
+                                        Save
+                                    </button>
+                                </td>
+                                {% endif %}
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="4" style="text-align: center; padding: 40px; color: #64748b;">
+                                <td colspan="{% if current_user_role == 'Admin' %}5{% else %}4{% endif %}" style="text-align: center; padding: 40px; color: #64748b;">
                                     No users found in the database.
                                 </td>
                             </tr>
@@ -97,6 +122,139 @@
                 </div>
             </div>
         </main>
-    </div> <!-- Close dashboard-container -->
+    </div>
+
+    {% if current_user_role == "Admin" %}
+    <style>
+        .role-select {
+            padding: 5px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.875rem;
+            color: #1e293b;
+            background-color: #f8fafc;
+            cursor: pointer;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .role-select:focus {
+            border-color: #6366f1;
+        }
+
+        .role-select.changed {
+            border-color: #f59e0b;
+            background-color: #fffbeb;
+        }
+
+        .save-role-btn {
+            padding: 5px 14px;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            border-radius: 6px;
+            background-color: #6366f1;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+        }
+
+        .save-role-btn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .save-role-btn:not(:disabled):hover {
+            background-color: #4f46e5;
+        }
+
+        .save-role-btn.saving {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .save-role-btn.saved {
+            background-color: #22c55e;
+        }
+    </style>
+
+    <script>
+        document.querySelectorAll('.role-select').forEach(select => {
+            select.addEventListener('change', function () {
+                const userId = this.dataset.userId;
+                const originalRole = this.dataset.originalRole;
+                const saveBtn = document.querySelector(`.save-role-btn[data-user-id="${userId}"]`);
+
+                if (this.value !== originalRole) {
+                    this.classList.add('changed');
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save';
+                    saveBtn.classList.remove('saved');
+                } else {
+                    this.classList.remove('changed');
+                    saveBtn.disabled = true;
+                }
+            });
+        });
+
+        async function saveRole(userId) {
+            const select = document.querySelector(`.role-select[data-user-id="${userId}"]`);
+            const saveBtn = document.querySelector(`.save-role-btn[data-user-id="${userId}"]`);
+            const newRole = select.value;
+
+            saveBtn.disabled = true;
+            saveBtn.classList.add('saving');
+            saveBtn.textContent = 'Saving...';
+
+            try {
+                const response = await fetch(`/usermanagement/update-role/${userId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'),
+                    },
+                    body: JSON.stringify({ role: newRole }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    select.dataset.originalRole = newRole;
+                    select.classList.remove('changed');
+                    saveBtn.classList.remove('saving');
+                    saveBtn.classList.add('saved');
+                    saveBtn.textContent = 'Saved ✓';
+                    saveBtn.disabled = true;
+                } else {
+                    alert(data.error || 'Failed to update role. Please try again.');
+                    saveBtn.classList.remove('saving');
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save';
+                }
+            } catch (err) {
+                alert('Network error. Please try again.');
+                saveBtn.classList.remove('saving');
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save';
+            }
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                document.cookie.split(';').forEach(cookie => {
+                    const trimmed = cookie.trim();
+                    if (trimmed.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(trimmed.slice(name.length + 1));
+                    }
+                });
+            }
+            return cookieValue;
+        }
+    </script>
+    {% endif %}
+
 </body>
 </html>
