@@ -1,12 +1,16 @@
 from django.shortcuts import render
-
 from config.models import Asset, AssetStatus
 from django.db.models import Q
 from mobility.models import Vehicle
 from disposal.models import DisposalItem
 from firearms.models import Firearm
 from communications.models import Communication
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.decorators.http import require_POST
 
+@login_required
 def dashboard_view(request):
     query = Q()
     plate_no = request.GET.get('plate_no')
@@ -31,6 +35,8 @@ def dashboard_view(request):
         ('removed asset',   'removed'),
         ('logged in',       'login'),
     ]
+    
+    read_ids = set(request.session.get('read_activity_ids', []))
 
     activities = []
     for i, asset in enumerate(recent_assets):
@@ -48,16 +54,19 @@ def dashboard_view(request):
             item_text    = f'{asset.category.category_name} – {asset.property_no}'
 
         activities.append({
+            'id':          asset.id,
             'initials':    initials,
             'actor':       'Logistics Officer',
             'action':      action_text,
             'item':        item_text,
             'change':      asset.status.status_name if asset.status else '—',
             'timestamp':   asset.date_acquired.strftime('%b %d, %Y'),
-            'unread':      True,
+            'unread':      asset.id not in read_ids,
             'action_type': action_type,
         })
         
+        unread_count = sum(1 for a in activities if a['unread'])
+
     context = {
         'vehicles':           all_v.filter(query),
         'total_vehicles':     all_v.count(),
@@ -69,5 +78,19 @@ def dashboard_view(request):
         'activities':           activities,
         'notification_count':   min(len(activities), 99),
     }
-
+    
+    
     return render(request, 'dashboard/dashboard.html', context)
+
+@login_required
+@require_POST
+def mark_all_read(request):
+    """AJAX endpoint — marks all current activity items as read in the session."""
+    recent_ids = list(
+        Asset.objects.order_by('-id').values_list('id', flat=True)[:5]
+    )
+    existing = set(request.session.get('read_activity_ids', []))
+    existing.update(recent_ids)
+    request.session['read_activity_ids'] = list(existing)
+    request.session.modified = True
+    return JsonResponse({'status': 'ok', 'read_count': len(recent_ids)})

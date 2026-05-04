@@ -252,100 +252,102 @@
 
         <!-- ── Two-column widgets ───────────────────────────────────────────── -->
         <div class="two-col">
-          <!-- Assets Feed -->
-          <div class="widget">
+
+          <!-- Assets widget -->
+          <div class="widget" id="widget-assets">
             <div class="widget-header">
               <span class="widget-title">Assets</span>
-              <div class="widget-actions">
-                <button class="icon-btn" title="Refresh"><i class="fas fa-sync-alt"></i></button>
-                <button class="icon-btn" title="Filter"><i class="fas fa-sliders-h"></i></button>
-                <button class="icon-btn" title="Export"><i class="fas fa-download"></i></button>
+              <div class="widget-header-actions">
+                <button class="icon-btn js-refresh" data-target="assets" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+                <button class="icon-btn js-filter" data-target="assets" title="Filter"><i class="fas fa-sliders-h"></i></button>
+                <button class="icon-btn js-export" data-target="assets" title="Export"><i class="fas fa-download"></i></button>
               </div>
             </div>
-            <div class="activity-list">
+            <div class="activity-list" id="list-assets">
               {% for act in activities %}
-                <div class="activity-item">
-                  <div class="av-sm">{{ act.initials }}</div>
-                  <div class="activity-body">
-                    <div class="activity-text">
-                      <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
-                    </div>
-                    <div class="activity-meta">{{ act.timestamp }}</div>
-                  </div>
-                  {% if act.unread %}
-                    <span class="dot"></span>
-                  {% endif %}
-                </div>
-              {% empty %}
-                <p class="empty-msg">No recent asset records.</p>
-              {% endfor %}
-            </div>
-            <button class="view-all">View all</button>
-          </div>
-
-          <!-- Notifications -->
-          <div class="widget">
-            <div class="widget-header">
-              <span class="widget-title">Notifications</span>
-              <span class="notif-badge">{{ notification_count }}</span>
-              <button class="read-btn">Read</button>
-              <div class="widget-actions ml-auto">
-                <button class="icon-btn" title="Refresh"><i class="fas fa-sync-alt"></i></button>
-                <button class="icon-btn" title="Filter"><i class="fas fa-sliders-h"></i></button>
-                <button class="icon-btn" title="Export"><i class="fas fa-download"></i></button>
-              </div>
-            </div>
-            <div class="activity-list">
-              {% for act in activities %}
-                <div class="activity-item">
-                  <div class="av-sm">{{ act.initials }}</div>
-                  <div class="activity-body">
-                    <div class="activity-text">
-                      <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
-                    </div>
-                    <div class="activity-meta">{{ act.timestamp }}</div>
-                  </div>
-                  {% if act.unread %}
-                    <span class="dot"></span>
-                  {% endif %}
-                </div>
-              {% empty %}
-                <p class="empty-msg">No notifications.</p>
-              {% endfor %}
-            </div>
-            <button class="view-all">View all</button>
-          </div>
-        </div>
-        <!-- /two-col -->
-
-        <!-- ── Recent Activities (full-width) ──────────────────────────────── -->
-        <div class="widget">
-          <div class="widget-header">
-            <span class="widget-title">Recent Activities</span>
-          </div>
-          <div class="activity-list">
-            {% for act in activities %}
               <div class="activity-item">
                 <div class="av-sm">{{ act.initials }}</div>
                 <div class="activity-body">
                   <div class="activity-text">
-                    <strong>{{ act.actor }}</strong> {{ act.action }} <strong>{{ act.item }}</strong>
+                    <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{% endif %}
                   </div>
                   <div class="activity-meta">{{ act.timestamp }}</div>
                 </div>
-                {% if act.unread %}
-                  <span class="dot"></span>
-                {% endif %}
+                {% if act.unread %}<span class="dot"></span>{% endif %}
               </div>
+              {% empty %}
+              <p class="empty-msg">No recent asset records.</p>
+              {% endfor %}
+            </div>
+            <a href="#" class="view-all" data-target="assets">View all</a>
+          </div>
+  
+          <!-- Notifications widget -->
+          <div class="widget" id="widget-notifications">
+            <div class="widget-header">
+              <span class="widget-title">Notifications</span>
+              <span class="notif-badge" id="notif-badge">{{ notification_count }}</span>
+              <button class="read-btn" id="read-all-btn">Read all</button>
+              <div class="widget-header-actions">
+                <button class="icon-btn js-refresh" data-target="notifications" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+                <button class="icon-btn js-filter" data-target="notifications" title="Filter"><i class="fas fa-sliders-h"></i></button>
+                <button class="icon-btn js-export" data-target="notifications" title="Export"><i class="fas fa-download"></i></button>
+              </div>
+            </div>
+            <div class="activity-list" id="list-notifications">
+              {% for act in activities %}
+              <div class="activity-item">
+                <div class="av-sm">{{ act.initials }}</div>
+                <div class="activity-body">
+                  <div class="activity-text">
+                    <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{% endif %}
+                  </div>
+                  <div class="activity-meta">{{ act.timestamp }}</div>
+                </div>
+                {% if act.unread %}<span class="dot"></span>{% endif %}
+              </div>
+              {% empty %}
+              <p class="empty-msg">No notifications.</p>
+              {% endfor %}
+            </div>
+            <a href="#" class="view-all" data-target="notifications">View all</a>
+          </div>
+  
+        </div><!-- /two-col -->
+  
+        <!-- ── Recent Activities-->
+        <div class="widget" id="widget-recent">
+          <div class="widget-header">
+            <span class="widget-title">Recent Activities</span>
+            <div class="widget-header-actions" style="margin-left:auto;">
+              <button class="icon-btn js-refresh" data-target="recent" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+              <button class="icon-btn js-filter" data-target="recent" title="Filter"><i class="fas fa-sliders-h"></i></button>
+              <button class="icon-btn js-export" data-target="recent" title="Export"><i class="fas fa-download"></i></button>
+            </div>
+          </div>
+          <div class="activity-list" id="list-recent">
+            {% for act in activities %}
+            <div class="activity-item">
+              <div class="av-sm">{{ act.initials }}</div>
+              <div class="activity-body">
+                <div class="activity-text">
+                  <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{% endif %}
+                </div>
+                <div class="activity-meta">{{ act.timestamp }}</div>
+              </div>
+              {% if act.unread %}<span class="dot"></span>{% endif %}
+            </div>
             {% empty %}
-              <p class="empty-msg">No activity yet.</p>
+            <p class="empty-msg">No activity yet.</p>
             {% endfor %}
           </div>
+          <a href="#" class="view-all" data-target="recent">View all</a>
         </div>
+  
       </main>
-    </div>
-    <!-- /layout -->
+    </div><!-- /layout -->
+  
 
-    <script src="{% static 'dashboard/dashboard.js' %}"></script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
   </body>
 </html>

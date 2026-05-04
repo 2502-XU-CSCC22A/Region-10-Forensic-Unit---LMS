@@ -52,11 +52,11 @@ function updateStats() {
   const validated = allFirearms.filter(f => f.validated === 'VALIDATED').length;
   const pending   = allFirearms.filter(f => f.validated === 'PENDING').length;
   const pct       = v => Math.max(4, Math.round((v / (total || 1)) * 100)) + '%';
-
+  
   document.getElementById('totalCount').textContent  = total;
   document.getElementById('issuedCount').textContent = validated;
   document.getElementById('pendingCount').textContent= pending;
-  
+
   document.getElementById('totalBar').style.width    = '100%';
   document.getElementById('issuedBar').style.width   = pct(validated);
   document.getElementById('pendingBar').style.width  = pct(pending);

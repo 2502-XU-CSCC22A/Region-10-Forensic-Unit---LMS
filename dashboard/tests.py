@@ -5,7 +5,7 @@ from django.urls import reverse
 User = get_user_model()
 
 
-class DashboardAccessTests(TestCase):
+class DashboardAccessTests(TestCase):   
     def setUp(self):
         self.client = Client()
         self.user = User.objects.create_user(

@@ -47,7 +47,7 @@ def vehicle_management(request):
                 description=f"Added new vehicle: {vehicle.make} {vehicle.model} ({vehicle.plate_number or vehicle.conduction_number})"
             )
             messages.success(request, f"Vehicle added successfully.")
-            return redirect('vehicle_management')
+            return redirect('mobility:vehicle_management')
     else:
         form = VehicleForm()
 
@@ -107,7 +107,7 @@ def par_management(request):
                 description=f"Issued PAR {par.par_number} to {par.issued_to}"
             )
             messages.success(request, f"PAR {par.par_number} issued successfully.")
-            return redirect('par_management')
+            return redirect('mobility:par_management')
     else:
         p_form = PARForm()
     
@@ -146,7 +146,7 @@ def delete_par(request, pk):
     )
     par.delete()
     messages.warning(request, "PAR record removed.")
-    return redirect('par_management')
+    return redirect('mobility:par_management')
 
 # --- PRINT PAR ---
 def print_par(request, pk):
@@ -166,7 +166,7 @@ def edit_vehicle(request, pk):
                 description=f"Updated details for {vehicle.plate_number or vehicle.conduction_number}"
             )
             messages.success(request, "Vehicle updated successfully.")
-            return redirect('vehicle_management')
+            return redirect('mobility:vehicle_management')
     else:
         form = VehicleForm(instance=vehicle)
     return render(request, 'mobility/edit_vehicle.html', {'form': form, 'vehicle': vehicle})
@@ -181,7 +181,7 @@ def delete_vehicle(request, pk):
     )
     vehicle.delete()
     messages.warning(request, "Vehicle record deleted.")
-    return redirect('vehicle_management')
+    return redirect('mobility:vehicle_management')
 
 # --- EMAIL ALERT SYSTEM ---
 def manual_email_alert(request):
@@ -261,6 +261,6 @@ def move_vehicle_to_disposal(request, pk):
         )
 
         messages.success(request, f"Vehicle {vehicle.plate_number} successfully moved to disposal.")
-        return redirect('vehicle_management')
+        return redirect('mobility:vehicle_management')
 
     return render(request, 'mobility/confirm_disposal.html', {'vehicle': vehicle})
