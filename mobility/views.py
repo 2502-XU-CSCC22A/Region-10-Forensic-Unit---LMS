@@ -7,10 +7,23 @@ from datetime import timedelta
 from django.contrib import messages
 import smtplib, ssl
 from django.conf import settings
-
-from disposal.models import DisposalItem
+from disposal.models import DisposalItem, DisposalActivityLog
 from firearms.models import Firearm
 from communications.models import Communication
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def edit_vehicle(request, pk):
+    # ... your existing code ...
+    if request.method == 'POST':
+        if form.is_valid():
+            vehicle = form.save()
+            ActivityLog.objects.create(
+                user=request.user,  # This will now always be a valid User
+                action_type='UPDATE',
+                description=f'Updated details for {vehicle.plate_number}'
+            )
+
 
 # --- MAIN DASHBOARD & VEHICLE ASSET ADDITION ---
 def vehicle_management(request):
@@ -29,6 +42,7 @@ def vehicle_management(request):
         if form.is_valid():
             vehicle = form.save()
             ActivityLog.objects.create(
+                user=request.user,
                 action_type='CREATE',
                 description=f"Added new vehicle: {vehicle.make} {vehicle.model} ({vehicle.plate_number or vehicle.conduction_number})"
             )
@@ -37,19 +51,39 @@ def vehicle_management(request):
     else:
         form = VehicleForm()
 
-    # Context updated to ensure Total Vehicles reflects the entire fleet
-    # and all 8 cards in your HTML have corresponding filters.
+    all_v = Vehicle.objects.all()
+    total = all_v.count()
+    
+    with_pms_count = all_v.filter(status='Good Condition').count()
+    without_pms_count = all_v.filter(status='No Maintenance Record').count()
+    for_pms_count = all_v.filter(status='For PMS').count()
+    for_reg_count = all_v.filter(status='For Registration').count()
+    for_ins_count = all_v.filter(status='For Insurance').count()
+    up_repairs_count = all_v.filter(status='For Repair').count()
+    up_pms_count = all_v.filter(status='Upcoming PMS').count()
+
+    def get_perc(count):
+        return (count / total * 100) if total > 0 else 0
+
     context = {
+        'form': form, 
         'vehicles': all_v.filter(query),
         'form': form, 
-        'total_vehicles': all_v.count(),  # Reflects every asset regardless of status
-        'with_pms': all_v.filter(status='Good Condition').count(),
-        'without_pms': all_v.filter(status='No Maintenance Record').count(),
-        'for_pms': all_v.filter(status='For PMS').count(),
-        'for_registration_renewal': all_v.filter(status='For Registration').count(),
-        'for_insurance_renewal': all_v.filter(status='For Insurance').count(),
-        'upcoming_repairs': all_v.filter(status='For Repair').count(),
-        'upcoming_pms': all_v.filter(status='Upcoming PMS').count(), # Added for your 8th card
+        'total_vehicles': total,
+        'with_pms': with_pms_count,
+        'without_pms': without_pms_count,
+        'for_pms': for_pms_count,
+        'for_registration_renewal': for_reg_count,
+        'for_insurance_renewal': for_ins_count,
+        'upcoming_repairs': up_repairs_count,
+        'upcoming_pms': up_pms_count,
+        'p1': get_perc(with_pms_count),
+        'p2': get_perc(without_pms_count),
+        'p3': get_perc(for_pms_count),
+        'p4': get_perc(for_reg_count),
+        'p5': get_perc(for_ins_count),
+        'p6': get_perc(up_repairs_count),
+        'p7': get_perc(up_pms_count),
         'total_disposal':     all_d.count(),
         'total_firearms':     all_f.count(),
         'total_comms':        all_c.count(),
@@ -58,9 +92,6 @@ def vehicle_management(request):
 
 # --- DETAILED VEHICLE LIST ---
 def vehicle_list_detailed(request):
-    """
-    Renders the detailed list view of all vehicle assets.
-    """
     vehicles = Vehicle.objects.all().order_by('make')
     return render(request, 'mobility/vehicle_list_detailed.html', {'vehicles': vehicles})
 
@@ -71,6 +102,7 @@ def par_management(request):
         if p_form.is_valid():
             par = p_form.save()
             ActivityLog.objects.create(
+                user=request.user,
                 action_type='CREATE',
                 description=f"Issued PAR {par.par_number} to {par.issued_to}"
             )
@@ -93,6 +125,7 @@ def edit_par(request, pk):
         if form.is_valid():
             form.save()
             ActivityLog.objects.create(
+                user=request.user,
                 action_type='UPDATE',
                 description=f"Updated PAR Record: {record.par_number}"
             )
@@ -107,6 +140,7 @@ def edit_par(request, pk):
 def delete_par(request, pk):
     par = get_object_or_404(PARRecord, pk=pk)
     ActivityLog.objects.create(
+        user=request.user,
         action_type='DELETE', 
         description=f"Deleted PAR Record: {par.par_number}"
     )
@@ -127,6 +161,7 @@ def edit_vehicle(request, pk):
         if form.is_valid():
             form.save()
             ActivityLog.objects.create(
+                user=request.user,
                 action_type='UPDATE',
                 description=f"Updated details for {vehicle.plate_number or vehicle.conduction_number}"
             )
@@ -140,6 +175,7 @@ def edit_vehicle(request, pk):
 def delete_vehicle(request, pk):
     vehicle = get_object_or_404(Vehicle, pk=pk)
     ActivityLog.objects.create(
+        user=request.user,
         action_type='DELETE',
         description=f"Deleted asset: {vehicle.make} ({vehicle.plate_number or vehicle.conduction_number})"
     )
@@ -180,6 +216,51 @@ def activity_log(request):
     period = request.GET.get('period', 'week')
     days = 7 if period == 'week' else 30
     cutoff = timezone.now() - timedelta(days=days)
-    logs = ActivityLog.objects.filter(timestamp__gte=cutoff).order_by('-timestamp')
+    logs = ActivityLog.objects.filter(timestamp__gte=cutoff).select_related('user').order_by('-timestamp')
     user=request.user,
     return render(request, 'mobility/activity_log.html', {'logs': logs, 'period': period, 'user': user})
+
+def move_vehicle_to_disposal(request, pk):
+    # 1. Get the vehicle and its associated asset
+    vehicle = get_object_or_404(Vehicle, pk=pk)
+    asset_instance = vehicle.asset 
+
+    if request.method == 'POST':
+        reason = request.POST.get('disposal_reason', 'No reason provided')
+        
+        # 2. Create the DisposalItem
+        # Since DisposalItem inherits from Asset, we link it to the existing property_no
+        disposal_entry = DisposalItem.objects.create(
+            # Copying data from the existing asset/vehicle
+            property_no=asset_instance.property_no, 
+            disposal_reason=reason,
+            processed_by=request.user,
+            # If your Vehicle has an expiry/renewal date, map it here
+            expiry_date=vehicle.registration_renewal_date 
+        )
+
+        # 3. Update Vehicle Status to 'Disposed'
+        vehicle.status = 'Disposed'
+        vehicle.save()
+
+        # 4. Log the activity in BOTH logs for a complete audit trail
+        # Mobility Log
+        ActivityLog.objects.create(
+            user=request.user,
+            action_type='UPDATE',
+            description=f"Vehicle {vehicle.plate_number} moved to Disposal Registry."
+        )
+        
+        # Disposal Log
+        DisposalActivityLog.objects.create(
+            user=request.user,
+            asset=asset_instance,
+            action_type='CREATE',
+            description=f"Vehicle {vehicle.plate_number} flagged for disposal.",
+            disposal_reason=reason
+        )
+
+        messages.success(request, f"Vehicle {vehicle.plate_number} successfully moved to disposal.")
+        return redirect('vehicle_management')
+
+    return render(request, 'mobility/confirm_disposal.html', {'vehicle': vehicle})

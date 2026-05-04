@@ -42,25 +42,39 @@ class VehicleForm(forms.ModelForm):
 class PARForm(forms.ModelForm):
     class Meta:
         model = PARRecord
-        # Ensure 'vehicle' is included to provide the foreign key dropdown selection
-        fields = ['vehicle', 'par_number', 'issued_to', 'date_issued', 'remarks']
+        # Added fund_cluster, reference_no, and expiry_date to match the PNP receipt requirements
+        fields = [
+            'vehicle', 
+            'par_number', 
+            'fund_cluster', 
+            'reference_no', 
+            'issued_to', 
+            'date_issued', 
+            'expiry_date', 
+            'remarks'
+        ]
         widgets = {
-            'date_issued': forms.DateInput(attrs={'type': 'date'}),
-            'remarks': forms.Textarea(attrs={'rows': 4}),
+            'date_issued': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'expiry_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
+            'remarks': forms.Textarea(attrs={'rows': 2, 'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        
+        # Apply Bootstrap classes dynamically
         for field_name, field in self.fields.items():
-            # Applying Bootstrap styles based on input type
             if field_name == 'vehicle':
                 field.widget.attrs.update({'class': 'form-select'})
-            else:
+            elif field_name not in ['date_issued', 'expiry_date', 'remarks']:
                 field.widget.attrs.update({'class': 'form-control'})
         
-        # Labels specifically formatted to match the PAR management screenshot
-        self.fields['vehicle'].label = "SELECT VEHICLE"
-        self.fields['par_number'].label = "PAR NUMBER"
-        self.fields['issued_to'].label = "ISSUED TO (PERSONNEL)"
+        # Labels updated to match your management dashboard UI
+        self.fields['vehicle'].label = "VEHICLE ASSET"
+        self.fields['par_number'].label = "PAR NO."
+        self.fields['fund_cluster'].label = "FUND CLUSTER"
+        self.fields['reference_no'].label = "REFERENCE NO."
+        self.fields['issued_to'].label = "ISSUED TO (NAME)"
         self.fields['date_issued'].label = "DATE ISSUED"
+        self.fields['expiry_date'].label = "EXPIRY DATE"
         self.fields['remarks'].label = "REMARKS / NOTES"

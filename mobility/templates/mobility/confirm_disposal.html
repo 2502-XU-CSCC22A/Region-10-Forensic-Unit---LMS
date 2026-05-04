@@ -1,0 +1,37 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle mr-2"></i> Confirm Asset Disposal</h5>
+                </div>
+                <div class="card-body">
+                    <p>You are about to move the following vehicle to the <strong>Disposal Registry</strong>:</p>
+                    <div class="alert alert-secondary">
+                        <strong>Vehicle:</strong> {{ vehicle.make} } {{ vehicle.model }}<br>
+                        <strong>Plate/Conduction:</strong> {{ vehicle.plate_number|default:vehicle.conduction_number }}
+                    </div>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="disposal_reason"><strong>Reason for Disposal/BER:</strong></label>
+                            <textarea name="disposal_reason" id="disposal_reason" class="form-control" rows="4" placeholder="e.g., Beyond Economic Repair, End of Life, etc." required></textarea>
+                            <small class="text-muted">This explanation will be saved in the Disposal Activity Log.</small>
+                        </div>
+                        
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'vehicle_management' %}" class="btn btn-light">Cancel</a>
+                            <button type="submit" class="btn btn-danger">Confirm and Move to Disposal</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
