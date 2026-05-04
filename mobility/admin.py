@@ -1,16 +1,10 @@
 from django.contrib import admin
-from .models import Vehicle, PARRecord, ActivityLog, ConfigAsset
-
-@admin.register(ConfigAsset)
-class ConfigAssetAdmin(admin.ModelAdmin):
-    list_display = ('property_no',)
-    search_fields = ('property_no',)
+from .models import Vehicle, PARRecord, ActivityLog
 
 @admin.register(Vehicle)
 class VehicleAdmin(admin.ModelAdmin):
-    # Added 'asset' to display the linked Property Number from Supabase
+    # 'asset' displays the linked Property Number from the Config app
     list_display = ('vehicle_id', 'plate_number', 'make', 'model', 'kind', 'status', 'asset')
-    # You can now search by the linked property number as well
     search_fields = ('vehicle_id', 'plate_number', 'make', 'model', 'asset__property_no')
     list_filter = ('status', 'kind')
 

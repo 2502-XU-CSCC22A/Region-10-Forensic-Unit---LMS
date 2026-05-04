@@ -1,0 +1,166 @@
+h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a237e;
+}
+
+.filter-section h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a237e;
+}
+
+/* Modal Background Blur */
+#filterModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999; /* Higher than your sidebar (which is likely around 1000) */
+    background: rgba(0, 0, 0, 0.5); /* Make sure this is dark enough to see */
+    backdrop-filter: blur(10px);
+    justify-content: center; 
+    align-items: center;
+}
+
+#filterModal.active {
+    display: flex; /* This overrides 'none' when the class is added */
+}
+
+/* 3. Your styling remains the same, just ensure class names match your HTML */
+.filter-modal-content {
+    background: white;
+    width: 600px;
+    max-height: 90vh;
+    border-radius: 28px;
+    padding: 32px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    overflow-y: auto;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.filter-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+}
+
+.filter-modal-header h2 {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a237e;
+}
+
+.filter-modal-footer {
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+}
+
+.filter-close-btn {
+    font-size: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+}
+
+/* Filter Sections & Tags */
+.filter-section {
+    margin-bottom: 24px;
+}
+
+.filter-section label {
+    display: block;
+    font-weight: 500;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-tag {
+    font-family: 'Inter', sans-serif;
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 20px;
+    background: #f1f5f9; /* Light grey for unselected */
+    color: #64748b;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.filter-item input[type="radio"]:checked + .filter-tag {
+    background: #1a237e; /* Your dark blue */
+    color: white;
+    font-size: 14px;
+}
+
+.filter-tag.active {
+    background: #1a237e; /* Matches your sidebar blue */
+    color: white;
+    font-size: 14px;
+}
+
+.filter-tag:hover:not(.active) {
+    border-color: #3C59DD;
+    color: #1a237e;
+}
+
+.filter-item input[type="radio"] {
+    display: none;
+}
+
+/* Apply Button */
+.filter-btn-apply {
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    border-color: #3C59DD;
+    color: #1a237e;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.filter-btn-reset {
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    border-color: #3C59DD;
+    color: #1a237e;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.filter-btn-reset:hover {
+    background: #151b61;
+    border: none;
+    color: #FFFFFF;
+}
+
+.filter-btn-apply:hover {
+    background: #151b61;
+    border: none;
+    color: #FFFFFF;
+}

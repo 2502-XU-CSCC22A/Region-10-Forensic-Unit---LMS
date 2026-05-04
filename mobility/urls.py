@@ -18,7 +18,7 @@ urlpatterns = [
     
     # Alerts & Logging
     path('activity/', views.activity_log, name='activity_log'),
-    # Note: Only one 'send-alerts' path using the manual_email_alert view
     path('send-alerts/', views.manual_email_alert, name='manual_email_alert'),
-    
+
+    path('vehicle/<int:pk>/dispose/', views.move_vehicle_to_disposal, name='move_vehicle_to_disposal'),
 ]

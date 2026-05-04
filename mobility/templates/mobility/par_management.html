@@ -3,152 +3,196 @@
 
 {% block content %}
 <style>
-    .section-title { font-weight: 700; color: #1a2b6d; margin: 20px 0 15px 0; }
-    .card-form { background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; }
-    
-    /* Grid for Issue New Record */
-    .par-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-    
-    .compact-group label { 
-        display: block; 
-        font-size: 0.72rem; 
-        font-weight: 700; 
-        color: #64748b; 
-        text-transform: uppercase; 
-        margin-bottom: 2px;
-        letter-spacing: 0.3px;
-    }
-    .compact-group input, .compact-group select, .compact-group textarea { 
-        width: 100%; 
-        padding: 6px 10px; 
-        border-radius: 6px; 
-        border: 1px solid #d1d5db;
-        font-size: 0.85rem;
+    :root {
+        --navy: #0a1d43; 
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --bg-light: #f8fafc;
     }
 
-    /* Table Styling */
-    .table-registry thead { background-color: #f8f9fc; }
-    .table-registry th { font-size: 0.75rem; text-transform: uppercase; color: #4e73df; letter-spacing: 0.5px; }
-    .btn-action { font-size: 0.75rem; font-weight: 600; border-radius: 6px; padding: 4px 8px; }
+    .registry-container { font-family: 'Inter', sans-serif; padding: 1.5rem; }
+
+    /* Navigation Link Styling */
+    .btn-back {
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-decoration: none !important;
+        transition: color 0.2s;
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    .btn-back:hover { color: var(--navy); }
+
+    .section-title { 
+        font-family: 'Inter', sans-serif; 
+        font-weight: 800; 
+        color: var(--navy); 
+        letter-spacing: -0.02em;
+    }
+
+    /* Form Styling */
+    .form-label { 
+        font-size: 0.75rem; 
+        font-weight: 700; 
+        color: var(--muted); 
+        text-transform: uppercase; 
+        letter-spacing: 0.025em; 
+        margin-bottom: 0.5rem; 
+    }
+
+    .form-control, .form-select { 
+        border-radius: 8px; 
+        border: 1px solid var(--border); 
+        padding: 0.6rem 0.8rem; 
+        font-size: 0.9rem; 
+        font-family: 'Inter', sans-serif;
+    }
+
+    .btn-save { 
+        background-color: var(--navy); 
+        color: white;
+        border: none; 
+        font-weight: 600; 
+        padding: 0.6rem 2rem; 
+        border-radius: 8px; 
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Table Design */
+    .table thead th { 
+        background-color: var(--bg-light); 
+        font-size: 0.75rem; 
+        font-weight: 700; 
+        color: var(--navy); 
+        text-transform: uppercase; 
+        border-bottom: 1px solid var(--border); 
+        padding: 1rem;
+    }
     
-    /* Icon Colors */
-    .btn-edit { color: #4e73df; border-color: #4e73df; }
-    .btn-edit:hover { background-color: #4e73df; color: white; }
-    .btn-print { color: #36b9cc; border-color: #36b9cc; }
-    .btn-print:hover { background-color: #36b9cc; color: white; }
+    .table tbody td { 
+        padding: 1rem; 
+        vertical-align: middle; 
+        font-size: 0.9rem; 
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Action Icons */
+    .btn-icon { 
+        width: 32px; height: 32px; 
+        display: inline-flex; align-items: center; justify-content: center; 
+        border-radius: 6px; border: 1px solid var(--border); 
+        transition: all 0.2s; 
+    }
+    .btn-edit { color: #3b82f6; background: #eff6ff; }
+    .btn-print { color: #475569; background: #f1f5f9; }
+    .btn-delete { color: #ef4444; background: #fef2f2; }
+    .btn-icon:hover { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 </style>
 
-<div class="d-flex justify-content-between align-items-center">
-    <h3 class="section-title">Property Acknowledgement Receipt (PAR)</h3>
-    <a href="{% url 'vehicle_management' %}" class="btn btn-sm btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Back to Dashboard
-    </a>
-</div>
-
-<div class="card shadow-sm card-form p-4 mb-4">
-    <small class="text-uppercase font-weight-bold text-muted mb-3 d-block">Issue New Record</small>
-    
-    {% if p_form.errors %}
-    <div class="alert alert-danger py-2 px-3 shadow-sm mb-3" style="border-left: 5px solid #dc3545;">
-        <p class="mb-1 font-weight-bold" style="font-size: 0.85rem;">Cannot Save Record:</p>
-        <ul class="mb-0" style="font-size: 0.8rem;">
-            {% for field, errors in p_form.errors.items %}
-                <li><strong>{{ field|title }}:</strong> {{ errors|striptags }}</li>
-            {% endfor %}
-        </ul>
+<div class="registry-container">
+    <!-- Header with Back Button -->
+    <div class="mb-4">
+        <a href="{% url 'vehicle_management' %}" class="btn-back">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Vehicles
+        </a>
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="section-title mb-0">PAR Management</h2>
+            <span class="badge badge-light border text-muted px-3 py-2" style="border-radius: 20px; font-weight: 600;">
+                {{ pars.count }} Total Records
+            </span>
+        </div>
     </div>
-    {% endif %}
 
-    <form method="POST">
-        {% csrf_token %}
-        <div class="par-grid">
-            <div class="compact-group">
-                <label>Select Vehicle</label>
-                {{ p_form.vehicle }}
-            </div>
-            <div class="compact-group">
-                <label>PAR Number</label>
-                {{ p_form.par_number }}
-            </div>
-            <div class="compact-group">
-                <label>Issued To (Personnel)</label>
-                {{ p_form.issued_to }}
-            </div>
-            <div class="compact-group">
-                <label>Date Issued</label>
-                {{ p_form.date_issued }}
-            </div>
+    <!-- Issuance Form Card -->
+    <div class="card border-0 shadow-sm mb-5" style="border-radius: 12px;">
+        <div class="card-body p-4">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">PAR Number</label>
+                        {{ p_form.par_number }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Fund Cluster</label>
+                        {{ p_form.fund_cluster }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Vehicle Asset</label>
+                        {{ p_form.vehicle }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Reference No.</label>
+                        {{ p_form.reference_no }}
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label">Issued To</label>
+                        {{ p_form.issued_to }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Date Issued</label>
+                        {{ p_form.date_issued }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Expiry Date</label>
+                        {{ p_form.expiry_date }}
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <label class="form-label">Remarks</label>
+                        {{ p_form.remarks }}
+                    </div>
+
+                    <div class="col-12 mt-4 text-end">
+                        <button type="submit" class="btn-save shadow-sm">
+                            <i class="fas fa-check-circle mr-2"></i> Save to Registry
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-        
-        <div class="compact-group mt-3">
-            <label>Remarks / Notes</label>
-            {{ p_form.remarks }}
+    </div>
+
+    <!-- Registry History -->
+    <h3 class="section-title mb-3" style="font-size: 1.5rem;">PAR History Registry</h3>
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">PAR No.</th>
+                        <th>Personnel</th>
+                        <th>Asset Description</th>
+                        <th>Issue Date</th>
+                        <th class="text-right pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for par in pars %}
+                    <tr>
+                        <td class="ps-4"><strong style="color: var(--navy);">{{ par.par_number }}</strong></td>
+                        <td><div class="font-weight-bold">{{ par.issued_to }}</div></td>
+                        <td>
+                            <div class="font-weight-bold">{{ par.vehicle.make }} {{ par.vehicle.model }}</div>
+                            <small class="text-muted">{{ par.vehicle.plate_number }}</small>
+                        </td>
+                        <td>{{ par.date_issued|date:"M d, Y" }}</td>
+                        <td class="text-right pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a href="{% url 'print_par' par.pk %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
+                                <a href="{% url 'edit_par' par.pk %}" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'delete_par' par.pk %}" class="btn-icon btn-delete" title="Delete" onclick="return confirm('Delete record?')"><i class="fas fa-trash-alt"></i></a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-
-        <div class="d-flex justify-content-end mt-3">
-            <button type="submit" class="btn btn-primary px-4 shadow-sm" style="background-color: #1a2b6d; border: none; font-size: 0.85rem; font-weight: 600;">
-                <i class="fas fa-save mr-2"></i> Save PAR Record
-            </button>
-        </div>
-    </form>
-</div>
-
-<hr>
-
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h5 class="font-weight-bold mb-0">Record Registry</h5>
-</div>
-
-<div class="card shadow-sm border-0">
-    <div class="table-responsive">
-        <table class="table table-hover table-registry mb-0">
-            <thead>
-                <tr>
-                    <th>PAR #</th>
-                    <th>Vehicle Details</th>
-                    <th>Issued To</th>
-                    <th>Remarks</th>
-                    <th>Date Issued</th>
-                    <th class="text-right">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for par in pars %}
-                <tr>
-                    <td><strong>{{ par.par_number }}</strong></td>
-                    <td>
-                        <span class="d-block font-weight-bold">{{ par.vehicle.make }} {{ par.vehicle.model }}</span>
-                        <small class="text-muted">{{ par.vehicle.plate_number|default:par.vehicle.conduction_number }}</small>
-                    </td>
-                    <td>{{ par.issued_to }}</td>
-                    <td><small>{{ par.remarks|default:"--"|truncatechars:40 }}</small></td>
-                    <td>{{ par.date_issued|date:"M d, Y" }}</td>
-                    <td class="text-right">
-                        <div class="d-flex justify-content-end align-items-center">
-                            <a href="{% url 'edit_par' par.pk %}" class="btn btn-sm btn-outline-primary btn-action mr-2" title="Edit Record">
-                                <i class="fas fa-edit"></i>
-                            </a>
-
-                            <a href="{% url 'print_par' par.pk %}" target="_blank" class="btn btn-sm btn-outline-info btn-action mr-2" title="Print Receipt">
-                                <i class="fas fa-print"></i>
-                            </a>
-
-                            <form action="{% url 'delete_par' par.pk %}" method="POST" 
-                                  onsubmit="return confirm('Are you sure you want to delete this PAR record?');" 
-                                  style="display:inline;">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-outline-danger btn-action" title="Delete Record">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="6" class="text-center text-muted py-5">No PAR records found in the system.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 </div>
 {% endblock %}

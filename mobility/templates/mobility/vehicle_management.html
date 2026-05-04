@@ -3,99 +3,158 @@
 
 {% block content %}
 <style>
-    /* Card Grid Consistency */
-    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-    
-    /* Hover effect for clickable cards */
-    .f-card-link { text-decoration: none !important; transition: transform 0.2s; cursor: pointer; }
-    .f-card-link:hover { transform: translateY(-3px); }
-    
-    .f-card { background: white; border-radius: 12px; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); height: 100%; }
-    .f-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 18px; }
-    .f-info h4 { margin: 0; font-size: 1.3rem; font-weight: 700; color: #1e293b; }
-    .f-info small { color: #64748b; font-size: 0.7rem; font-weight: 600; display: block; line-height: 1.2; }
+    /* Section Title with Inter Font */
+    .section-title { 
+        font-family: 'Inter', sans-serif; 
+        font-weight: 700; 
+        color: var(--navy); 
+        margin: 35px 0 15px 0; 
+        letter-spacing: -0.02em;
+    }
 
-    /* Colors matching your dashboard UI */
-    .c-blue { border: 1px solid #4e73df; } .i-blue { background: #4e73df; color: white; }
-    .c-orange { border: 1px solid #f6ad55; } .i-orange { background: #f6ad55; color: white; }
-    .c-red { border: 1px solid #e53e3e; } .i-red { background: #e53e3e; color: white; }
-    .c-green { border: 1px solid #48bb78; } .i-green { background: #48bb78; color: white; }
-    
-    .section-title { font-weight: 700; color: #1a2b6d; margin: 35px 0 15px 0; }
+    /* Card Text and Labels */
+    .stat-label { font-family: 'Inter', sans-serif; font-weight: 500; }
+    .stat-value { font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: -0.03em; }
 
-    /* Clean Input Box Spacing */
+    /* Form Grid and Compact Inputs */
     .form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
     .compact-group { margin-bottom: 8px; }
     .compact-group label { 
         display: block; 
+        font-family: 'Inter', sans-serif;
         font-size: 0.72rem; 
-        font-weight: 700; 
-        color: #64748b; 
+        font-weight: 600; 
+        color: var(--muted); 
         text-transform: uppercase; 
         margin-bottom: 2px;
-        letter-spacing: 0.3px;
+        letter-spacing: 0.02em;
     }
     .compact-group input, .compact-group select { 
+        font-family: 'Inter', sans-serif;
         width: 100%; 
         padding: 6px 10px; 
         border-radius: 6px; 
-        border: 1px solid #d1d5db;
+        border: 1px solid var(--border);
         font-size: 0.85rem;
     }
-    .card-form { background-color: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; }
+    .card-form { background-color: #ffffff; border-radius: 12px; border: 1px solid var(--border); }
 
-    /* Table Styling */
-    .table-registry thead { background-color: #f8f9fc; }
-    .table-registry th { font-size: 0.75rem; text-transform: uppercase; color: #4e73df; letter-spacing: 0.5px; }
+    /* Table Styling with Inter */
+    .table-registry thead { background-color: var(--bg); }
+    .table-registry th { 
+        font-family: 'Inter', sans-serif;
+        font-size: 0.75rem; 
+        text-transform: uppercase; 
+        color: var(--navy); 
+        letter-spacing: 0.05em; 
+        font-weight: 700;
+    }
+    .table-registry td { font-family: 'Inter', sans-serif; font-size: 0.9rem; }
+    
+    /* Hover effect for stat cards */
+    .stat-card-link { text-decoration: none !important; transition: transform 0.2s; display: block; }
+    .stat-card-link:hover .stat-card { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
 </style>
 
-<div class="stat-grid">
-    <a href="{% url 'vehicle_list_detailed' %}" class="f-card-link">
-        <div class="f-card c-blue">
-            <div class="f-icon i-blue"><i class="fas fa-car"></i></div>
-            <div class="f-info"><small>Total Vehicles</small><h4>{{ total_vehicles }}</h4></div>
+<!-- DYNAMIC 8 CARDS GRID -->
+<div class="stat-cards">
+    <!-- Row 1 -->
+    <a href="{% url 'vehicle_list_detailed' %}" class="stat-card-link">
+        <div class="stat-card">
+            <div class="stat-top">
+                <div class="stat-icon blue"><i class="fas fa-car"></i></div>
+                <div class="stat-info">
+                    <div class="stat-label">Total Vehicles</div>
+                    <div class="stat-value">{{ total_vehicles|default:"0" }}</div>
+                </div>
+            </div>
+            <!-- Total is always 100% of itself -->
+            <div class="stat-bar-wrap"><div class="stat-bar blue" style="width: 100%;"></div></div>
         </div>
     </a>
 
-    <div class="f-card c-blue">
-        <div class="f-icon i-blue"><i class="fas fa-check-circle"></i></div>
-        <div class="f-info"><small>With PMS Record</small><h4>{{ with_pms }}</h4></div>
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon blue"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">With PMS Record</div>
+                <div class="stat-value">{{ with_pms|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="stat-bar-wrap"><div class="stat-bar blue" style="width: {{ p1|default:0 }}%;"></div></div>
     </div>
 
-    <div class="f-card c-orange">
-        <div class="f-icon i-orange"><i class="fas fa-exclamation-triangle"></i></div>
-        <div class="f-info"><small>Without PMS Record</small><h4>{{ without_pms }}</h4></div>
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon orange"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Without PMS Record</div>
+                <div class="stat-value">{{ without_pms|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="stat-bar-wrap"><div class="stat-bar orange" style="width: {{ p2|default:0 }}%;"></div></div>
     </div>
 
-    <div class="f-card c-red">
-        <div class="f-icon i-red"><i class="fas fa-wrench"></i></div>
-        <div class="f-info"><small>For PMS</small><h4>{{ for_pms }}</h4></div>
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon red"><i class="fas fa-wrench"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">For PMS</div>
+                <div class="stat-value">{{ for_pms|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="stat-bar-wrap"><div class="stat-bar red" style="width: {{ p3|default:0 }}%;"></div></div>
     </div>
 
-    <div class="f-card c-orange">
-        <div class="f-icon i-orange"><i class="fas fa-id-card"></i></div>
-        <div class="f-info"><small>For Registration</small><h4>{{ for_registration_renewal }}</h4></div>
+    <!-- Row 2 -->
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon orange"><i class="fas fa-id-card"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">For Registration</div>
+                <div class="stat-value">{{ for_registration_renewal|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="stat-bar-wrap"><div class="stat-bar orange" style="width: {{ p4|default:0 }}%;"></div></div>
     </div>
 
-    <div class="f-card c-green">
-        <div class="f-icon i-green"><i class="fas fa-shield-alt"></i></div>
-        <div class="f-info"><small>For Insurance</small><h4>{{ for_insurance_renewal }}</h4></div>
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon green"><i class="fas fa-shield-alt"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">For Insurance</div>
+                <div class="stat-value">{{ for_insurance_renewal|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="stat-bar-wrap"><div class="stat-bar green" style="width: {{ p5|default:0 }}%;"></div></div>
     </div>
 
-    <div class="f-card c-green">
-        <div class="f-icon i-green"><i class="fas fa-tools"></i></div>
-        <div class="f-info"><small>Upcoming Repairs</small><h4>{{ upcoming_repairs }}</h4></div>
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon green"><i class="fas fa-tools"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Upcoming Repairs</div>
+                <div class="stat-value">{{ upcoming_repairs|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="stat-bar-wrap"><div class="stat-bar green" style="width: {{ p6|default:0 }}%;"></div></div>
     </div>
 
-    <div class="f-card c-green">
-        <div class="f-icon i-green"><i class="fas fa-calendar-alt"></i></div>
-        <div class="f-info"><small>Upcoming PMS</small><h4>{{ upcoming_pms }}</h4></div>
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon green"><i class="fas fa-calendar-alt"></i></div>
+            <div class="stat-info">
+                <div class="stat-label">Upcoming PMS</div>
+                <div class="stat-value">{{ upcoming_pms|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="stat-bar-wrap"><div class="stat-bar green" style="width: {{ p7|default:0 }}%;"></div></div>
     </div>
 </div>
 
-<div class="mb-4 d-flex justify-content-end">
-    <a href="{% url 'par_management' %}" class="btn btn-outline-primary mr-2 shadow-sm"><i class="fas fa-file-signature"></i> PAR Records</a>
-    <a href="{% url 'activity_log' %}" class="btn btn-outline-dark shadow-sm"><i class="fas fa-history"></i> Activity Log</a>
+<div class="mb-4 d-flex justify-content-end mt-3">
+    <a href="{% url 'par_management' %}" class="btn btn-outline-primary mr-2 shadow-sm" style="font-family: 'Inter', sans-serif;"><i class="fas fa-file-signature"></i> PAR Records</a>
+    <a href="{% url 'activity_log' %}" class="btn btn-outline-dark shadow-sm" style="font-family: 'Inter', sans-serif;"><i class="fas fa-history"></i> Activity Log</a>
 </div>
 
 <hr>
@@ -103,12 +162,12 @@
 <div class="d-flex justify-content-between align-items-center">
     <h3 class="section-title">Vehicle Registry</h3>
     <form method="GET" class="form-inline">
-        <input type="text" name="plate_no" class="form-control form-control-sm mr-2" placeholder="Plate Number...">
-        <button type="submit" class="btn btn-sm btn-primary">Search</button>
+        <input type="text" name="plate_no" class="form-control form-control-sm mr-2" placeholder="Plate Number..." style="font-family: 'Inter', sans-serif;">
+        <button type="submit" class="btn btn-sm btn-primary" style="background-color: var(--navy); border: none; font-family: 'Inter', sans-serif;">Search</button>
     </form>
 </div>
 
-<div class="card shadow-sm border-0 mb-5">
+<div class="card shadow-sm border-0 mb-5" style="border-radius: 12px; overflow: hidden;">
     <div class="table-responsive">
         <table class="table table-hover table-registry mb-0">
             <thead>
@@ -128,28 +187,29 @@
                     <td>{{ vehicle.make }} {{ vehicle.model }}</td>
                     <td>
                         {% if vehicle.status == 'For PMS' or vehicle.status == 'For Repair' %}
-                            <span class="badge badge-danger shadow-sm" style="background-color: #e53e3e; color: white;">{{ vehicle.status }}</span>
+                            <span class="badge badge-danger shadow-sm" style="background-color: var(--red);">{{ vehicle.status }}</span>
                         {% elif vehicle.status == 'No Maintenance Record' or vehicle.status == 'For Registration' %}
-                            <span class="badge badge-warning shadow-sm" style="background-color: #f6ad55; color: white;">{{ vehicle.status }}</span>
+                            <span class="badge badge-warning shadow-sm" style="background-color: #f59e0b; color: white;">{{ vehicle.status }}</span>
                         {% elif vehicle.status == 'Good Condition' %}
-                            <span class="badge badge-primary shadow-sm" style="background-color: #4e73df; color: white;">{{ vehicle.status }}</span>
+                            <span class="badge badge-primary shadow-sm" style="background-color: var(--accent);">{{ vehicle.status }}</span>
                         {% elif vehicle.status == 'For Insurance' %}
-                            <span class="badge badge-success shadow-sm" style="background-color: #48bb78; color: white;">{{ vehicle.status }}</span>
+                            <span class="badge badge-info shadow-sm" style="background-color: #06b6d4;">{{ vehicle.status }}</span>
                         {% else %}
                             <span class="badge badge-secondary shadow-sm">{{ vehicle.status }}</span>
                         {% endif %}
                     </td>
                     <td>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-light border dropdown-toggle" data-toggle="dropdown">Manage</button>
-                            <div class="dropdown-menu shadow">
-                                <a class="dropdown-item" href="{% url 'edit_vehicle' vehicle.pk %}">
+                            <button class="btn btn-sm btn-light border dropdown-toggle" data-toggle="dropdown" style="font-family: 'Inter', sans-serif;">Manage</button>
+                            <div class="dropdown-menu shadow border-0">
+                                <a class="dropdown-item" href="{% url 'edit_vehicle' vehicle.pk %}" style="font-family: 'Inter', sans-serif;">
                                     <i class="fas fa-edit mr-2 text-primary"></i> Edit Asset
                                 </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item text-danger" 
                                    href="{% url 'delete_vehicle' vehicle.pk %}" 
-                                   onclick="return confirm('Are you sure you want to delete this vehicle asset?');">
+                                   onclick="return confirm('Are you sure you want to delete this vehicle asset?');"
+                                   style="font-family: 'Inter', sans-serif;">
                                     <i class="fas fa-trash mr-2"></i> Delete Asset
                                 </a>
                             </div>
@@ -157,7 +217,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="5" class="text-center py-4 text-muted">No vehicles found matching your criteria.</td></tr>
+                <tr><td colspan="5" class="text-center py-4 text-muted" style="font-family: 'Inter', sans-serif;">No vehicles found matching your criteria.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -166,76 +226,25 @@
 
 <h3 class="section-title">Add New Vehicle Asset</h3>
 <div class="card shadow-sm card-form p-4 mb-5">
-    {% if form.errors %}
-    <div class="alert alert-danger py-2 mb-3 shadow-sm" style="border-left: 5px solid #dc3545;">
-        <strong style="font-size: 0.9rem; color: #721c24;">Validation Errors Found:</strong>
-        <ul class="mb-0 mt-1" style="font-size: 0.85rem; color: #721c24;">
-            {% for field, errors in form.errors.items %}
-                <li><strong>{{ field|title }}:</strong> {{ errors|striptags }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% endif %}
-    
     <form method="POST">
         {% csrf_token %}
         <div class="form-grid">
-            <div class="compact-group">
-                <label>Vehicle ID</label>
-                {{ form.vehicle_id }}
-            </div>
-            <div class="compact-group">
-                <label>Kind / Classification</label>
-                {{ form.kind }}
-            </div>
-            <div class="compact-group">
-                <label>Make</label>
-                {{ form.make }}
-            </div>
-            <div class="compact-group">
-                <label>Model</label>
-                {{ form.model }}
-            </div>
-            <div class="compact-group">
-                <label>Year</label>
-                {{ form.year }}
-            </div>
-            <div class="compact-group">
-                <label>Plate Number</label>
-                {{ form.plate_number }}
-            </div>
-            <div class="compact-group">
-                <label>Conduction Number</label>
-                {{ form.conduction_number }}
-            </div>
-            <div class="compact-group">
-                <label>Status</label>
-                {{ form.status }}
-            </div>
-            <div class="compact-group">
-                <label>Engine Number</label>
-                {{ form.engine_number }}
-            </div>
-            <div class="compact-group">
-                <label>Chassis Number</label>
-                {{ form.chassis_number }}
-            </div>
-            <div class="compact-group">
-                <label>Latest Odometer</label>
-                {{ form.latest_odo }}
-            </div>
-            <div class="compact-group">
-                <label>Reg. Renewal Date</label>
-                {{ form.registration_renewal_date }}
-            </div>
-            <div class="compact-group">
-                <label>Ins. Renewal Date</label>
-                {{ form.insurance_renewal_date }}
-            </div>
+            <div class="compact-group"><label>Vehicle ID</label>{{ form.vehicle_id }}</div>
+            <div class="compact-group"><label>Kind / Classification</label>{{ form.kind }}</div>
+            <div class="compact-group"><label>Make</label>{{ form.make }}</div>
+            <div class="compact-group"><label>Model</label>{{ form.model }}</div>
+            <div class="compact-group"><label>Year</label>{{ form.year }}</div>
+            <div class="compact-group"><label>Plate Number</label>{{ form.plate_number }}</div>
+            <div class="compact-group"><label>Conduction Number</label>{{ form.conduction_number }}</div>
+            <div class="compact-group"><label>Status</label>{{ form.status }}</div>
+            <div class="compact-group"><label>Engine Number</label>{{ form.engine_number }}</div>
+            <div class="compact-group"><label>Chassis Number</label>{{ form.chassis_number }}</div>
+            <div class="compact-group"><label>Latest Odometer</label>{{ form.latest_odo }}</div>
+            <div class="compact-group"><label>Reg. Renewal Date</label>{{ form.registration_renewal_date }}</div>
+            <div class="compact-group"><label>Ins. Renewal Date</label>{{ form.insurance_renewal_date }}</div>
         </div>
-
         <div class="d-flex justify-content-end mt-4">
-            <button type="submit" class="btn btn-primary px-5 shadow-sm" style="background-color: #1a2b6d; border: none; border-radius: 8px; font-weight: 600;">
+            <button type="submit" class="btn btn-primary px-5 shadow-sm" style="background-color: var(--navy); border: none; border-radius: 8px; font-weight: 600; font-family: 'Inter', sans-serif;">
                 <i class="fas fa-plus-circle mr-2"></i> Save Asset
             </button>
         </div>

@@ -1,17 +1,9 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
-# This "Virtual Model" points directly to your Supabase table 'config_asset'
-# We define it here to prevent the "config.Asset has not been loaded" error.
-class ConfigAsset(models.Model):
-    class Meta:
-        managed = False  # Django will not try to modify this table
-        db_table = 'config_asset'
-    
-    property_no = models.CharField(max_length=100)
 
-    def __str__(self):
-        return self.property_no
+from config.models import Asset
 
 class Vehicle(models.Model):
     STATUS_CHOICES = [
@@ -21,11 +13,12 @@ class Vehicle(models.Model):
         ('For PMS', 'For PMS'),
         ('For Repair', 'For Repair'),
         ('No Maintenance Record', 'No Maintenance Record'),
+        ('Disposed', 'Disposed'),
     ]
 
-    # Link to the Virtual Model using the column name 'asset_id' found in your Supabase schema
+ 
     asset = models.ForeignKey(
-        ConfigAsset, 
+        Asset, 
         db_column='asset_id', 
         on_delete=models.SET_NULL, 
         null=True, 
@@ -57,14 +50,33 @@ class Vehicle(models.Model):
         return f"{self.make} {self.model} ({self.plate_number or self.conduction_number})"
 
 class PARRecord(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='par_records')
+    vehicle = models.ForeignKey('Vehicle', on_delete=models.CASCADE, related_name='par_records')
     par_number = models.CharField(max_length=50, unique=True)
+    
+    fund_cluster = models.CharField(max_length=100, blank=True, null=True)
+    reference_no = models.CharField(max_length=100, blank=True, null=True)
+    
     issued_to = models.CharField(max_length=100)
-    designation = models.CharField(max_length=100)
+    designation = models.CharField(max_length=100, blank=True, null=True)
     date_issued = models.DateField(default=timezone.now)
+    
+    expiry_date = models.DateField(blank=True, null=True)
+    
     remarks = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.par_number} - {self.issued_to}"
+
+    class Meta:
+        verbose_name = "PAR Record"
+        verbose_name_plural = "PAR Records"
+        ordering = ['-date_issued']
+
 class ActivityLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     action_type = models.CharField(max_length=10)
     description = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+    def get_action_type_display(self):
+        return self.action_type.capitalize()

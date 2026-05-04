@@ -1,0 +1,385 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RFU 10 LMS Dashboard</title>
+
+    <link rel="stylesheet" href="{% static 'disposal/disposal_style.css' %}" />
+    <link rel="stylesheet" href="{% static 'disposal/filter_modal.css' %}" />
+    <link rel="stylesheet" href="{% static 'disposal/summary_modal.css' %}" />
+    <link rel="stylesheet" href="{% static 'disposal/sidebar.css' %}" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  </head>
+
+  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+    <div class="header-brand d-flex align-items-center">
+      <div class="header-logo">
+        PNP<br />FORENSIC<br />GROUP
+      </div>
+      <div class="header-divider"></div>
+      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
+    </div>
+
+    <div class="header-user d-flex align-items-center">
+      <div class="notification-wrapper mr-4">
+        <i class="fas fa-bell {% if upcoming_pms > 0 or upcoming_repairs > 0 %}
+            text-danger
+          {% else %}
+            text-muted
+          {% endif %}">
+
+        </i>
+      </div>
+
+      <div class="profile-group d-flex align-items-center">
+        <div class="user-avatar d-flex align-items-center justify-content-center">
+          <i class="fas fa-user text-muted"></i>
+        </div>
+        <div class="user-text ml-2">
+          <div class="user-name font-weight-bold ">{{ user.get_full_name|default:user.username }}</div>
+          <div class="user-role text-muted">Logistics Officer</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <body>
+    <div class="dashboard-container">
+      <aside class="sidebar" id="sidebarNav">
+        {% include 'disposal/sidebar.html' %}
+      </aside>
+      <main class="main-content">
+
+        <!-- ── Stat Cards ──────────────────────────────────────────────────── -->
+      <div class="stat-cards">
+
+        <!-- Total BER Items -->
+        <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon purple"><i class="fas fa-recycle"></i></div>
+              <div>
+                <div class="stat-value">{{ total_disposal }}</div>
+                <div class="stat-label">Total BER Items</div>
+              </div>
+            </div>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar purple"
+                style="width:{% if total_assets %}{% widthratio total_ber total_assets 100 %}{% else %}0{% endif %}%"></div>
+            </div>
+          </div>
+
+        <!-- Total Firearms -->
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon orange"><i class="fas fa-crosshairs"></i></div>
+            <div>
+              <div class="stat-label">BER Firearms</div>
+              <div class="stat-value"></div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar orange"
+              style="width:{% if total_assets %}{% widthratio total_firearms total_assets 100 %}{% else %}0{% endif %}%"></div>
+          </div>
+        </div>
+
+        <!-- Total Mobility -->
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon green"><i class="fas fa-car"></i></div>
+            <div>
+              <div class="stat-value">{{ expired_mobility }}</div>
+              <div class="stat-label">BER Mobility</div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar green"
+              style="width:{% if total_assets %}{% widthratio total_mobility total_assets 100 %}{% else %}0{% endif %}%"></div>
+          </div>
+        </div>
+
+        <!-- Total Communication Devices -->
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon red"><i class="fas fa-broadcast-tower"></i></div>
+            <div>
+              <div class="stat-value">{{ total_communications }}</div>
+              <div class="stat-label">BER Communication</div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar red"
+              style="width:{% if total_assets %}{% widthratio total_communications total_assets 100 %}{% else %}0{% endif %}%"></div>
+          </div>
+        </div>
+
+        <!-- Total Investigative Equipment -->
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon gray"><i class="fas fa-microscope"></i></div>
+            <div>
+              <div class="stat-value">{{ total_investigative }}</div>
+              <div class="stat-label">BER Investigative Equip.</div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar gray"
+              style="width:{% if total_assets %}{% widthratio total_investigative total_assets 100 %}{% else %}0{% endif %}%"></div>
+          </div>
+        </div>
+
+      </div> <!-- /stat-cards -->
+
+      <!--- Alert Box -->
+
+        <div class="summary-container">
+          <div class="summary-alert">
+            <i class="ph ph-warning-circle"></i>
+            <div class="alert-content">
+              <p>
+                <strong>Removal Summary:</strong> 5 Firearms were removed today
+              </p>
+              <span class="sync-text">Last sync: •</span>
+              <a href="javascript:void(0)" class="learn-more-link" onclick="toggleBerModal()">Learn more</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-outline" onclick="toggleFilterModal()"><i class="ph ph-faders"></i>Filter</button>
+          <a href="{% url 'disposal:export_disposal_csv' %}?{{ request.GET.urlencode }}">
+            <button type="button" class="btn-outline">
+              <i class="ph ph-download"></i>
+              Download
+            </button>
+          </a>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>
+                  <i class="ph ph-calendar"></i> Asset ID
+                </th>
+                <th>
+                  <i class="ph ph-calendar"></i>Asset Model
+                </th>
+                <th>
+                  <i class="ph ph-text-align-left"></i> Days Overdue
+                </th>
+                <th>
+                  <i class="ph ph-headphones"></i> Expiry Date
+                </th>
+                <th>
+                  <i class="ph ph-link"></i> Disposal Reason
+                </th>
+                <th>
+                  <i class="ph ph-calendar-check"></i> Disposal Date
+                </th>
+                <th>
+                  <i class="ph ph-calendar-check"></i> Action
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+                <tr>
+                  <td>{{ item.id }}</td>
+                  <td>{{ item.asset_ptr.model }}</td>
+                  <td>
+                    {% if item.days_overdue_calc > 0 %}
+                      <span class="badge badge-red">{{ item.days_overdue_calc }} days</span>
+                    {% else %}
+                      <span class="badge badge-gray">Not Overdue</span>
+                    {% endif %}
+                  </td>
+
+                  <td>{{ item.expiry_date|date:'d/m/Y'|default:'N/A' }}</td>
+
+                  <td>{{ item.reason }}</td>
+
+                  <td>{{ item.disposal_date|date:'d/m/Y H:i' }}</td>
+
+                  <td class="text-center">
+                    <a href="{% url 'disposal:finalize_removal' item.pk %}" 
+                       class="btn btn-sm btn-danger px-3"
+                       onclick="return confirm('Are you sure you want to permanently archive this item? This action cannot be undone.')">
+                       <i class="fas fa-trash-alt mr-1"></i>
+                    </a>
+                </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" style="text-align: center; padding: 40px; color: #64748b;">
+                    <i class="ph ph-database-slash" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
+                    No disposal records found in the database.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    {% include 'disposal/filter_modal.html' %}
+    {% include 'disposal/summary_modal.html' %}
+
+    <script>
+      // --- 1. MODAL TOGGLE LOGIC ---
+      
+      function toggleFilterModal() {
+        const modal = document.getElementById('filterModal')
+        if (modal) {
+          modal.classList.toggle('active')
+        }
+      }
+      
+      function toggleBerModal() {
+        const modal = document.getElementById('berModal') // Make sure this ID is on your overlay div
+        if (modal) {
+          modal.classList.toggle('active')
+      
+          // Optional: If you want to fetch fresh data every time it opens
+          if (modal.classList.contains('active')) {
+            loadBerData()
+          }
+        }
+      }
+      
+      // --- 2. EXPLICIT CLOSE LOGIC ---
+      // Fixed your naming errors here
+      function closeFilterModal() {
+        const modal = document.getElementById('filterModal')
+        modal.classList.remove('active')
+      }
+      
+      function closeBerModal() {
+        const modal = document.getElementById('berModal')
+        modal.classList.remove('active')
+      }
+      
+      // --- 3. OVERLAY CLICK LOGIC ---
+      window.onclick = function (event) {
+        const filterModal = document.getElementById('filterModal')
+        const berModal = document.getElementById('berModal')
+      
+        if (event.target === filterModal) filterModal.classList.remove('active')
+        if (event.target === berModal) berModal.classList.remove('active')
+      }
+      
+      // --- 4. DATA FETCHING (DJANGO API) ---
+      async function loadBerData() {
+        const grid = document.getElementById('itemsGrid')
+      
+        if (!grid) return
+      
+        grid.innerHTML = '<p>Loading items...</p>'
+      
+        try {
+          // Fetching from your Django URL instead of Supabase directly
+          const response = await fetch('/disposal/api/ber-items/')
+      
+          if (!response.ok) throw new Error('Network response was not ok')
+      
+          const data = await response.json()
+      
+          allItems = data // Put the Django data into our global list
+          renderItems('all') // Show them in the grid
+        } catch (error) {
+          console.error('Fetch error:', error)
+          grid.innerHTML = '<p>Error loading data from server.</p>'
+        }
+      }
+      
+      function applyTableFilters() {
+        const unit = document.getElementById('filterUnit').value
+        const commType = document.getElementById('filterCommType').value
+      
+        // Build the URL with parameters
+        let url = new URL(window.location.href)
+      
+        if (unit) url.searchParams.set('unit', unit)
+        else url.searchParams.delete('unit')
+      
+        if (commType) url.searchParams.set('comm_type', commType)
+        else url.searchParams.delete('comm_type')
+      
+        // Reload the page with the new filters
+        window.location.href = url.toString()
+      }
+      
+      // --- Inside disposal.html (or your main script file) ---
+      
+      function renderItems(filter) {
+        const grid = document.getElementById('itemsGrid')
+        const modalTitle = document.getElementById('modalTitle')
+        const itemCountText = document.getElementById('itemCountText')
+      
+        if (!grid) return
+      
+        // 1. Filter the list (using dummy or Supabase data)
+        const filtered = filter === 'all' ? allItems : allItems.filter((item) => item.category === filter)
+      
+        // 2. Clear the grid
+        grid.innerHTML = ''
+      
+        // 3. --- UPDATE THE NEW MODAL HEADER ---
+      
+        // Set dynamic title
+        const titleMap = {
+          all: 'REMOVED EQUIPMENT (SUMMARY)',
+          firearm: 'REMOVED FIREARMS',
+          communication: 'REMOVED COMMUNICATION UNITS',
+          investigative: 'REMOVED INVESTIGATIVE TOOLS'
+        }
+        modalTitle.innerText = titleMap[filter]
+      
+        // Set dynamic item count
+        const unitMap = {
+          all: 'Items',
+          firearm: 'Firearms',
+          communication: 'Comms Units',
+          investigative: 'Tools'
+        }
+        const unitName = filtered.length === 1 ? filter : unitMap[filter]
+        itemCountText.innerText = `${filtered.length} ${unitName} Removed This Week`
+      
+        // 4. Populate the new cards
+        filtered.forEach((item) => {
+          const card = document.createElement('div')
+      
+          // This keeps the red/blue/yellow border logic from earlier
+          card.className = `firearm-card card-${item.category}`
+      
+          card.innerHTML = `
+                  <div class="category-tag">${item.category}</div>
+                  
+                  <div class="card-img"></div>
+                  
+                  <h3>${item.title || 'Untitled Item'}</h3>
+                  <p>${item.description || 'No description provided.'}</p>
+              `
+          grid.appendChild(card)
+        })
+      }
+      
+      // Filter Button Logic
+      document.querySelectorAll('.filter-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          document.querySelector('.filter-btn.active').classList.remove('active')
+          e.target.classList.add('active')
+          renderItems(e.target.dataset.filter)
+        })
+      })
+    </script>
+  </body>
+</html>
