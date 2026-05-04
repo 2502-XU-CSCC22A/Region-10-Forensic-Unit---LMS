@@ -92,8 +92,8 @@
                       <i class="fas fa-boxes"></i>
                     </div>
                     <div>
-                      <div class="stat-value">{{ total_assets }}</div>
-                      <div class="stat-label">Total Assets</div>
+                      <div class="stat-value">{{ total_count }}</div>
+                      <div class="stat-label">Total Inventory</div>
                     </div>
                   </div>
                   <div class="stat-bar-wrap">
@@ -108,8 +108,8 @@
                       <i class="fas fa-crosshairs"></i>
                     </div>
                     <div>
-                      <div class="stat-value">{{ total_firearms }}</div>
-                      <div class="stat-label">Total Firearms</div>
+                      <div class="stat-value">{{ in_use }}</div>
+                      <div class="stat-label">Active / Issued</div>
                     </div>
                   </div>
                   <div class="stat-bar-wrap">
@@ -131,8 +131,8 @@
                       <i class="fas fa-car"></i>
                     </div>
                     <div>
-                      <div class="stat-value">{{ total_vehicles }}</div>
-                      <div class="stat-label">Total Mobility</div>
+                      <div class="stat-value">{{ under_repair }}</div>
+                      <div class="stat-label">Under Maintenance</div>
                     </div>
                   </div>
                   <div class="stat-bar-wrap">
@@ -147,21 +147,26 @@
                   </div>
                 </div>
             </div>
-
-            <section class="equipment-list-container">
-                <div class="list-header">
-                    <h2 style="margin:0; font-size: 1.2rem;">Equipment Inventory</h2>
-                    <div style="display: flex; gap: 12px;">
-                        <button class="btn-secondary" onclick="toggleModal('filterModal')">
-                            <i class="ph ph-funnel"></i> Filter
-                        </button>
+            <div class="table-section">
+                <div class="table-header">Equipment Inventory</div>
+      
+                <div class="table-controls">
+                  <div class="search-wrap">
+                    <span class="search-icon">&#x1F50D;</span>
+                    <input type="text" id="searchInput" placeholder="Search by name, date, personnel&#x2026;" oninput="filterTable()" />
+                  </div>
+                  <div class="action-bar">
+                    <button class="btn-secondary" onclick="toggleModal('filterModal')">
+                        <i class="ph ph-funnel"></i> Filter
+                    </button>
                         <button class="btn-primary" onclick="toggleModal('addModal')">+ New Asset</button>
-                    </div>
+                  </div>
                 </div>
-                
-                <table class="equipment-table">
-                    <thead>
-                        <tr>
+      
+                <!-- - Table -->
+                <table id="disposalTable">
+                  <thead>
+                    <tr>
                             <th>Item Name</th>
                             <th>Property ID</th>
                             <th>Category</th>
@@ -169,10 +174,10 @@
                             <th>Status</th>
                             <th>Inspection Date</th>
                             <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in equipment %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in equipment %}
                         <tr>
                             <td><strong>{{ item.asset_id.model }}</strong></td>
                             <td><code style="background: #f1f1f1; padding: 2px 5px; border-radius: 4px;">{{ item.asset_id.property_no }}</code></td>
@@ -201,12 +206,12 @@
                             </td>
                         </tr>
                         {% endfor %}
-                    </tbody>
+                  </tbody>
                 </table>
-            </section>
-        </main>
-    </div>
-
+              </div>
+            </main>
+          </div>
+          
     <!-- --- ADD MODAL --- -->
     <div class="modal-overlay" id="addModal">
         <div class="modal-content">

@@ -4,6 +4,7 @@ from config.models import Asset, AssetStatus, Category
 from mobility.models import Vehicle
 from disposal.models import DisposalItem
 from communications.models import Communication
+from InvestigativeEquipment.models import InvestigativeDetails
 from firearms.models import Firearm
 import datetime
 import uuid
@@ -14,6 +15,7 @@ def investigative_view(request):
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     disposal_all = DisposalItem.objects.count()
     firearm_all = Firearm.objects.exclude(status_id__in=[4, 5]).count()
+    inves_all = InvestigativeDetails.objects.count()
     
     if request.method == "POST":
         action = request.POST.get("action_type")
@@ -50,7 +52,7 @@ def investigative_view(request):
                 )
 
             messages.success(request, "Equipment added successfully.")
-            return redirect("investigative_view")
+            return redirect("InvestigativeEquipment:investigative_view")
 
         elif action == "update":
             asset_pk = request.POST.get("asset_id")
@@ -77,14 +79,14 @@ def investigative_view(request):
             details.save()
 
             messages.success(request, "Equipment updated successfully.")
-            return redirect("investigative_view")
+            return redirect("InvestigativeEquipment:investigative_view")
 
         elif action == "delete":
             asset_pk = request.POST.get("asset_id")
             asset = get_object_or_404(Asset, pk=asset_pk)
             asset.delete()
             messages.success(request, "Equipment deleted successfully.")
-            return redirect("investigative_view")
+            return redirect("InvestigativeEquipment:investigative_view")
 
     equipment_list = InvestigativeDetails.objects.select_related(
         "asset_id",
@@ -116,6 +118,7 @@ def investigative_view(request):
         "comms_all": comms_all,
         "disposal_all": disposal_all,
         "firearm_all": firearm_all,
+        "inves_all": inves_all,
     }
 
     return render(request, "investigative.html", context)
