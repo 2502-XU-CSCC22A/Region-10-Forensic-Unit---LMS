@@ -3,7 +3,14 @@ from django.conf import settings
 from config.models import Asset
 from datetime import date
 from config.models import Personnel
+from django.contrib.auth.models import User
 
+class UserProfile(models.Model):
+    role = models.CharField(max_length=50, blank=True, null=True)
+    
+    def __str__(self):
+        return f"{self.role}"
+    
 class DisposalItem(Asset): 
     last_sync = models.DateTimeField(auto_now=True)
     disposal_reason = models.TextField(

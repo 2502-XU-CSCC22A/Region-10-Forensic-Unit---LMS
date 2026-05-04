@@ -1,30 +1,68 @@
-function updateDisposalStats(allBerItems) {
-  // 1. Calculate Counts
-  const totalBer      = allBerItems.length;
-  const berFirearms   = allBerItems.filter(i => i.category === 'firearm').length;
-  const berMobility   = allBerItems.filter(i => i.category === 'mobility').length;
-  const berComms      = allBerItems.filter(i => i.category === 'communication').length;
-  const berInvest     = allBerItems.filter(i => i.category === 'investigative').length;
+/* ---------------- SAFE SUPABASE INIT ---------------- */
+window.supabaseClient = window.supabaseClient || window.supabase.createClient(
+  "https://vamjajitzyspdyfxisac.supabase.co",
+  "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54"
+);
 
-  // 2. Percentage Helper (relative to totalBer)
-  const getPct = (value) => {
-    if (totalBer === 0) return '0%';
-    // Ensures a minimum width of 5% for visual consistency
-    return Math.max(5, Math.round((value / totalBer) * 100)) + '%';
-  };
+const sb = window.supabaseClient;
 
-  // 3. Update Text Content
-  document.getElementById('totalBerCount').textContent    = totalBer;
-  document.getElementById('firearmsBerCount').textContent = berFirearms;
-  document.getElementById('mobilityBerCount').textContent = berMobility;
-  document.getElementById('commsBerCount').textContent    = berComms;
-  document.getElementById('investBerCount').textContent   = berInvest;
+/* ---------------- STATE ---------------- */
+let disposal = [];
+let filtered = [];
+let currentPage = 1;
+const pageSize = 5;
+let editingId = null;
 
-  // 4. Update Progress Bar Widths
-  // The Total bar is always 100% of itself
-  document.getElementById('totalBerBar').style.width    = '100%'; 
-  document.getElementById('firearmsBerBar').style.width = getPct(berFirearms);
-  document.getElementById('mobilityBerBar').style.width = getPct(berMobility);
-  document.getElementById('commsBerBar').style.width    = getPct(berComms);
-  document.getElementById('investBerBar').style.width   = getPct(berInvest);
+/* ---------------- FETCH DATA ---------------- */
+async function fetchData() {
+  const { data, error } = await sb
+    .from("disposal_disposalitems")
+    .select("*")
+    .order("asset_ptr_id", { ascending: false });
+
+  if (error) {
+    console.error("FETCH ERROR:", error);
+    alert("Failed to load disposal.");
+    return;
+  }
+
+  disposal = data
+    .map((item) => ({
+      id: item.asset_ptr_id,
+      action_type: item.action_typetype || "",
+    }))
+    .filter((item) => item.id > 0);
+
+  filtered = [...disposal];
+
+  updateStats();
+}
+
+/* ---------------- STATS ---------------- */
+function updateStats() {
+  const total = disposal.length;
+  
+  // Filtering based on the mapped category name (e.g., from your config_category table)
+  const firearms = disposal.filter(i => (i.category || '').toLowerCase().includes('firearm')).length;
+  const mobility = disposal.filter(i => (i.category || '').toLowerCase().includes('mobility')).length;
+  const comms    = disposal.filter(i => (i.category || '').toLowerCase().includes('communication')).length;
+  const invest   = disposal.filter(i => (i.category || '').toLowerCase().includes('investigative')).length;
+
+  const pct = v => Math.max(4, Math.round((v / (total || 1)) * 100)) + '%';
+  
+  // Text Counters
+  document.getElementById('totalBerCount').textContent    = total;
+  document.getElementById('firearmsBerCount').textContent = firearms;
+  document.getElementById('mobilityBerCount').textContent = mobility;
+  document.getElementById('commsBerCount').textContent    = comms;
+  document.getElementById('investBerCount').textContent   = invest;
+
+  // Animate Bars
+  setTimeout(() => {
+    if(document.getElementById('totalBerBar'))    document.getElementById('totalBerBar').style.width = '100%';
+    if(document.getElementById('firearmsBerBar')) document.getElementById('firearmsBerBar').style.width = pct(firearms);
+    if(document.getElementById('mobilityBerBar')) document.getElementById('mobilityBerBar').style.width = pct(mobility);
+    if(document.getElementById('commsBerBar'))    document.getElementById('commsBerBar').style.width = pct(comms);
+    if(document.getElementById('investBerBar'))   document.getElementById('investBerBar').style.width = pct(invest);
+  }, 100);
 }

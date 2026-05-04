@@ -147,7 +147,7 @@ main {
 }
 
 .stat-value {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: 36px; font-weight: 700;
   color: var(--text); line-height: 1;
 }

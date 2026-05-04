@@ -27,6 +27,7 @@ body {
     overflow-x: hidden;
 }
 
+/* Header */
 .navbar-header {
     height: 70px;
     background-color: #ffffff;
@@ -263,7 +264,8 @@ body {
 
 .btn-outline {
     background: white;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--accent-2);
+    color: var(--accent-2);
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
@@ -272,7 +274,7 @@ body {
     gap: 8px;
     font-family: 'Inter', sans-serif;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     transition: background 0.2s;
     text-decoration: none;
 }
@@ -548,37 +550,19 @@ td {
     background: var(--border);
     border-radius: 99px;
     overflow: hidden;
-}
-
-.stat-bar {
+  }
+  
+  .stat-bar {
     height: 100%;
     border-radius: 99px;
-    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.stat-bar.blue {
-    background: linear-gradient(90deg, #3b82f6, #60a5fa);
-}
-
-.stat-bar.green {
-    background: linear-gradient(90deg, #10b981, #34d399);
-}
-
-.stat-bar.teal {
-    background: linear-gradient(90deg, #14b8a6, #2dd4bf);
-}
-
-.stat-bar.red {
-    background: linear-gradient(90deg, #ef4444, #f87171);
-}
-
-.stat-bar.orange {
-    background: linear-gradient(90deg, #f59e0b, #fbbf24);
-}
-
-.stat-bar.purple {
-    background: linear-gradient(90deg, #8b5cf6, #a78bfa);
-}
+    transition: width .8s ease;
+  }
+  
+  .stat-bar.blue  { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+  .stat-bar.green { background: linear-gradient(90deg, #10b981, #34d399); }
+  .stat-bar.red   { background: linear-gradient(90deg, #ef4444, #f87171); }
+  .stat-bar.purple { background: linear-gradient(90deg, #8b5cf6, #ede9fe);}
+  .stat-bar.orange { background: linear-gradient(90deg, #f59e0b, #eaba68);}
 
 /* ── Additional stat card colors ─────────────────────────────────────────── */
 .stat-icon.gray {

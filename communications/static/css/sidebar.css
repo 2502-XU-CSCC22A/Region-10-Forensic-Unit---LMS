@@ -1,6 +1,6 @@
 :root {
   --pnp-blue: #1a237e;
-  --sidebar-width: 290px;
+  --sidebar-width: 315px;
   --figma-active: #4338ca;
 }
 
@@ -11,7 +11,7 @@ body {
 }
 
 #sidebar {
-  width: var(--sidebar-width);
+  width: 315px;
   height: 100vh;
   position: fixed;
   background: #1a2b6d;

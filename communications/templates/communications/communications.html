@@ -12,6 +12,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/regular.min.css" integrity="sha512-x3gns+l9p4mIK7vYLOCUoFS2P1gavFvnO9Its8sr0AkUk46bgf9R51D8xeRUwCSk+W93YbXWi19BYzXDNBH5SA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/communications.css' %}" />
@@ -32,7 +33,7 @@
             --navy-light: #1e3d8f;
             --accent: #2563eb;
             --accent-2: #3b82f6;
-            --sidebar-w: 290px;
+            --sidebar-w: 315px;
             --header-h: 72px;
             --red: #ef4444;
             --text: #1e293b;
@@ -52,83 +53,6 @@
             flex-direction: column;
             min-height: 100vh;
             overflow-x: hidden;
-        }
-
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            height: var(--header-h);
-            background: var(--white);
-            border-bottom: 3px solid var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px 0 0;
-            box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
-        }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 0 20px;
-            margin: 8px 20px 8px 12px;
-            border-radius: 6px;
-            height: 54px;
-        }
-
-        .header-logo {
-            font-size: 11px;
-            font-weight: 800;
-            line-height: 1.1;
-            color: #1a2b6d;
-            text-transform: uppercase;
-        }
-
-        .header-divider {
-            height: 40px;
-            width: 2px;
-            background-color: #1a2b6d;
-            margin: 0 15px;
-        }
-
-        .header-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1a2b6d;
-            margin: 0;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            background: var(--bg);
-            border-radius: 50%;
-            border: 2px solid var(--border);
-        }
-
-        .user-info {
-            line-height: 1.3;
-        }
-
-        .user-role {
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--accent);
-        }
-
-        .user-greet {
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        .layout {
-            display: flex;
-            padding-top: var(--header-h);
-            min-height: 100vh;
         }
 
         main {
@@ -201,10 +125,12 @@
                 <!-- Total Communications Items -->
                 <div class="stat-card">
                     <div class="stat-top">
-                        <div class="stat-icon blue">&#x1F52B;</div>
+                        <div class="stat-icon blue">
+                            <i class="fas fa-broadcast-tower"></i>
+                        </div>
                         <div>
-                            <div class="stat-label">Total Communications</div>
                             <div class="stat-value" id="totalCount">&#8212;</div>
+                            <div class="stat-label">Total Communications</div>
                         </div>
                     </div>
                     <div class="stat-bar-wrap">
@@ -215,10 +141,12 @@
                 <!-- Total Issued Communications -->
                 <div class="stat-card">
                     <div class="stat-top">
-                        <div class="stat-icon green">&#x2705;</div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
                         <div>
-                            <div class="stat-label">Issued Communications</div>
                             <div class="stat-value" id="issuedCount">&#8212;</div>
+                            <div class="stat-label">Issued Communications</div>
                         </div>
                     </div>
                     <div class="stat-bar-wrap">
@@ -229,27 +157,28 @@
                 <!-- Total BER -->
                 <div class="stat-card">
                     <div class="stat-top">
-                        <div class="stat-icon red">&#x1F4C4;</div>
+                        <div class="stat-icon red">
+                            <i class="fas fa-recycle"></i>
+                        </div>
                         <div>
-                            <div class="stat-label">Pending BER</div>
                             <div class="stat-value" id="pendingCount">&#8212;</div>
+                            <div class="stat-label">Pending BER</div>  
                         </div>
                     </div>
                     <div class="stat-bar-wrap">
                         <div class="stat-bar red" id="pendingBar" style="width:0%"></div>
                     </div>
                 </div>
-            </div>
-
+            
             <!-- Validated PAR Items -->
             <div class="stat-card">
                 <div class="stat-top">
                     <div class="stat-icon green">
-                        <i class="fas fa-car"></i>
+                        <i class="fas fa-check-square"></i>
                     </div>
                     <div>
-                        <div class="stat-value" id="parCount">0</div>
-                        <div class="stat-label">Validated PAR</div>
+                        <div class="stat-value" id="parCount">&#8212;</div>   
+                        <div class="stat-label">Validated PAR</div>                
                     </div>
                 </div>
                 <div class="stat-bar-wrap">

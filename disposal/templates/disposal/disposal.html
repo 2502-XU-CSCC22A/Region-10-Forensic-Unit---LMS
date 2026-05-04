@@ -35,7 +35,9 @@
             
             
             
+            
             text-danger
+
 
 
 
@@ -47,7 +49,9 @@
             
             
             
+            
             text-muted
+
 
 
 
@@ -64,7 +68,7 @@
         </div>
         <div class="user-text ml-2">
           <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-          <div class="user-role text-muted">Logistics Officer</div>
+          <div class="user-role text-muted">{{ user.get_role|default:"User" }}</div>
         </div>
       </div>
     </div>
@@ -90,7 +94,9 @@
               </div>
             </div>
             <div class="stat-bar-wrap">
-              <div class="stat-bar purple" id="totalBerBar" style="width: 0%"></div>
+              <div class="stat-bar-wrap">
+                <div class="stat-bar green" id="totalBerBar" style="width:0%"></div>
+              </div>
             </div>
           </div>
 
@@ -106,7 +112,7 @@
               </div>
             </div>
             <div class="stat-bar-wrap">
-              <div class="stat-bar orange" id="firearmsBerBar" style="width: 0%"></div>
+              <div class="stat-bar orange" id="firearmsBerBar" style="width:0%"></div>
             </div>
           </div>
 
@@ -122,7 +128,9 @@
               </div>
             </div>
             <div class="stat-bar-wrap">
-              <div class="stat-bar green" id="mobilityBerBar" style="width: 0%"></div>
+              <div class="stat-bar-wrap">
+                <div class="stat-bar green" id="mobilityBerBar" style="width:0%"></div>
+              </div>
             </div>
           </div>
 
@@ -288,21 +296,27 @@
     {% include 'disposal/filter_modal.html' %}
     {% include 'disposal/summary_modal.html' %}
 
-    <script src="{% static 'disposal/js/sample.js' %}"></script>
+    <script id="supabase-data" type="application/json">
+      [ {% for f in firearms %} ... {% endfor %} ]
+    </script>
+    <script>
+      const supabaseData = JSON.parse(document.getElementById('supabase-data').textContent);
+    </script>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="{% static 'js/sample.js' %}"></script>
 
     <script>
       async function fetchDisposalData() {
-        const { data, error } = await supabase
-          .from('disposal_list') 
-          .select('*');
+        const { data, error } = await supabase.from('disposal_list').select('*')
       
         if (error) {
-            console.error('Error fetching disposal data:', error);
+          console.error('Error fetching disposal data:', error)
         } else {
-            updateDisposalStats(data);
+          updateDisposalStats(data)
         }
       }
-
+      
       function toggleFilterModal() {
         const modal = document.getElementById('filterModal')
         if (modal) {
@@ -410,13 +424,13 @@
           card.className = `firearm-card card-${item.category}`
       
           card.innerHTML = `
-                                                <div class="category-tag">${item.category}</div>
-                                                
-                                                <div class="card-img"></div>
-                                                
-                                                <h3>${item.title || 'Untitled Item'}</h3>
-                                                <p>${item.description || 'No description provided.'}</p>
-                                            `
+                                                      <div class="category-tag">${item.category}</div>
+                                                      
+                                                      <div class="card-img"></div>
+                                                      
+                                                      <h3>${item.title || 'Untitled Item'}</h3>
+                                                      <p>${item.description || 'No description provided.'}</p>
+                                                  `
           grid.appendChild(card)
         })
       }
@@ -444,7 +458,7 @@
       
           tr[i].style.display = rowVisible ? '' : 'none'
         }
-        
+      
         const noResultsMessage = document.getElementById('noResults')
         const visibleRows = Array.from(tr).filter((row) => row.style.display !== 'none' && row.parentNode.tagName === 'TBODY')
       

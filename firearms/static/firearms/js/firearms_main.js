@@ -56,6 +56,7 @@ function updateStats() {
   document.getElementById('totalCount').textContent  = total;
   document.getElementById('issuedCount').textContent = validated;
   document.getElementById('pendingCount').textContent= pending;
+  
   document.getElementById('totalBar').style.width    = '100%';
   document.getElementById('issuedBar').style.width   = pct(validated);
   document.getElementById('pendingBar').style.width  = pct(pending);

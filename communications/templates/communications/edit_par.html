@@ -128,7 +128,7 @@
 
             <!-- HEADER -->
             <div class="mb-4">
-                <a href="{% url 'par_monitoring' %}" class="btn-back">
+                <a href="{% url 'communications:par_monitoring' %}" class="btn-back">
                     ← Back to PAR Registry
                 </a>
 
@@ -163,14 +163,14 @@
 
                     <div class="d-flex justify-content-between">
 
-                        <a href="{% url 'delete_par' record.pk %}" 
+                        <a href="{% url 'communications:delete_par' record.pk %}" 
                            class="text-danger"
                            onclick="return confirm('Delete record?')">
                            🗑 Delete
                         </a>
 
                         <div>
-                            <a href="{% url 'par_monitoring' %}" class="text-muted mr-3">Cancel</a>
+                            <a href="{% url 'communications:par_monitoring' %}" class="text-muted mr-3">Cancel</a>
                             <button type="submit" class="btn-update">Update</button>
                         </div>
 

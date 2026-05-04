@@ -1,13 +1,12 @@
 /* summary_modal.css */
 
 :root {
-    --text-dark-blue: #1a237e; /* The dark navy from your screenshot */
-    --text-muted-blue: #8fa3cf; /* The lighter blue/grey for subtitles */
-    --bg-light: #f9fbfd; /* Very light background from your mockup */
+    --text-dark-blue: #1a237e; 
+    --text-muted-blue: #8fa3cf; 
+    --bg-light: #f9fbfd; 
     --card-border: rgba(0, 0, 0, 0.1);
 }
 
-/* 1. Modal Overlay & Display */
 #berModal {
     display: none; 
     position: fixed;
@@ -16,7 +15,7 @@
     width: 100%;
     height: 100%;
     z-index: 9999;
-    background: rgba(0, 0, 0, 0.4); /* Dark background with subtle blur */
+    background: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);
     justify-content: center; 
     align-items: center;
@@ -26,21 +25,19 @@
     display: flex;
 }
 
-/* 2. Modal Container (Content Box) */
 .summary-modal-content {
     background: white;
     width: 90%;
-    max-width: 1100px; /* Wider to accommodate more cards */
+    max-width: 1100px; 
     max-height: 90vh;
     border-radius: 28px;
-    padding: 60px; /* Spacious padding from your mockup */
+    padding: 60px;
     box-shadow: 0 10px 50px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
     border: 1px solid rgba(0, 0, 0, 0.05);
     position: relative;
 }
 
-/* 3. Close Button (X) */
 .summary-close-btn {
     position: absolute;
     top: 25px;
@@ -52,7 +49,6 @@
     color: #a0a0a0;
 }
 
-/* 4. NEW Modal Header (Match the mockup) */
 .summary-modal-header {
     margin-bottom: 40px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -60,7 +56,7 @@
 }
 
 .summary-modal-header h1 {
-    font-family: 'Inter', sans-serif; /* Recommended font from your mockup style */
+    font-family: 'Inter', sans-serif;
     font-size: 28px;
     font-weight: 900;
     color: var(--text-dark-blue);
@@ -76,7 +72,6 @@
     margin: 0;
 }
 
-/* 5. Filter Bar Styling */
 .filter-bar {
     display: flex;
     gap: 12px;
@@ -101,16 +96,15 @@
     border-color: var(--text-dark-blue);
 }
 
-/* 6. --- NEW CARD & GRID STYLING --- */
+/* --- CARD & GRID STYLING --- */
 
-/* Responsive Grid */
+
 .items-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 25px;
 }
 
-/* Base Card Style (Matches the Mockup) */
 .firearm-card {
     border: 1px solid var(--card-border);
     border-radius: 12px;
@@ -126,7 +120,6 @@
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
-/* Category Tag in the card */
 .category-tag {
     font-size: 10px;
     text-transform: uppercase;
@@ -136,7 +129,6 @@
     color: #888;
 }
 
-/* Mockup Image Placeholder */
 .card-img {
     width: 100%;
     aspect-ratio: 16 / 9; /* Modern widescreen aspect ratio */
