@@ -4,6 +4,13 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/regular.min.css" integrity="sha512-x3gns+l9p4mIK7vYLOCUoFS2P1gavFvnO9Its8sr0AkUk46bgf9R51D8xeRUwCSk+W93YbXWi19BYzXDNBH5SA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <title>Activity Logs</title>
 
   <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
@@ -25,7 +32,7 @@
     }
 
     .activity-title h1 {
-      font-family: 'Rajdhani', sans-serif;
+      font-family: 'Inter', sans-serif;
       color: #0d2155;
       font-size: 34px;
       margin-bottom: 4px;
@@ -175,7 +182,7 @@
       align-items: center;
       justify-content: center;
       color: #fff;
-      font-family: 'Rajdhani', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 9px;
       font-weight: 700;
       text-align: center;
@@ -185,7 +192,7 @@
     }
 
     .header-title {
-      font-family: 'Rajdhani', sans-serif;
+      font-family: 'Inter', sans-serif;
       font-size: 26px;
       font-weight: 700;
       color: var(--navy);
@@ -253,20 +260,39 @@
 </head>
 
 <body>
-  <header>
-    <div class="header-brand">
-      <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
-      <span class="header-title">Regional Forensic Unit 10 LMS</span>
+  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+    <div class="header-brand d-flex align-items-center">
+      <div class="header-logo">
+        PNP<br />FORENSIC<br />GROUP
+      </div>
+      <div class="header-divider"></div>
+      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
     </div>
-    <div class="header-user">
-      <div class="user-avatar"></div>
-      <div class="user-info">
-        <div class="user-role">Logistics Officer</div>
-        <div class="user-greet">Welcome!</div>
+
+    <div class="header-user d-flex align-items-center">
+      <div class="notification-wrapper mr-4">
+        <i class="fas fa-bell {% if upcoming_pms > 0 or upcoming_repairs > 0 %}
+            text-danger
+          {% else %}
+            text-muted
+          {% endif %}">
+
+        </i>
+      </div>
+
+      <div class="profile-group d-flex align-items-center">
+        <div class="user-avatar d-flex align-items-center justify-content-center">
+          <i class="fas fa-user text-muted"></i>
+        </div>
+        <div class="user-text ml-2">
+          <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
+          <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
+        </div>
       </div>
     </div>
   </header>
-  {% include 'sidebar.html' %}
+
+  {% include 'communications/sidebar.html' %}
 
   <main>
     <div class="activity-header">
@@ -285,7 +311,7 @@
       <p>Loading activity logs...</p>
     </div>
 
-    <a href="{% url 'communications_list' %}" class="return-link">
+    <a href="{% url 'communications:communications_list' %}" class="return-link">
       ← Return to Dashboard
     </a>
   </main>
