@@ -4,127 +4,167 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Activity Logs</title>
 
   <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
   <link rel="stylesheet" href="{% static 'css/communications.css' %}">
 
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
   <style>
-    main {
-      margin-left: 290px;
-      padding: 120px 48px 40px;
+    body {
+      font-family: 'Inter', sans-serif;
       background: #f1f5f9;
-      min-height: 100vh;
+      margin: 0;
+      overflow-x: hidden;
+      color: #1e293b;
     }
 
-    .activity-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 36px;
+    .navbar-header {
+      height: 70px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
     }
 
-    .activity-title h1 {
-      font-family: 'Rajdhani', sans-serif;
-      color: #0d2155;
-      font-size: 34px;
-      margin-bottom: 4px;
-    }
-
-    .activity-title p {
-      color: #64748b;
-      font-size: 14px;
-    }
-
-    .filter-buttons {
-      display: flex;
-      border: 1px solid #2563eb;
-      border-radius: 999px;
-      overflow: hidden;
-      background: white;
-    }
-
-    .filter-buttons button {
-      border: none;
-      padding: 8px 18px;
-      font-weight: 600;
-      cursor: pointer;
-      background: white;
-      color: #2563eb;
-    }
-
-    .filter-buttons button.active {
-      background: #2563eb;
-      color: white;
-    }
-
-    .activity-list {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .log-card {
-      background: white;
-      border-left: 4px solid #22c55e;
-      padding: 20px 24px;
-      margin-bottom: 18px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .log-card.updated {
-      border-left-color: #2563eb;
-    }
-
-    .log-card.moved {
-      border-left-color: #f97316;
-    }
-
-    .log-card.deleted {
-      border-left-color: #ef4444;
-    }
-
-    .log-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
+    .header-logo {
       font-size: 11px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: #1a2b6d;
+      text-transform: uppercase;
+    }
+
+    .header-divider {
+      height: 40px;
+      width: 2px;
+      background-color: #1a2b6d;
+      margin: 0 15px;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
       font-weight: 700;
+      color: #1a2b6d;
+      margin: 0;
+    }
+
+    .notification-wrapper i {
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      background-color: #e9ecef;
+      border-radius: 50%;
+      font-size: 1.1rem;
+    }
+
+    .user-name {
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    .user-role {
+      font-size: 12px;
+      line-height: 1;
+    }
+
+    main {
+      margin-left: 315px;
+      padding: 95px 24px 40px;
+      min-height: 100vh;
+      background: #f1f5f9;
+    }
+
+    .page-title {
+      font-weight: 700;
+      color: #1a2b6d;
+      margin: 20px 0 4px 0;
+      font-size: 28px;
+    }
+
+    .filter-btn {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 5px 15px;
+      border-radius: 20px;
+    }
+
+    .activity-timeline {
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      margin: 0;
+    }
+
+    .log-card-delete,
+    .log-card-update,
+    .log-card-create,
+    .log-card-moved {
+      border-left: 4px solid #ef4444 !important;
+      border-radius: 3px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
+      margin-bottom: 16px !important;
+      background: #ffffff;
+    }
+
+    .log-card-delete .card-body,
+    .log-card-update .card-body,
+    .log-card-create .card-body,
+    .log-card-moved .card-body {
+      padding: 22px 34px !important;
+    }
+
+    .asset-id-badge {
+      background-color: #f1f5f9;
+      color: #475569;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .badge-secondary {
+      background-color: #6b7280 !important;
       color: white;
-      background: #22c55e;
+      font-size: 11px;
+    }
+
+    .action-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+      margin-left: 10px;
+    }
+
+    .log-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #000;
+      margin-bottom: 6px;
+    }
+
+    .log-stock {
+      font-size: 13px;
+      color: #475569;
       margin-bottom: 8px;
     }
 
-    .log-badge.updated {
-      background: #2563eb;
-    }
-
-    .log-badge.moved {
-      background: #f97316;
-    }
-
-    .log-badge.deleted {
-      background: #ef4444;
-    }
-
-    .log-main h3 {
-      font-size: 17px;
-      color: #1e293b;
-      margin-bottom: 5px;
-    }
-
-    .log-main p {
+    .log-time {
       font-size: 13px;
       color: #64748b;
-    }
-
-    .log-date {
-      text-align: right;
-      color: #64748b;
-      font-size: 13px;
-      min-width: 170px;
+      font-weight: 600;
     }
 
     .return-link {
@@ -132,161 +172,89 @@
       text-align: center;
       margin-top: 30px;
       color: #64748b;
-      text-decoration: none;
       font-weight: 600;
+      text-decoration: none;
     }
 
     .return-link:hover {
       color: #2563eb;
+      text-decoration: none;
     }
 
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      height: var(--header-h);
-      background: var(--white);
-      border-bottom: 3px solid var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 24px 0 0;
-      box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
+    #sidebar {
+      top: 70px !important;
+      height: calc(100vh - 70px) !important;
+      z-index: 999 !important;
     }
 
-    .header-brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 0 20px;
-      margin: 8px 20px 8px 12px;
-      border-radius: 6px;
-      height: 54px;
-    }
-
-    .header-logo {
-      width: 46px;
-      height: 46px;
-      background: var(--navy);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 9px;
-      font-weight: 700;
-      text-align: center;
-      line-height: 1.1;
-      padding: 4px;
-      letter-spacing: .5px;
-    }
-
-    .header-title {
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--navy);
-      letter-spacing: .5px;
-    }
-
-    .header-user {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-radius: 8px;
-      padding: 8px 16px;
-      min-width: 170px;
-    }
-
-    .user-avatar {
-      width: 36px;
-      height: 36px;
-      background: var(--bg);
-      border-radius: 50%;
-      border: 2px solid var(--border);
-    }
-
-    .user-info {
-      line-height: 1.3;
-    }
-
-    .user-role {
-      font-weight: 600;
-      font-size: 14px;
-      color: var(--accent);
-    }
-
-    .user-greet {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .layout {
-      display: flex;
-      padding-top: var(--header-h);
-      min-height: 100vh;
+    .navbar-header {
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      z-index: 1000 !important;
     }
 
     main {
-      margin-left: var(--sidebar-w);
-      flex: 1;
-      padding: 28px 28px 40px;
-    }
-
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: var(--bg);
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 3px;
+      margin-left: 315px !important;
+      padding: 95px 24px 40px !important;
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <div class="header-brand">
-      <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
-      <span class="header-title">Regional Forensic Unit 10 LMS</span>
+
+  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+    <div class="header-brand d-flex align-items-center">
+      <div class="header-logo">
+        PNP<br>FORENSIC<br>GROUP
+      </div>
+      <div class="header-divider"></div>
+      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
     </div>
-    <div class="header-user">
-      <div class="user-avatar"></div>
-      <div class="user-info">
-        <div class="user-role">Logistics Officer</div>
-        <div class="user-greet">Welcome!</div>
+
+    <div class="header-user d-flex align-items-center">
+      <div class="notification-wrapper mr-4">
+        <i class="fas fa-bell text-muted"></i>
+      </div>
+
+      <div class="profile-group d-flex align-items-center">
+        <div class="user-avatar d-flex align-items-center justify-content-center">
+          <i class="fas fa-user text-muted"></i>
+        </div>
+        <div class="user-text ml-2">
+          <div class="user-name font-weight-bold text-dark">
+            {{ user.get_full_name|default:user.username }}
+          </div>
+          <div class="user-role text-muted">Logistics Officer</div>
+        </div>
       </div>
     </div>
   </header>
+
   {% include 'sidebar.html' %}
 
   <main>
-    <div class="activity-header">
-      <div class="activity-title">
-        <h1>Activity History</h1>
-        <p>Tracking system modifications, additions, and updates</p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h3 class="page-title mb-0">Activity History</h3>
+        <p class="text-muted small">Tracking Communications modifications, additions, and stock updates</p>
       </div>
 
-      <div class="filter-buttons">
-        <button class="active">Last 7 Days</button>
-        <button>Last 30 Days</button>
+      <div class="btn-group">
+        <button class="btn filter-btn btn-primary">Last 7 Days</button>
+        <button class="btn filter-btn btn-outline-primary">Last 30 Days</button>
       </div>
     </div>
 
-    <div class="activity-list" id="activityLogList">
-      <p>Loading activity logs...</p>
+    <div class="activity-timeline" id="activityLogList">
+      <div class="text-center py-5">
+        <i class="fas fa-history fa-3x text-light mb-3"></i>
+        <p class="text-muted">Loading activity logs...</p>
+      </div>
     </div>
 
     <a href="{% url 'communications_list' %}" class="return-link">
-      ← Return to Dashboard
+      <i class="fas fa-arrow-left mr-1"></i> Return to Communications
     </a>
   </main>
 
@@ -297,16 +265,6 @@
       "https://vamjajitzyspdyfxisac.supabase.co",
       "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54"
     );
-
-    function getLogType(action) {
-      const text = action.toLowerCase();
-
-      if (text.includes("moved") || text.includes("ber")) return "moved";
-      if (text.includes("deleted")) return "deleted";
-      if (text.includes("updated")) return "updated";
-
-      return "created";
-    }
 
     function formatDate(dateString) {
       const date = new Date(dateString);
@@ -323,34 +281,69 @@
 
       if (error) {
         console.error(error);
-        list.innerHTML = "<p>Failed to load activity logs.</p>";
+        list.innerHTML = `
+          <div class="text-center py-5">
+            <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
+            <p class="text-muted">Failed to load activity logs.</p>
+          </div>
+        `;
         return;
       }
 
       if (!data || data.length === 0) {
-        list.innerHTML = "<p>No activity logs yet.</p>";
+        list.innerHTML = `
+          <div class="text-center py-5">
+            <i class="fas fa-history fa-3x text-light mb-3"></i>
+            <p class="text-muted">No activity logs found.</p>
+          </div>
+        `;
         return;
       }
 
-      list.innerHTML = data.map(log => {
-        const type = getLogType(log.action);
+      list.innerHTML = data.map(log => `
+        <div class="card shadow-sm log-card-delete">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
 
-        return `
-        <div class="log-card ${type}">
-          <div class="log-main">
-            <span class="log-badge ${type}">${log.action}</span>
-            <h3>${log.details || "Activity recorded"}</h3>
-            <p>Action performed by system administrator.</p>
-          </div>
+              <div>
+                <div class="d-flex align-items-center mb-2">
+                  <span class="badge asset-id-badge mr-2">
+                    ID: ${log.communication_id ?? "-"}
+                  </span>
 
-          <div class="log-date">
-            <div>${formatDate(log.created_at)}</div>
-            <div>Old Stock: ${log.old_stock ?? "-"}</div>
-            <div>New Stock: ${log.new_stock ?? "-"}</div>
+                  <span class="badge badge-pill badge-secondary">
+                    communications
+                  </span>
+
+                  <span class="action-label">
+                    ${log.action || "Activity"}
+                  </span>
+                </div>
+
+                <div class="log-title">
+                  ${log.details || "Activity recorded"}
+                </div>
+
+                <p class="log-stock">
+                  Old Stock: ${log.old_stock ?? "-"} &nbsp; | &nbsp;
+                  New Stock: ${log.new_stock ?? "-"}
+                </p>
+
+                <small class="text-muted">
+                  Action by: System Administrator
+                </small>
+              </div>
+
+              <div class="text-right">
+                <span class="log-time text-nowrap">
+                  <i class="far fa-clock"></i> ${formatDate(log.created_at)}
+                </span>
+              </div>
+
+            </div>
           </div>
         </div>
-      `;
-      }).join("");
+      `).join("");
     }
 
     document.addEventListener("DOMContentLoaded", loadActivityLogs);
