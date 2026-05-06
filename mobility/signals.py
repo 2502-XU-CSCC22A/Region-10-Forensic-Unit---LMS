@@ -1,21 +1,27 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils import timezone
 from .models import Vehicle
-from config.models import Asset, Category, AssetStatus
+from config.models import AssetStatus
 
 @receiver(post_save, sender=Vehicle)
-def sync_vehicle_to_assets(sender, instance, created, **kwargs):
-    if created:
-        category, _ = Category.objects.get_or_create(category_name="VEHICLE")
-        
-        status = AssetStatus.objects.filter(name__icontains="Active").first()
+def sync_disposal_status(sender, instance, **kwargs):
+    if instance.status == "Disposed":
+        try:
+            disposed_status = AssetStatus.objects.get(status_name='Disposed')
+            if instance.asset.status != disposed_status:
+                instance.asset.status = disposed_status
+                instance.asset.save()
+        except AssetStatus.DoesNotExist:
+            pass
 
-        Asset.objects.create(
-            property_no=instance.plate_number or instance.conduction_number or instance.vehicle_id,
-            model=f"{instance.make} {instance.model}",
-            serial_no=instance.chassis_number or instance.vehicle_id,
-            date_acquired=timezone.now().date(),
-            category=category,
-            status=status,
-        )
+        try:
+            from disposal.models import DisposalItem
+            DisposalItem.objects.get_or_create(
+                property_no=instance.asset.property_no,
+                defaults={
+                    "disposal_reason": "Auto-synced from Mobility",
+                    "expiry_date": getattr(instance, "registration_renewal_date", None),
+                },
+            )
+        except (ModuleNotFoundError, ImportError):
+            pass
