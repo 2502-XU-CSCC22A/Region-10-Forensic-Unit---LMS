@@ -3,99 +3,128 @@
 
 {% block content %}
 <style>
-    /* Same Theme as Dashboard */
-    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
-    .f-card { background: white; border-radius: 12px; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid #4e73df; }
-    .f-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 18px; background: #4e73df; color: white; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+    .f-card { background: white; border-radius: 12px; padding: 15px; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--navy); }
+    .f-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 18px; background: var(--navy); color: white; }
     .f-info h4 { margin: 0; font-size: 1.3rem; font-weight: 700; color: #1e293b; }
     .f-info small { color: #64748b; font-size: 0.7rem; font-weight: 600; display: block; line-height: 1.2; }
     
-    .section-title { font-weight: 700; color: #1a2b6d; margin: 35px 0 15px 0; }
+    .section-title { font-weight: 700; color: var(--navy); margin: 35px 0 15px 0; }
 
-    /* Wide Table Styling from Reference */
-    .table-detailed { font-size: 0.75rem; background: white; }
+    .table-detailed { font-size: 0.75rem; background: white; border-collapse: separate; border-spacing: 0; }
     .table-detailed thead th { 
         background-color: #f8f9fc; 
         text-transform: uppercase; 
-        color: #4e73df; 
+        color: var(--navy); 
         letter-spacing: 0.5px;
         border-top: none;
+        padding: 15px 10px;
         vertical-align: middle;
+        border-bottom: 2px solid #e2e8f0;
     }
-    .table-detailed td { vertical-align: middle; color: #4a5568; padding: 12px 8px; }
+    .table-detailed td { vertical-align: middle; color: #4a5568; padding: 12px 10px; border-bottom: 1px solid #edf2f7; }
     .text-pms-none { color: #e53e3e; font-style: italic; font-weight: 500; }
-    .scroll-wrapper { overflow-x: auto; background: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .scroll-wrapper { overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+    
+    /* Badge styling for status */
+    .status-badge { padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 0.7rem; }
 </style>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h3 class="section-title mb-0">Detailed Vehicle Assets</h3>
-    <a href="{% url 'vehicle_management' %}" class="btn btn-sm btn-outline-primary shadow-sm">
-        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    <a href="{% url 'mobility:vehicle_management' %}" class="btn btn-sm btn-outline-primary shadow-sm" style="border-radius: 8px;">
+        <i class="fas fa-arrow-left mr-1"></i> Back to Dashboard
     </a>
 </div>
 
 <div class="stat-grid">
-    <div class="f-card"><div class="f-icon"><i class="fas fa-car"></i></div><div class="f-info"><small>Total Assets</small><h4>{{ vehicles.count }}</h4></div></div>
+    <div class="f-card">
+        <div class="f-icon"><i class="fas fa-car"></i></div>
+        <div class="f-info">
+            <small>Total Assets</small>
+            <h4>{{ vehicles.count }}</h4>
+        </div>
+    </div>
 </div>
 
 <div class="scroll-wrapper">
     <table class="table table-hover table-detailed mb-0">
         <thead>
             <tr>
-                <th>Kind</th>
-                <th>Plate NR</th>
-                <th>Conduction NR</th>
-                <th>Make</th>
-                <th>Model</th>
-                <th>Engine NR</th>
-                <th>Chassis NR</th>
-                <th>Unit</th>
-                <th>Subunit</th>
-                <th>Latest Odo</th>
-                <th>For PMS?</th>
+                <th><i class="fas fa-tag mr-1"></i> Kind</th>
+                <th><i class="fas fa-id-card mr-1"></i> Plate NR</th>
+                <th><i class="fas fa-barcode mr-1"></i> Conduction</th>
+                <th><i class="fas fa-industry mr-1"></i> Make</th>
+                <th><i class="fas fa-car-side mr-1"></i> Model</th>
+                <th><i class="fas fa-fingerprint mr-1"></i> Engine NR</th>
+                <th><i class="fas fa-cogs mr-1"></i> Chassis NR</th>
+                <th><i class="fas fa-building mr-1"></i> Subunit</th>
+                <th><i class="fas fa-tachometer-alt mr-1"></i> Odo</th>
+                <th><i class="fas fa-tools mr-1"></i> Status</th>
                 <th class="text-center">Action</th>
             </tr>
         </thead>
         <tbody>
             {% for vehicle in vehicles %}
             <tr>
-                <td class="font-weight-bold" style="width: 100px;">{{ vehicle.kind }}</td>
-                <td>{{ vehicle.plate_number|default:"" }}</td>
-                <td>{{ vehicle.conduction_number|default:"" }}</td>
+                <td class="font-weight-bold" style="color: var(--navy);">{{ vehicle.kind }}</td>
+                <td><span class="badge badge-light border">{{ vehicle.plate_number|default:"---" }}</span></td>
+                <td>{{ vehicle.conduction_number|default:"---" }}</td>
                 <td>{{ vehicle.make }}</td>
                 <td>{{ vehicle.model }}</td>
-                <td>{{ vehicle.engine_number }}</td>
-                <td>{{ vehicle.chassis_number }}</td>
-                <td>PNP FG</td> <td><small>{{ vehicle.subunit|default:"REGIONAL CRIME LABORATORY OFFICE 10" }}</small></td>
-                <td>{{ vehicle.latest_odo|default:"" }}</td>
+                <td><code class="small">{{ vehicle.engine_number }}</code></td>
+                <td><code class="small">{{ vehicle.chassis_number }}</code></td>
+                <td><small class="text-muted">{{ vehicle.subunit|default:"REGION 10 FORENSIC UNIT" }}</small></td>
+                <td>{{ vehicle.latest_odo|default:"0" }}</td>
                 <td>
                     {% if vehicle.status == 'No Record' %}
-                        <span class="text-pms-none">No PM data recorded</span>
+                        <span class="text-pms-none">No PM data</span>
+                    {% elif vehicle.status == 'Good Condition' %}
+                        <span class="badge badge-green">Good</span>
                     {% else %}
-                        {{ vehicle.status }}
+                        <span class="badge badge-red">{{ vehicle.status }}</span>
                     {% endif %}
                 </td>
                 <td class="text-center">
                     <div class="dropdown">
-                        <button class="btn btn-sm btn-primary dropdown-toggle shadow-sm" style="font-size: 0.7rem;" data-toggle="dropdown">
-                            Actions
+                        <button class="btn btn-sm btn-light border dropdown-toggle" data-toggle="dropdown" style="font-size: 0.7rem;">
+                            Options
                         </button>
-                        <div class="dropdown-menu dropdown-menu-right shadow">
-                            <a class="dropdown-item" href="{% url 'edit_vehicle' vehicle.pk %}"><i class="fas fa-edit mr-2 text-primary"></i> Edit</a>
+                        <div class="dropdown-menu dropdown-menu-right shadow border-0">
+                            <!-- PUBLIC: All users can print PAR -->
+                            <a class="dropdown-item" href="{% url 'mobility:print_par' vehicle.pk %}">
+                                <i class="fas fa-print mr-2 text-success"></i> Print PAR
+                            </a>
+
+                            <!-- STRICT: Only Logistics Officer can Edit/Delete -->
+                            {% if current_user_role == "Logistics Officer" %}
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item text-danger" href="{% url 'delete_vehicle' vehicle.pk %}"><i class="fas fa-trash mr-2"></i> Delete</a>
+                            <a class="dropdown-item" href="{% url 'mobility:edit_vehicle' vehicle.pk %}">
+                                <i class="fas fa-edit mr-2 text-primary"></i> Edit Asset
+                            </a>
+                            <a class="dropdown-item text-danger" href="{% url 'mobility:delete_vehicle' vehicle.pk %}" 
+                               onclick="return confirm('Strict Action: Are you sure you want to delete this vehicle asset?')">
+                                <i class="fas fa-trash mr-2"></i> Delete
+                            </a>
+                            {% endif %}
                         </div>
                     </div>
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="12" class="text-center py-5 text-muted">No records found.</td></tr>
+            <tr>
+                <td colspan="11" class="text-center py-5 text-muted">
+                    <i class="fas fa-folder-open d-block mb-2" style="font-size: 24px;"></i>
+                    No detailed vehicle records found.
+                </td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
-<div class="mt-3 text-muted">
-    <small>Showing 1 to {{ vehicles.count }} entries</small>
+<div class="mt-3 d-flex justify-content-between align-items-center">
+    <small class="text-muted">Showing 1 to {{ vehicles.count }} entries</small>
+    <small class="text-muted">Confidential Forensic Unit Data</small>
 </div>
 {% endblock %}

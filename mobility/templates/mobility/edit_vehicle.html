@@ -2,108 +2,133 @@
 
 {% block content %}
 <style>
-    /* Styling for the Xavier University / R10FU-LMS aesthetic */
-    .section-title { font-weight: 700; color: #1a2b6d; margin: 20px 0 15px 0; }
+    
+    .section-title { font-weight: 700; color: var(--navy); margin: 20px 0 15px 0; }
     .edit-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
     
     .compact-group label { 
         display: block; 
-        font-size: 0.75rem; 
+        font-size: 0.72rem; 
         font-weight: 700; 
         color: #64748b; 
         text-transform: uppercase; 
         margin-bottom: 4px; 
     }
     
-    /* Ensure all inputs, selects, and textareas look consistent */
     .compact-group input, 
     .compact-group select, 
     .compact-group textarea { 
         width: 100%; 
-        padding: 8px; 
-        border-radius: 6px; 
-        border: 1px solid #d1d5db; 
+        padding: 8px 12px; 
+        border-radius: 8px; 
+        border: 1px solid var(--border); 
         font-size: 0.9rem; 
-        transition: border-color 0.2s;
+        transition: all 0.2s;
     }
 
     .compact-group input:focus, .compact-group select:focus {
         outline: none;
-        border-color: #1a2b6d;
-        box-shadow: 0 0 0 2px rgba(26, 43, 109, 0.1);
+        border-color: var(--navy);
+        box-shadow: 0 0 0 3px rgba(26, 43, 109, 0.1);
     }
 
     .errorlist {
         list-style: none;
         padding: 0;
-        margin: 2px 0 0 0;
+        margin: 4px 0 0 0;
         color: #dc3545;
         font-size: 0.75rem;
         font-weight: 600;
     }
     
-    .btn-outline-danger:hover { background-color: #dc3545; color: white; }
+    .access-denied {
+        text-align: center;
+        padding: 50px;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
     
-    /* Responsive adjustment for mobile */
     @media (max-width: 768px) {
         .edit-grid { grid-template-columns: 1fr; }
     }
 </style>
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="section-title mb-0">Update Vehicle Asset</h3>
-            <p class="text-muted small">Editing Record: <strong>{{ vehicle.plate_number|default:vehicle.conduction_number }}</strong></p>
+    <!-- ROLE CHECK: Only Logistics Officer can access this page -->
+    {% if current_user_role == "Logistics Officer" %}
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h3 class="section-title mb-0">Update Vehicle Asset</h3>
+                <p class="text-muted small">
+                    <i class="fas fa-database mr-1"></i> 
+                    Editing Record: <strong>{{ vehicle.plate_number|default:vehicle.conduction_number }}</strong>
+                </p>
+            </div>
+            <a href="{% url 'mobility:vehicle_management' %}" class="btn btn-sm btn-outline-secondary px-4 shadow-sm" style="border-radius: 8px;">
+                <i class="fas fa-times mr-1"></i> Cancel
+            </a>
         </div>
-        <a href="{% url 'vehicle_management' %}" class="btn btn-sm btn-outline-secondary px-4">
-            <i class="fas fa-times mr-1"></i> Cancel
-        </a>
-    </div>
 
-    <div class="card shadow-sm p-4 border-0" style="border-radius: 15px;">
-        <!-- Global Form Errors -->
-        {% if form.non_field_errors %}
-            <div class="alert alert-danger py-2">
-                {{ form.non_field_errors }}
-            </div>
-        {% endif %}
-
-        <form method="POST">
-            {% csrf_token %}
-            <div class="edit-grid">
-                {% for field in form %}
-                <div class="compact-group mb-3">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.errors %}
-                        {{ field.errors }}
-                    {% endif %}
-                    {% if field.help_text %}
-                        <small class="form-text text-muted">{{ field.help_text|safe }}</small>
-                    {% endif %}
+        <div class="card shadow-sm p-4 border-0" style="border-radius: 15px; background: #ffffff;">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger py-2 shadow-sm">
+                    <i class="fas fa-exclamation-triangle mr-2"></i> {{ form.non_field_errors }}
                 </div>
-                {% endfor %}
-            </div>
-            
-            <hr class="my-4">
-            
-            <div class="d-flex justify-content-between align-items-center mt-2">
-                <!-- Delete Action -->
-                <a href="{% url 'delete_vehicle' vehicle.pk %}" 
-                   class="btn btn-outline-danger px-4" 
-                   style="border-radius: 8px; font-weight: 600;"
-                   onclick="return confirm('Are you sure you want to delete this vehicle asset? This action cannot be undone.');">
-                    <i class="fas fa-trash-alt mr-2"></i> Delete Asset
-                </a>
+            {% endif %}
 
-                <!-- Save Action -->
-                <button type="submit" class="btn btn-primary px-5 shadow-sm" 
-                        style="background-color: #1a2b6d; border: none; border-radius: 8px; font-weight: 600;">
-                    <i class="fas fa-save mr-2"></i> Save Changes
-                </button>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="edit-grid">
+                    {% for field in form %}
+                    <div class="compact-group mb-3">
+                        <label for="{{ field.id_for_label }}">
+                            {% if field.field.required %}<span class="text-danger mr-1">*</span>{% endif %}
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="errorlist">{{ field.errors }}</div>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text|safe }}</small>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <!-- Action: Delete (Strictly Protected) -->
+                    <a href="{% url 'mobility:delete_vehicle' vehicle.pk %}" 
+                       class="btn btn-outline-danger px-4" 
+                       style="border-radius: 8px; font-weight: 600;"
+                       onclick="return confirm('Strict Action: Delete this vehicle asset? This cannot be undone.');">
+                        <i class="fas fa-trash-alt mr-2"></i> Delete Asset
+                    </a>
+
+                    <!-- Action: Save -->
+                    <button type="submit" class="btn btn-primary px-5 shadow-sm" 
+                            style="background-color: var(--navy); border: none; border-radius: 8px; font-weight: 600;">
+                        <i class="fas fa-save mr-2"></i> Update Registry
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    {% else %}
+        <!-- Access Denied Screen for unauthorized users -->
+        <div class="access-denied mt-5">
+            <i class="fas fa-lock text-danger mb-3" style="font-size: 3rem;"></i>
+            <h2 class="font-weight-bold" style="color: var(--navy);">Restricted Access</h2>
+            <p class="text-muted">You do not have the required permissions to edit vehicle assets. Only the <strong>Logistics Officer</strong> can perform this action.</p>
+            <div class="mt-4">
+                <a href="{% url 'mobility:vehicle_management' %}" class="btn btn-primary px-4" style="background: var(--navy); border: none; border-radius: 8px;">
+                    <i class="fas fa-arrow-left mr-2"></i> Return to Registry
+                </a>
             </div>
-        </form>
-    </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

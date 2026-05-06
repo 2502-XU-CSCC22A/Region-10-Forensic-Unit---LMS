@@ -8,11 +8,9 @@ from django.contrib.auth import views as auth_views
 from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
-    
+ 
     # ── Feature Pages ─────────────────────────────────────────────────────────────
-    path('disposal/', include('disposal.urls'), name='disposal'),
-    #path('login/', include ('login.urls'), name='login'),
-    path('mobility/', include('mobility.urls'), name='mobility'),
+    path('mobility/', include('mobility.urls')),
    
 
     

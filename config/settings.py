@@ -2,11 +2,12 @@ import os
 import ssl
 from pathlib import Path
 import dj_database_url
-import ssl
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
 
+# Global SSL override for restrictive network environments
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and 
     getattr(ssl, '_create_unverified_context', None)):
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -19,16 +20,15 @@ DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.vercel.app', '.supabase.co']
 
+# --- Application Definition ---
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions', 
-    'disposal',
-    #'login',
-    'config',
+    'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'config',
     'mobility',
 ]
 
@@ -63,6 +63,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# --- Database (Supabase / local) ---
 DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('DATABASE_URL'),
@@ -77,11 +78,13 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# --- Internationalization ---
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Manila' # Set to Philippine Time for Region 10
 USE_I18N = True
 USE_TZ = True
 
+# --- Static Files ---
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
@@ -89,23 +92,29 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ── Auth Redirects ────────────────────────────────────────────────────────────
+# --- Auth Redirects ---
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/login/'
 
-# ── Email ─────────────────────────────────────────────────────────────────────
-EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND')
+# --- Email Configuration ---
+# Defaults to Console in dev if no environment variable is present
 EMAIL_BACKEND = os.environ.get(
-    'EMAIL_BACKEND',
-    'django.core.mail.backends.console.EmailBackend'   # safe default for dev
+    'EMAIL_BACKEND', 
+    'django.core.mail.backends.console.EmailBackend'
 )
+
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
-EMAIL_PORT = os.environ.get('EMAIL_PORT')
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS') 
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@rfu10.gov.ph')
 
-# Critical for fixing the certificate verify failed error
+# Set default sender to the authenticated user or a system noreply address
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL', 
+    EMAIL_HOST_USER or 'noreply@rfu10.pnp.gov.ph'
+)
+
+# Fix for certificate verify failed errors on certain SMTP servers
 EMAIL_SSL_CONTEXT = ssl._create_unverified_context()

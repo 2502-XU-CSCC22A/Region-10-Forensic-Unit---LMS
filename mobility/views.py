@@ -1,255 +1,260 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Vehicle, PARRecord, ActivityLog
-from .forms import VehicleForm, PARForm
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta
-from django.contrib import messages
-import smtplib, ssl
+from django.core.mail import send_mail
 from django.conf import settings
-from disposal.models import DisposalItem, DisposalActivityLog
-from django.contrib.auth.decorators import login_required
 
+from .models import Vehicle, PARRecord, ActivityLog
+from config.models import AssetStatus 
+from .forms import VehicleForm, PARForm
+
+def is_logistics_officer(user):
+    return hasattr(user, 'userprofile') and user.userprofile.role == 'Logistics Officer'
+
+def get_user_role(user):
+    return user.userprofile.role if hasattr(user, 'userprofile') else None
 
 @login_required
-def edit_vehicle(request, pk):
-    # ... your existing code ...
-    if request.method == 'POST':
-        if form.is_valid():
-            vehicle = form.save()
-            ActivityLog.objects.create(
-                user=request.user,  # This will now always be a valid User
-                action_type='UPDATE',
-                description=f'Updated details for {vehicle.plate_number}'
-            )
-
-# --- MAIN DASHBOARD & VEHICLE ASSET ADDITION ---
 def vehicle_management(request):
+    current_user_role = get_user_role(request.user)
+    
     query = Q()
-    plate_no = request.GET.get('plate_no')
+    plate_no = request.GET.get("plate_no")
     if plate_no:
         query &= Q(plate_number__icontains=plate_no) | Q(conduction_number__icontains=plate_no)
-    
-    if request.method == 'POST':
+
+    all_v = Vehicle.objects.exclude(status="Disposed")
+    total = all_v.count()
+
+    def get_perc(count):
+        return (count / total * 100) if total > 0 else 0
+
+    counts = {
+        "with_pms": all_v.filter(status="Good Condition").count(),
+        "without_pms": all_v.filter(status="No Maintenance Record").count(),
+        "for_pms": all_v.filter(status="For PMS").count(),
+        "for_registration": all_v.filter(status="For Registration").count(),
+        "for_insurance": all_v.filter(status="For Insurance").count(),
+        "for_repair": all_v.filter(status="For Repair").count(),
+        "upcoming_pms": all_v.filter(status="Upcoming PMS").count(),
+    }
+
+    if request.method == "POST":
+        if not is_logistics_officer(request.user):
+            messages.error(request, "Unauthorized action.")
+            return redirect("mobility:vehicle_management")
+
         form = VehicleForm(request.POST)
         if form.is_valid():
             vehicle = form.save()
             ActivityLog.objects.create(
                 user=request.user,
-                action_type='CREATE',
-                description=f"Added new vehicle: {vehicle.make} {vehicle.model} ({vehicle.plate_number or vehicle.conduction_number})"
+                action="CREATE",
+                details=f"Added vehicle: {vehicle.make} {vehicle.model} ({vehicle.plate_number or vehicle.conduction_number})"
             )
-            messages.success(request, f"Vehicle added successfully.")
-            return redirect('vehicle_management')
+            messages.success(request, "Vehicle added successfully.")
+            return redirect("mobility:vehicle_management")
     else:
         form = VehicleForm()
 
-    all_v = Vehicle.objects.all()
-    total = all_v.count()
-    
-    with_pms_count = all_v.filter(status='Good Condition').count()
-    without_pms_count = all_v.filter(status='No Maintenance Record').count()
-    for_pms_count = all_v.filter(status='For PMS').count()
-    for_reg_count = all_v.filter(status='For Registration').count()
-    for_ins_count = all_v.filter(status='For Insurance').count()
-    up_repairs_count = all_v.filter(status='For Repair').count()
-    up_pms_count = all_v.filter(status='Upcoming PMS').count()
-
-    def get_perc(count):
-        return (count / total * 100) if total > 0 else 0
-
     context = {
-        'form': form, 
-        'vehicles': all_v.filter(query),
-        'total_vehicles': total,
-        'with_pms': with_pms_count,
-        'without_pms': without_pms_count,
-        'for_pms': for_pms_count,
-        'for_registration_renewal': for_reg_count,
-        'for_insurance_renewal': for_ins_count,
-        'upcoming_repairs': up_repairs_count,
-        'upcoming_pms': up_pms_count,
-        'p1': get_perc(with_pms_count),
-        'p2': get_perc(without_pms_count),
-        'p3': get_perc(for_pms_count),
-        'p4': get_perc(for_reg_count),
-        'p5': get_perc(for_ins_count),
-        'p6': get_perc(up_repairs_count),
-        'p7': get_perc(up_pms_count),
+        "form": form,
+        "vehicles": all_v.filter(query),
+        "total_vehicles": total,
+        "current_user_role": current_user_role,
+        **counts,
+        "p1": get_perc(counts["with_pms"]),
+        "p2": get_perc(counts["without_pms"]),
+        "p3": get_perc(counts["for_pms"]),
+        "p4": get_perc(counts["for_registration"]),
+        "p5": get_perc(counts["for_insurance"]),
+        "p6": get_perc(counts["for_repair"]),
+        "p7": get_perc(counts["upcoming_pms"]),
     }
+    return render(request, "mobility/vehicle_management.html", context)
 
-    return render(request, 'mobility/vehicle_management.html', context)
-
-# --- DETAILED VEHICLE LIST ---
+@login_required
 def vehicle_list_detailed(request):
-    vehicles = Vehicle.objects.all().order_by('make')
-    return render(request, 'mobility/vehicle_list_detailed.html', {'vehicles': vehicles})
+    current_user_role = get_user_role(request.user)
+    vehicles = Vehicle.objects.all().order_by("status", "make")
+    return render(request, "mobility/vehicle_list_detailed.html", {
+        "vehicles": vehicles,
+        "current_user_role": current_user_role
+    })
 
-# --- PAR MANAGEMENT (ISSUE NEW & REGISTRY TABLE) ---
-def par_management(request):
-    if request.method == 'POST':
-        p_form = PARForm(request.POST)
-        if p_form.is_valid():
-            par = p_form.save()
-            ActivityLog.objects.create(
-                user=request.user,
-                action_type='CREATE',
-                description=f"Issued PAR {par.par_number} to {par.issued_to}"
-            )
-            messages.success(request, f"PAR {par.par_number} issued successfully.")
-            return redirect('par_management')
-    else:
-        p_form = PARForm()
-    
-    context = {
-        'pars': PARRecord.objects.all().order_by('-date_issued'),
-        'p_form': p_form, 
-    }
-    return render(request, 'mobility/par_management.html', context)
-
-# --- EDIT PAR RECORD ---
-def edit_par(request, pk):
-    record = get_object_or_404(PARRecord, pk=pk)
-    if request.method == 'POST':
-        form = PARForm(request.POST, instance=record)
-        if form.is_valid():
-            form.save()
-            ActivityLog.objects.create(
-                user=request.user,
-                action_type='UPDATE',
-                description=f"Updated PAR Record: {record.par_number}"
-            )
-            messages.success(request, "PAR Record updated successfully.")
-            return redirect('par_management')
-    else:
-        form = PARForm(instance=record)
-    
-    return render(request, 'mobility/edit_par.html', {'form': form, 'record': record})
-
-# --- DELETE PAR RECORD ---
-def delete_par(request, pk):
-    par = get_object_or_404(PARRecord, pk=pk)
-    ActivityLog.objects.create(
-        user=request.user,
-        action_type='DELETE', 
-        description=f"Deleted PAR Record: {par.par_number}"
-    )
-    par.delete()
-    messages.warning(request, "PAR record removed.")
-    return redirect('par_management')
-
-# --- PRINT PAR ---
-def print_par(request, pk):
-    par = get_object_or_404(PARRecord, pk=pk)
-    return render(request, 'mobility/print_par.html', {'par': par})
-
-# --- EDIT VEHICLE ---
+@login_required
 def edit_vehicle(request, pk):
+    if not is_logistics_officer(request.user):
+        messages.error(request, "Permission denied.")
+        return redirect("mobility:vehicle_management")
+
     vehicle = get_object_or_404(Vehicle, pk=pk)
-    if request.method == 'POST':
+
+    if request.method == "POST":
         form = VehicleForm(request.POST, instance=vehicle)
         if form.is_valid():
             form.save()
             ActivityLog.objects.create(
                 user=request.user,
-                action_type='UPDATE',
-                description=f"Updated details for {vehicle.plate_number or vehicle.conduction_number}"
+                action="UPDATE",
+                details=f"Updated {vehicle.plate_number or vehicle.conduction_number}"
             )
-            messages.success(request, "Vehicle updated successfully.")
-            return redirect('vehicle_management')
+            messages.success(request, "Vehicle updated.")
+            return redirect("mobility:vehicle_management")
     else:
         form = VehicleForm(instance=vehicle)
-    return render(request, 'mobility/edit_vehicle.html', {'form': form, 'vehicle': vehicle})
 
-# --- DELETE VEHICLE ---
-def delete_vehicle(request, pk):
-    vehicle = get_object_or_404(Vehicle, pk=pk)
+    return render(request, "mobility/edit_vehicle.html", {"form": form, "vehicle": vehicle})
+
+@login_required
+def par_management(request):
+    current_user_role = get_user_role(request.user)
+
+    if request.method == "POST":
+        if not is_logistics_officer(request.user):
+            messages.error(request, "Unauthorized action.")
+            return redirect("mobility:par_management")
+
+        p_form = PARForm(request.POST)
+        if p_form.is_valid():
+            par = p_form.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                action="CREATE",
+                details=f"Issued PAR {par.par_number}"
+            )
+            messages.success(request, f"PAR {par.par_number} issued.")
+            return redirect("mobility:par_management")
+    else:
+        p_form = PARForm()
+
+    context = {
+        "pars": PARRecord.objects.filter(is_active=True).order_by("-date_issued"),
+        "p_form": p_form,
+        "current_user_role": current_user_role,
+    }
+    return render(request, "mobility/par_management.html", context)
+
+@login_required
+def edit_par(request, pk):
+    if not is_logistics_officer(request.user):
+        messages.error(request, "Permission denied.")
+        return redirect("mobility:par_management")
+
+    par = get_object_or_404(PARRecord, pk=pk)
+    if request.method == "POST":
+        form = PARForm(request.POST, instance=par)
+        if form.is_valid():
+            form.save()
+            ActivityLog.objects.create(
+                user=request.user,
+                action="UPDATE",
+                details=f"Updated PAR record: {par.par_number}"
+            )
+            messages.success(request, "PAR record updated successfully.")
+            return redirect("mobility:par_management")
+    else:
+        form = PARForm(instance=par)
+    
+    return render(request, "mobility/par_form.html", {"p_form": form, "par": par})
+
+@login_required
+def print_par(request, pk):
+    par = get_object_or_404(PARRecord, pk=pk)
+    return render(request, 'mobility/print_par.html', {'par': par})
+
+@login_required
+def archive_par(request, pk):
+    if not is_logistics_officer(request.user):
+        messages.error(request, "Permission denied.")
+        return redirect("mobility:par_management")
+
+    par = get_object_or_404(PARRecord, pk=pk)
+    par.is_active = False
+    par.save()
+
     ActivityLog.objects.create(
         user=request.user,
-        action_type='DELETE',
-        description=f"Deleted asset: {vehicle.make} ({vehicle.plate_number or vehicle.conduction_number})"
+        action="UPDATE",
+        details=f"Archived PAR: {par.par_number}"
     )
-    vehicle.delete()
-    messages.warning(request, "Vehicle record deleted.")
-    return redirect('vehicle_management')
+    messages.warning(request, f"PAR {par.par_number} archived.")
+    return redirect("mobility:par_management")
 
-# --- EMAIL ALERT SYSTEM ---
-def manual_email_alert(request):
-    urgent = Vehicle.objects.filter(status__in=['For Repair', 'For PMS', 'For Registration'])
-    
-    if urgent.exists():
-        vehicle_list = "\n".join([f"- {v.make} {v.model} ({v.plate_number or v.conduction_number}): {v.status}" for v in urgent])
-        message_body = (
-            f"Subject: RFU 10 Mobility Alert: Maintenance Required\n\n"
-            f"Good day,\n\nThis is an automated alert from the RFU 10 Logistics Management System.\n\n"
-            f"The following vehicles require maintenance or administrative action:\n\n{vehicle_list}\n\n"
-            f"Please update the system records once actions are taken."
-        )
-        
-        try:
-            context = ssl._create_unverified_context()
-            with smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT) as server:
-                server.starttls(context=context)
-                server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
-                server.sendmail(settings.EMAIL_HOST_USER, ['dlpalayen@gmail.com'], message_body)
-                
-            messages.success(request, "Alert emails sent successfully!")
-        except Exception as e:
-            messages.error(request, f"Email failed: {e}")
-    else:
-        messages.info(request, "No urgent records found.")
-        
-    return redirect('vehicle_management')
-
-# --- ACTIVITY LOG ---
-def activity_log(request):
-    period = request.GET.get('period', 'week')
-    days = 7 if period == 'week' else 30
-    cutoff = timezone.now() - timedelta(days=days)
-    logs = ActivityLog.objects.filter(timestamp__gte=cutoff).select_related('user').order_by('-timestamp')
-    return render(request, 'mobility/activity_log.html', {'logs': logs, 'period': period})
-
+@login_required
 def move_vehicle_to_disposal(request, pk):
-    # 1. Get the vehicle and its associated asset
+    if not is_logistics_officer(request.user):
+        messages.error(request, "Permission denied.")
+        return redirect("mobility:vehicle_management")
+
     vehicle = get_object_or_404(Vehicle, pk=pk)
-    asset_instance = vehicle.asset 
 
-    if request.method == 'POST':
-        reason = request.POST.get('disposal_reason', 'No reason provided')
+    if request.method == "POST":
+        reason = request.POST.get("disposal_reason", "No reason provided")
         
-        # 2. Create the DisposalItem
-        # Since DisposalItem inherits from Asset, we link it to the existing property_no
-        disposal_entry = DisposalItem.objects.create(
-            # Copying data from the existing asset/vehicle
-            property_no=asset_instance.property_no, 
-            disposal_reason=reason,
-            processed_by=request.user,
-            # If your Vehicle has an expiry/renewal date, map it here
-            expiry_date=vehicle.registration_renewal_date 
-        )
-
-        # 3. Update Vehicle Status to 'Disposed'
-        vehicle.status = 'Disposed'
+        vehicle.status = "Disposed"
         vehicle.save()
 
-        # 4. Log the activity in BOTH logs for a complete audit trail
-        # Mobility Log
+        try:
+            disposed_status = AssetStatus.objects.get(status_name='Disposed')
+            vehicle.asset.status = disposed_status
+            vehicle.asset.save()
+        except AssetStatus.DoesNotExist:
+            messages.error(request, "Config Error: 'Disposed' status missing.")
+            return redirect("mobility:vehicle_management")
+
+        PARRecord.objects.filter(vehicle=vehicle, is_active=True).update(is_active=False)
+
         ActivityLog.objects.create(
             user=request.user,
-            action_type='UPDATE',
-            description=f"Vehicle {vehicle.plate_number} moved to Disposal Registry."
+            action="DISPOSAL",
+            details=f"Vehicle {vehicle.plate_number} decommissioned. Reason: {reason}",
         )
+
+        messages.success(request, f"Vehicle {vehicle.plate_number} moved to disposal.")
+        return redirect("mobility:vehicle_management")
+
+    return render(request, "mobility/confirm_disposal.html", {"vehicle": vehicle})
+
+@login_required
+def manual_email_alert(request):
+    if not is_logistics_officer(request.user):
+        return redirect("mobility:vehicle_management")
+
+    m_query = Q(status="For PMS") | Q(status="Upcoming PMS") | Q(status="For Repair")
+    flagged = Vehicle.objects.filter(m_query)
+
+    if flagged.exists():
+        details = "".join([f"- {v.make} ({v.plate_number or v.conduction_number}) | Status: {v.status}\n" for v in flagged])
         
-        # Disposal Log
-        DisposalActivityLog.objects.create(
-            user=request.user,
-            asset=asset_instance,
-            action_type='CREATE',
-            description=f"Vehicle {vehicle.plate_number} flagged for disposal.",
-            disposal_reason=reason
-        )
+        try:
+            send_mail(
+                "Maintenance Alert - RFU 10",
+                f"Required maintenance:\n\n{details}",
+                settings.DEFAULT_FROM_EMAIL,
+                ['admin@rfu10.pnp.gov.ph'],
+                fail_silently=False,
+            )
+            messages.success(request, "Alerts sent.")
+        except Exception:
+            messages.error(request, "Mail delivery failed.")
+    
+    return redirect("mobility:vehicle_management")
 
-        messages.success(request, f"Vehicle {vehicle.plate_number} successfully moved to disposal.")
-        return redirect('vehicle_management')
+@login_required
+def activity_log(request):
+    current_user_role = get_user_role(request.user)
+    period = request.GET.get("period", "week")
+    days = 7 if period == "week" else 30
+    cutoff = timezone.now() - timedelta(days=days)
 
-    return render(request, 'mobility/confirm_disposal.html', {'vehicle': vehicle})
+    logs = ActivityLog.objects.filter(timestamp__gte=cutoff).select_related("user").order_by("-timestamp")
+
+    return render(request, "mobility/activity_log.html", {
+        "logs": logs,
+        "period": period,
+        "current_user_role": current_user_role
+    })
