@@ -12,7 +12,6 @@
 
     .registry-container { font-family: 'Inter', sans-serif; padding: 1.5rem; }
 
-    /* Navigation Link Styling */
     .btn-back {
         font-family: 'Inter', sans-serif;
         font-size: 0.85rem;
@@ -33,7 +32,6 @@
         letter-spacing: -0.02em;
     }
 
-    /* Form Styling */
     .form-label { 
         font-size: 0.75rem; 
         font-weight: 700; 
@@ -41,6 +39,7 @@
         text-transform: uppercase; 
         letter-spacing: 0.025em; 
         margin-bottom: 0.5rem; 
+        display: block;
     }
 
     .form-control, .form-select { 
@@ -49,7 +48,10 @@
         padding: 0.6rem 0.8rem; 
         font-size: 0.9rem; 
         font-family: 'Inter', sans-serif;
+        transition: border-color 0.2s;
     }
+
+    .form-control:focus { border-color: var(--navy); outline: none; }
 
     .btn-save { 
         background-color: var(--navy); 
@@ -59,12 +61,13 @@
         padding: 0.6rem 2rem; 
         border-radius: 8px; 
         font-family: 'Inter', sans-serif;
+        transition: opacity 0.2s;
     }
+    .btn-save:hover { opacity: 0.9; color: white; }
 
-    /* Table Design */
     .table thead th { 
         background-color: var(--bg-light); 
-        font-size: 0.75rem; 
+        font-size: 0.72rem; 
         font-weight: 700; 
         color: var(--navy); 
         text-transform: uppercase; 
@@ -75,11 +78,9 @@
     .table tbody td { 
         padding: 1rem; 
         vertical-align: middle; 
-        font-size: 0.9rem; 
-        font-family: 'Inter', sans-serif;
+        font-size: 0.88rem; 
     }
 
-    /* Action Icons */
     .btn-icon { 
         width: 32px; height: 32px; 
         display: inline-flex; align-items: center; justify-content: center; 
@@ -88,84 +89,99 @@
     }
     .btn-edit { color: #3b82f6; background: #eff6ff; }
     .btn-print { color: #475569; background: #f1f5f9; }
-    .btn-delete { color: #ef4444; background: #fef2f2; }
+    .btn-archive { color: #ef4444; background: #fef2f2; }
     .btn-icon:hover { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+    .unauthorized-badge {
+        background: #fff1f2;
+        color: #e11d48;
+        border: 1px solid #fda4af;
+        padding: 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
 </style>
 
 <div class="registry-container">
-    <!-- Header with Back Button -->
     <div class="mb-4">
         <a href="{% url 'mobility:vehicle_management' %}" class="btn-back">
             <i class="fas fa-arrow-left mr-2"></i> Back to Vehicles
         </a>
         <div class="d-flex justify-content-between align-items-center">
-            <h2 class="section-title mb-0">PAR Management</h2>
+            <h2 class="section-title mb-0">Property Acknowledgement Receipt (PAR)</h2>
             <span class="badge badge-light border text-muted px-3 py-2" style="border-radius: 20px; font-weight: 600;">
-                {{ pars.count }} Total Records
+                {{ pars.count }} Active Records
             </span>
         </div>
     </div>
 
-    <!-- Issuance Form Card -->
-    <div class="card border-0 shadow-sm mb-5" style="border-radius: 12px;">
+    {% if current_user_role == "Logistics Officer" %}
+    <div class="card border-0 shadow-sm mb-5" style="border-radius: 12px; border-left: 4px solid var(--navy) !important;">
         <div class="card-body p-4">
+            <h5 class="font-weight-bold mb-4" style="color: var(--navy); font-size: 1rem;">New Issuance Entry</h5>
             <form method="POST">
                 {% csrf_token %}
                 <div class="row g-3">
-                    <div class="col-md-3">
+                    <div class="col-md-3 mb-3">
                         <label class="form-label">PAR Number</label>
                         {{ p_form.par_number }}
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 mb-3">
                         <label class="form-label">Fund Cluster</label>
                         {{ p_form.fund_cluster }}
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 mb-3">
                         <label class="form-label">Vehicle Asset</label>
                         {{ p_form.vehicle }}
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 mb-3">
                         <label class="form-label">Reference No.</label>
                         {{ p_form.reference_no }}
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label">Issued To</label>
                         {{ p_form.issued_to }}
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label">Date Issued</label>
                         {{ p_form.date_issued }}
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label">Expiry Date</label>
                         {{ p_form.expiry_date }}
                     </div>
 
-                    <div class="col-12 mt-2">
-                        <label class="form-label">Remarks</label>
+                    <div class="col-12">
+                        <label class="form-label">Remarks / Conditions</label>
                         {{ p_form.remarks }}
                     </div>
 
                     <div class="col-12 mt-4 text-end">
                         <button type="submit" class="btn-save shadow-sm">
-                            <i class="fas fa-check-circle mr-2"></i> Save to Registry
+                            <i class="fas fa-file-contract mr-2"></i> Register Issuance
                         </button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
+    {% else %}
+    <div class="unauthorized-badge mb-5 d-flex align-items-center">
+        <i class="fas fa-lock mr-3"></i>
+        <span>Restricted Access: Only the <strong>Logistics Officer</strong> can register new PAR issuances.</span>
+    </div>
+    {% endif %}
 
-    <!-- Registry History -->
-    <h3 class="section-title mb-3" style="font-size: 1.5rem;">PAR History Registry</h3>
+    <h3 class="section-title mb-3" style="font-size: 1.25rem;">PAR History Registry</h3>
     <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
                         <th class="ps-4">PAR No.</th>
-                        <th>Personnel</th>
+                        <th>Accountable Personnel</th>
                         <th>Asset Description</th>
                         <th>Issue Date</th>
                         <th class="text-right pe-4">Actions</th>
@@ -175,18 +191,39 @@
                     {% for par in pars %}
                     <tr>
                         <td class="ps-4"><strong style="color: var(--navy);">{{ par.par_number }}</strong></td>
-                        <td><div class="font-weight-bold">{{ par.issued_to }}</div></td>
                         <td>
-                            <div class="font-weight-bold">{{ par.vehicle.make }} {{ par.vehicle.model }}</div>
-                            <small class="text-muted">{{ par.vehicle.plate_number }}</small>
+                            <div class="font-weight-bold">{{ par.issued_to }}</div>
+                            <small class="text-muted">PNP Personnel</small>
+                        </td>
+                        <td>
+                            <div class="font-weight-bold text-uppercase">{{ par.vehicle.make }} {{ par.vehicle.model }}</div>
+                            <code class="small text-primary">{{ par.vehicle.plate_number|default:par.vehicle.conduction_number }}</code>
                         </td>
                         <td>{{ par.date_issued|date:"M d, Y" }}</td>
                         <td class="text-right pe-4">
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{% url 'mobility:print_par' par.pk %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
-                                <a href="{% url 'mobility:edit_par' par.pk %}" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
-                                <a href="{% url 'mobility:delete_par' par.pk %}" class="btn-icon btn-delete" title="Delete" onclick="return confirm('Delete record?')"><i class="fas fa-trash-alt"></i></a>
+                                <a href="{% url 'mobility:print_par' par.pk %}" class="btn-icon btn-print" title="Print Document">
+                                    <i class="fas fa-print"></i>
+                                </a>
+                                
+                                {% if current_user_role == "Logistics Officer" %}
+                                    <a href="{% url 'mobility:edit_par' par.pk %}" class="btn-icon btn-edit" title="Edit Entry">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <!-- Path updated to 'archive_par' to match views.py and urls.py -->
+                                    <a href="{% url 'mobility:archive_par' par.pk %}" class="btn-icon btn-archive" title="Archive Record" 
+                                       onclick="return confirm('Archive this PAR record? Information will be moved to history logs.')">
+                                        <i class="fas fa-archive"></i>
+                                    </a>
+                                {% endif %}
                             </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="fas fa-folder-open d-block mb-2" style="font-size: 2rem; opacity: 0.3;"></i>
+                            No active PAR records found in the registry.
                         </td>
                     </tr>
                     {% endfor %}

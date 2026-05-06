@@ -10,7 +10,6 @@
         --bg-light: #f8fafc;
     }
 
-    /* Expand to full width to match Management View */
     .registry-container { font-family: 'Inter', sans-serif; padding: 1.5rem; }
 
     .btn-back {
@@ -33,7 +32,6 @@
         letter-spacing: -0.02em;
     }
 
-    /* Form Layout matching the density of image_cfa6f9.png */
     .form-label { 
         font-size: 0.75rem; 
         font-weight: 700; 
@@ -41,6 +39,7 @@
         text-transform: uppercase; 
         letter-spacing: 0.025em; 
         margin-bottom: 0.5rem; 
+        display: block;
     }
 
     .form-control, .form-select { 
@@ -49,6 +48,13 @@
         padding: 0.6rem 0.8rem; 
         font-size: 0.9rem; 
         font-family: 'Inter', sans-serif;
+        transition: all 0.2s;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--navy);
+        box-shadow: 0 0 0 3px rgba(10, 29, 67, 0.1);
+        outline: none;
     }
 
     .btn-update { 
@@ -59,72 +65,105 @@
         padding: 0.6rem 2rem; 
         border-radius: 8px; 
         font-family: 'Inter', sans-serif;
+        transition: opacity 0.2s;
     }
+    .btn-update:hover { opacity: 0.9; color: white; }
 
     .card-edit { 
         background-color: #ffffff; 
         border-radius: 12px; 
         border: 1px solid var(--border); 
     }
+
+    .access-denied-card {
+        text-align: center;
+        padding: 4rem;
+        background: white;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+    }
 </style>
 
 <div class="container-fluid registry-container">
-    <!-- Header -->
-    <div class="mb-4">
-        <a href="{% url 'mobility:par_management' %}" class="btn-back">
-            <i class="fas fa-arrow-left mr-2"></i> Back to PAR Registry
-        </a>
-        <div class="d-flex justify-content-between align-items-end">
-            <div>
-                <h2 class="section-title mb-0">Update PAR Record</h2>
-                <p class="text-muted small mb-0">
-                    Editing Registry Entry: <span class="font-weight-bold" style="color: var(--navy);">{{ record.par_number }}</span>
-                </p>
+    {% if current_user_role == "Logistics Officer" %}
+        <!-- Header -->
+        <div class="mb-4">
+            <a href="{% url 'mobility:par_management' %}" class="btn-back">
+                <i class="fas fa-arrow-left mr-2"></i> Back to PAR Registry
+            </a>
+            <div class="d-flex justify-content-between align-items-end">
+                <div>
+                    <h2 class="section-title mb-0">Update PAR Record</h2>
+                    <p class="text-muted small mb-0">
+                        <i class="fas fa-file-signature mr-1"></i> Editing Registry Entry: <span class="font-weight-bold" style="color: var(--navy);">{{ record.par_number }}</span>
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Edit Form Card (Same width as management form) -->
-    <div class="card border-0 shadow-sm card-edit">
-        <div class="card-body p-4">
-            <form method="POST">
-                {% csrf_token %}
-                <div class="row g-3">
-                    {% for field in form %}
-                        {% if field.name == 'remarks' %}
-                            <div class="col-12 mt-2">
-                                <label class="form-label">{{ field.label }}</label>
-                                {{ field }}
-                                <small class="text-muted" style="font-size: 0.7rem;">Update specific conditions or observations for this vehicle assignment.</small>
-                            </div>
-                        {% else %}
-                            <div class="col-md-3">
-                                <label class="form-label">{{ field.label }}</label>
-                                {{ field }}
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-                
-                <hr class="my-4" style="border-top: 1px solid var(--border);">
-                
-                <div class="d-flex justify-content-between align-items-center">
-                    <a href="{% url 'mobility:delete_par' record.pk %}" 
-                       class="text-danger small font-weight-bold" 
-                       style="text-decoration: none;"
-                       onclick="return confirm('Are you sure you want to archive this record?');">
-                        <i class="fas fa-trash-alt mr-1"></i> ARCHIVE RECORD
-                    </a>
-
-                    <div>
-                        <a href="{% url 'mobility:par_management' %}" class="btn btn-sm text-muted mr-2" style="font-weight: 600;">Cancel</a>
-                        <button type="submit" class="btn-update shadow-sm">
-                            <i class="fas fa-save mr-2"></i> Update Registry
-                        </button>
+        <!-- Edit Form Card -->
+        <div class="card border-0 shadow-sm card-edit">
+            <div class="card-body p-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        {% for field in form %}
+                            {% if field.name == 'remarks' %}
+                                <div class="col-12 mt-2">
+                                    <label class="form-label">
+                                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %} {{ field.label }}
+                                    </label>
+                                    {{ field }}
+                                    <small class="text-muted" style="font-size: 0.7rem;">Update specific conditions or observations for this vehicle assignment.</small>
+                                    {% if field.errors %}<div class="text-danger small font-weight-bold mt-1">{{ field.errors }}</div>{% endif %}
+                                </div>
+                            {% else %}
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">
+                                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %} {{ field.label }}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.errors %}<div class="text-danger small font-weight-bold mt-1">{{ field.errors }}</div>{% endif %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
-                </div>
-            </form>
+                    
+                    <hr class="my-4" style="border-top: 1px solid var(--border);">
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <!-- Archive Action (Strictly Protected) -->
+                        <a href="{% url 'mobility:delete_par' record.pk %}" 
+                           class="text-danger small font-weight-bold" 
+                           style="text-decoration: none; letter-spacing: 0.05em;"
+                           onclick="return confirm('STRICT ACTION: Are you sure you want to archive this record? This will remove it from the active registry.');">
+                            <i class="fas fa-archive mr-1"></i> ARCHIVE RECORD
+                        </a>
+
+                        <div>
+                            <a href="{% url 'mobility:par_management' %}" class="btn btn-sm text-muted mr-3" style="font-weight: 600;">Cancel</a>
+                            <button type="submit" class="btn-update shadow-sm">
+                                <i class="fas fa-save mr-2"></i> Update Registry
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    {% else %}
+        <!-- Access Denied View -->
+        <div class="access-denied-card shadow-sm">
+            <i class="fas fa-user-shield text-danger mb-4" style="font-size: 3.5rem;"></i>
+            <h2 class="section-title">Unauthorized Access</h2>
+            <p class="text-muted mx-auto" style="max-width: 500px;">
+                Your current account permissions do not allow you to modify PAR Records. Please contact the <strong>Logistics Officer</strong> if you believe this is an error.
+            </p>
+            <div class="mt-4">
+                <a href="{% url 'mobility:par_management' %}" class="btn btn-primary shadow-sm" style="background: var(--navy); border: none; border-radius: 8px; padding: 0.6rem 2rem;">
+                    <i class="fas fa-arrow-left mr-2"></i> Return to Registry
+                </a>
+            </div>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

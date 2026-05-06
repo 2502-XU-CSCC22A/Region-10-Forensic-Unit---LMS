@@ -2,20 +2,17 @@ from django import forms
 from .models import Vehicle, PARRecord
 
 class VehicleForm(forms.ModelForm):
-    # This maps the manual odometer input to the model's odometer_reading
     latest_odo = forms.IntegerField(label="LATEST ODOMETER", required=False)
 
     class Meta:
         model = Vehicle
         fields = [
-            'asset', 'vehicle_id', 'kind', 'make', 'model', 
-            'year', 'plate_number', 'conduction_number', 'status',
-            'engine_number', 'chassis_number', 
-            'latest_odo', 
-            'registration_renewal_date', 'insurance_renewal_date'
+            'asset', 'make', 'model', 'year', 'latest_odo', 
+            'plate_number', 'conduction_number', 'engine_number', 
+            'chassis_number', 'status', 'registration_renewal_date', 
+            'insurance_renewal_date'
         ]
         widgets = {
-            # Explicitly using Select widget for the Status dropdown logic
             'status': forms.Select(attrs={'class': 'form-control'}),
             'registration_renewal_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'insurance_renewal_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
@@ -23,18 +20,16 @@ class VehicleForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Apply consistent Bootstrap styling and uppercase labels for aesthetics
         for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control'})
             field.label = field.label.upper() if field.label else field_name.replace('_', ' ').upper()
             
         if self.instance and self.instance.pk:
-            self.fields['latest_odo'].initial = self.instance.odometer_reading
+            self.fields['latest_odo'].initial = self.instance.latest_odo
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        # Transfer the latest_odo value to the odometer_reading field before saving
-        instance.odometer_reading = self.cleaned_data.get('latest_odo') or 0
+        instance.latest_odo = self.cleaned_data.get('latest_odo') or 0
         if commit:
             instance.save()
         return instance
@@ -42,7 +37,6 @@ class VehicleForm(forms.ModelForm):
 class PARForm(forms.ModelForm):
     class Meta:
         model = PARRecord
-        # Added fund_cluster, reference_no, and expiry_date to match the PNP receipt requirements
         fields = [
             'vehicle', 
             'par_number', 
@@ -62,14 +56,18 @@ class PARForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # Apply Bootstrap classes dynamically
+        self.fields['vehicle'].queryset = Vehicle.objects.exclude(
+            status="Disposed"
+        ).exclude(
+            par_records__is_active=True
+        )
+
         for field_name, field in self.fields.items():
             if field_name == 'vehicle':
                 field.widget.attrs.update({'class': 'form-select'})
             elif field_name not in ['date_issued', 'expiry_date', 'remarks']:
                 field.widget.attrs.update({'class': 'form-control'})
         
-        # Labels updated to match your management dashboard UI
         self.fields['vehicle'].label = "VEHICLE ASSET"
         self.fields['par_number'].label = "PAR NO."
         self.fields['fund_cluster'].label = "FUND CLUSTER"
