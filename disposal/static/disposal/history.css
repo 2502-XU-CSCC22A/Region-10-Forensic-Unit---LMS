@@ -68,6 +68,13 @@ body {
     margin: 20px 0 15px 0;
 }
 
+.header-history {
+    margin-left: 320px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
 .filter-btn {
     font-size: 0.8rem;
     font-weight: 600;

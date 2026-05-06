@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from config.models import Asset, AssetStatus
+from django.contrib.auth.models import User
 from django.db.models import Q
 from mobility.models import Vehicle
 from disposal.models import DisposalItem
@@ -19,9 +20,21 @@ def dashboard_view(request):
 
     all_v = Vehicle.objects.all()
     all_a = Asset.objects.exclude(status_id__in=[5])
-    all_d = DisposalItem.objects.all()
+    all_d = DisposalItem.objects.exclude(status_id__in=[5])
     all_f = Firearm.objects.all()
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    
+    users = User.objects.select_related('userprofile') \
+        .filter(is_active=True) \
+        .order_by('-last_login')[:50]
+        
+    try:
+        current_user_role = request.user.userprofile.role
+        print("USER DEBUG:", repr(request.user.username))
+        print("ROLE DEBUG:", repr(current_user_role))
+    except Exception as e:
+        print("ROLE ERROR:", e)
+        current_user_role = None
 
     recent_assets = (
         Asset.objects
@@ -77,6 +90,7 @@ def dashboard_view(request):
         # 'total_inves':        all_i.count(),
         'activities':           activities,
         'notification_count':   min(len(activities), 99),
+        'current_user_role': current_user_role,
     }
     
     

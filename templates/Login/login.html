@@ -1,70 +1,97 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login – RFU10 LMS</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="{% static 'css/login.css' %}"/>
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login – RFU10 LMS</title>
 
-  <div class="login-wrapper">
-    <div class="login-container">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
-      <!-- Left panel -->
-      <div class="welcome-panel">
-        <img src="{% static 'img/RFU10 Logo.png' %}" class="small-logo" alt="RFU10 Logo"/>
-        <h1>Welcome Back!</h1>
-        <p class="panel-sub">Regional Forensic Unit 10</p>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}" />
+  </head>
+  <body>
+    <div class="login-wrapper">
+      <div class="login-container">
+        <!-- Left panel -->
+        <div class="welcome-panel">
+          <img src="{% static 'img/RFU10 Logo.png' %}" class="small-logo" alt="RFU10 Logo" />
+          <h1>Welcome Back!</h1>
+          <p class="panel-sub">Regional Forensic Unit 10</p>
+        </div>
+
+        <!-- Right panel -->
+        <div class="form-panel">
+          <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            <div class="form-header">
+              <h2>LOGIN</h2>
+            </div>
+
+            <!-- Django messages (wrong credentials) -->
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-error">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+
+            <div class="input-group">
+              <label for="id_username">Username</label>
+              <input type="text" id="id_username" name="username" placeholder="Enter your username" required autocomplete="username" />
+            </div>
+
+            <div class="input-group">
+              <label for="id_password">Password</label>
+              <div class="password-wrapper" style="position: relative; display: flex; align-items: center;">
+                <input type="password" id="id_password" name="password"
+                       placeholder="Enter your password" required autocomplete="current-password"
+                       style="width: 100%; padding-right: 40px;"> 
+                
+                <button type="button" id="togglePassword" 
+                        style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; display: flex; align-items: center;">
+                  <i class="ph ph-eye-slash" id="eyeIcon" style="font-size: 20px; color: #64748b;"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-options">
+              <label class="remember-me">
+                <input type="checkbox" name="remember" />
+                <span>Remember Me</span>
+              </label>
+              <a href="{% url 'reset_password' %}" class="forgot-link">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="login-button">Login</button>
+          </form>
+        </div>
+        <!-- /form-panel -->
       </div>
+      <!-- /login-container -->
+    </div>
+    <!-- /login-wrapper -->
 
-      <!-- Right panel -->
-      <div class="form-panel">
-        <form method="POST" action="{% url 'login' %}">
-          {% csrf_token %}
-
-          <div class="form-header">
-            <h2>LOGIN</h2>
-          </div>
-
-          <!-- Django messages (wrong credentials) -->
-          {% if messages %}
-            {% for message in messages %}
-              <div class="alert alert-error">{{ message }}</div>
-            {% endfor %}
-          {% endif %}
-
-          <div class="input-group">
-            <label for="id_username">Username</label>
-            <input type="text" id="id_username" name="username"
-                   placeholder="Enter your username" required autocomplete="username"/>
-          </div>
-
-          <div class="input-group">
-            <label for="id_password">Password</label>
-            <input type="password" id="id_password" name="password"
-                   placeholder="Enter your password" required autocomplete="current-password"/>
-          </div>
-
-          <div class="form-options">
-            <label class="remember-me">
-              <input type="checkbox" name="remember"/>
-              <span>Remember Me</span>
-            </label>
-            <a href="{% url 'reset_password' %}" class="forgot-link">Forgot Password?</a>
-          </div>
-
-          <button type="submit" class="login-button">Login</button>
-
-        </form>
-      </div><!-- /form-panel -->
-
-    </div><!-- /login-container -->
-  </div><!-- /login-wrapper -->
-
-</body>
+    <script>
+      const togglePassword = document.querySelector('#togglePassword')
+      const password = document.querySelector('#id_password')
+      const eyeIcon = document.querySelector('#eyeIcon')
+      
+      togglePassword.addEventListener('click', function (e) {
+        // Toggle the type attribute
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password'
+        password.setAttribute('type', type)
+      
+        // Toggle the icon (if using Phosphor icons like in your previous code)
+        if (type === 'text') {
+          eyeIcon.classList.replace('ph-eye-slash', 'ph-eye')
+        } else {
+          eyeIcon.classList.replace('ph-eye', 'ph-eye-slash')
+        }
+      })
+    </script>
+  </body>
 </html>

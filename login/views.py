@@ -68,7 +68,7 @@ def verify_token_view(request, token):
     else:
         request.session.set_expiry(0)            # expires on browser close
 
-    return redirect('dashboard')
+    return redirect('dashboard:dashboard_view')
 
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────

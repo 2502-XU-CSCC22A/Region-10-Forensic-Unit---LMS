@@ -9,13 +9,26 @@ from firearms.models import Firearm
 import datetime
 import uuid
 from django.contrib import messages
+from django.contrib.auth.models import User
 
 def investigative_view(request):
     vehicle_all = Vehicle.objects.count()
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
-    disposal_all = DisposalItem.objects.count()
+    disposal_all = DisposalItem.objects.exclude(status_id__in=[5])
     firearm_all = Firearm.objects.exclude(status_id__in=[4, 5]).count()
     inves_all = InvestigativeDetails.objects.count()
+    
+    users = User.objects.select_related('userprofile') \
+        .filter(is_active=True) \
+        .order_by('-last_login')[:50]
+        
+    try:
+        current_user_role = request.user.userprofile.role
+        print("USER DEBUG:", repr(request.user.username))
+        print("ROLE DEBUG:", repr(current_user_role))
+    except Exception as e:
+        print("ROLE ERROR:", e)
+        current_user_role = None
     
     if request.method == "POST":
         action = request.POST.get("action_type")
@@ -119,6 +132,7 @@ def investigative_view(request):
         "disposal_all": disposal_all,
         "firearm_all": firearm_all,
         "inves_all": inves_all,
+        "current_user_role": current_user_role,
     }
 
     return render(request, "investigative.html", context)

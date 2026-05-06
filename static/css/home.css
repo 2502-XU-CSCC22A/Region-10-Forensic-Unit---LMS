@@ -57,6 +57,7 @@ body {
 
 .description {
   display: flex;
+  width: 850px;
   flex-direction: column;
   gap: 20px;
 }

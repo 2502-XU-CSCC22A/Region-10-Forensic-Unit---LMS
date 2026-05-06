@@ -31,7 +31,8 @@ body {
 .navbar-header {
     height: 70px;
     background-color: #ffffff;
-    border-bottom: 3px solid var(--accent);
+    border-bottom: none;
+    box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
     width: 100%;
 }
 
@@ -196,6 +197,7 @@ body {
     flex: 1;
     padding: 0 30px 20px 30px;
     background-color: #f4f7fe;
+    margin-left: 35px;
     margin-right: 10px;
     overflow-y: auto;
 }

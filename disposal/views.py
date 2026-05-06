@@ -5,11 +5,13 @@ from datetime import timedelta
 import csv
 from django.http import HttpResponse
 from django.contrib import messages
+from django.contrib.auth.models import User
 from django.db.models import Q, Count
 from mobility.models import Vehicle
 from communications.models import Communication
 from config.models import Asset, AssetStatus, Personnel
 from InvestigativeEquipment.models import InvestigativeDetails
+from firearms.models import Firearm
 from .models import DisposalItem, DisposalActivityLog
 from django.core.paginator import Paginator
 
@@ -45,6 +47,8 @@ def disposal_list(request):
     
     vehicle_all = Vehicle.objects.count()
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    firearms_all = Firearm.objects.count()
+    inves_all = InvestigativeDetails.objects.count()
     
     logs = DisposalActivityLog.objects.all().order_by('-timestamp')
     
@@ -53,23 +57,17 @@ def disposal_list(request):
     
     today = timezone.now().date()
     
-    # last_week = timezone.now() - timedelta(days=7)
-    # # recent_firearms = Vehicle.objects.filter(date_disposed__gte=last_week)
-    # recent_mobility = Vehicle.objects.filter(date_disposed__gte=last_week)
-    # recent_comms = Communication.objects.filter(date_disposed__gte=last_week)
-    # recent_investigative = InvestigativeDetails.objects.filter(date_disposed__gte=last_week)
-    
-    # selected_filter = request.GET.get('asset_type', 'all')
-    
-    # display_items = []
-    # # if selected_filter == 'firearm' or selected_filter == 'all':
-    # #     display_items.extend(recent_firearms)
-    # if selected_filter == 'mobility' or selected_filter == 'all':
-    #     display_items.extend(recent_mobility)
-    # if selected_filter == 'communication' or selected_filter == 'all':
-    #     display_items.extend(recent_comms)
-    # if selected_filter == 'investigative' or selected_filter == 'all':
-    #     display_items.extend(recent_investigative)
+    users = User.objects.select_related('userprofile') \
+        .filter(is_active=True) \
+        .order_by('-last_login')[:50]
+        
+    try:
+        current_user_role = request.user.userprofile.role
+        print("USER DEBUG:", repr(request.user.username))
+        print("ROLE DEBUG:", repr(current_user_role))
+    except Exception as e:
+        print("ROLE ERROR:", e)
+        current_user_role = None
   
     ber_today_count = DisposalItem.objects.filter(
         disposal_date__date=today
@@ -127,10 +125,10 @@ def disposal_list(request):
         'disposal_items': disposal_items,
         'vehicle_all': vehicle_all,
         'comms_all': comms_all,
-        # 'recent_mobility': recent_mobility.count(),
-        # 'recent_comms': recent_comms.count(),
-        # 'recent_investigative': recent_investigative.count(),
         'total_removed': len(disposal_items),
+        'firearms_all': firearms_all,
+        'inves_all': inves_all,
+        'current_user_role': current_user_role,
     })
 
 def disposal_list_supervisor(request):
@@ -141,7 +139,21 @@ def disposal_list_supervisor(request):
 # --- ACTIVITY LOG ---
 def history_log(request):
     logs = DisposalActivityLog.objects.all().order_by('-timestamp')
-    return render(request, 'disposal/history.html', {'items': logs})
+    
+    vehicle_all = Vehicle.objects.count()
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    firearms_all = Firearm.objects.count()
+    inves_all = InvestigativeDetails.objects.count()
+    total_ber = DisposalItem.objects.filter(asset_ptr__status_id = 4,).count()
+    
+    return render(request, 'disposal/history.html', {
+        'items': logs,
+        'vehicle_all': vehicle_all,
+        'comms_all': comms_all,
+        'total_ber': total_ber,
+        'firearms_all': firearms_all,
+        'inves_all': inves_all
+        })
 
 def finalize_removal(request, pk):
     disposal_entry = DisposalItem.objects.filter(pk=pk).first()
@@ -164,9 +176,6 @@ def finalize_removal(request, pk):
         disposal_reason=reason,
         description=f"Finalized disposal for {asset.model} ({asset.serial_no})"
     )
-
-    if disposal_entry:
-        disposal_entry.delete()
 
     messages.success(request, f"Asset {asset.serial_no} successfully disposed.")
     return redirect('disposal:history_log')

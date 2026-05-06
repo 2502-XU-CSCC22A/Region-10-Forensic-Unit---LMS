@@ -2,6 +2,8 @@ from django.urls import path
 from django.contrib.auth import views as auth_views  # Missing this for password resets
 from . import views  # This imports your views.py file
 
+app_name= 'login'
+
 urlpatterns = [
     # ── Authentication ────────────────────────────────────────────────────────
     # Notice we now use views.login_view because you imported 'views'

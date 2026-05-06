@@ -68,7 +68,7 @@
         </div>
         <div class="user-text ml-2">
           <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-          <div class="user-role text-muted">{{ user.get_role|default:"User" }}</div>
+          <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
         </div>
       </div>
     </div>
@@ -211,27 +211,17 @@
           <table id="disposalTable">
             <thead>
               <tr>
-                <th>
-                  <i class="ph ph-identification-badge"></i> Asset ID
-                </th>
-                <th>
-                  <i class="ph ph-archive"></i>Asset Model
-                </th>
-                <th>
-                  <i class="ph ph-calendar-minus"></i> Days Overdue
-                </th>
-                <th>
-                  <i class="ph ph-user-circle-check"></i> Personnel Assigned
-                </th>
-                <th>
-                  <i class="ph ph-link"></i> Disposal Reason
-                </th>
-                <th>
-                  <i class="ph ph-calendar-x"></i> Disposal Date
-                </th>
-                <th>
-                  <i class="ph ph-clock-clockwise"></i> Action
-                </th>
+                <th><i class="ph ph-identification-badge"></i> Asset ID</th>
+                <th><i class="ph ph-archive"></i> Asset Model</th>
+                <th><i class="ph ph-calendar-minus"></i> Days Overdue</th>
+                <th><i class="ph ph-user-circle-check"></i> Personnel Assigned</th>
+                <th><i class="ph ph-link"></i> Disposal Reason</th>
+                <th><i class="ph ph-calendar-x"></i> Disposal Date</th>
+                
+                <!-- Check role for Header -->
+                {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
+                <th><i class="ph ph-clock-clockwise"></i> Action</th>
+                {% endif %}
               </tr>
             </thead>
             <tbody>
@@ -246,7 +236,6 @@
                       <span class="badge badge-gray">Not Overdue</span>
                     {% endif %}
                   </td>
-
                   <td>
                     {% if item.personnel_assigned %}
                       <strong>{{ item.personnel_assigned.name }}</strong>
@@ -254,26 +243,32 @@
                       <span class="text-muted">Unassigned</span>
                     {% endif %}
                   </td>
-
                   <td>{{ item.disposal_reason|truncatewords:10 }}</td>
-
                   <td>{{ item.disposal_date|date:'d/m/Y H:i' }}</td>
-
+          
+                  <!-- Check role for Data Cells -->
+                  {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
                   <td class="text-center">
-                    <a href="{% url 'disposal:finalize_removal' item.pk %}" class="btn btn-sm btn-danger px-3" onclick="return confirm('Are you sure you want to permanently archive this item? This action cannot be undone.')"><i class="fas fa-trash-alt mr-1"></i></a>
+                    <a href="{% url 'disposal:finalize_removal' item.pk %}" 
+                       class="btn btn-sm btn-danger px-3" 
+                       onclick="return confirm('Are you sure?')">
+                      <i class="fas fa-trash-alt mr-1"></i>
+                    </a>
                   </td>
+                  {% endif %}
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="5" style="text-align: center; padding: 40px; color: #64748b;">
+                  <!-- Update colspan to 7 if role matches, otherwise 6 -->
+                  <td colspan="{% if current_user_role == 'Admin' or current_user_role == 'Logistics Officer' %}7{% else %}6{% endif %}" 
+                      style="text-align: center; padding: 40px; color: #64748b;">
                     <i class="ph ph-database-slash" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
-                    No disposal records found in the database.
+                    No disposal records found.
                   </td>
                 </tr>
               {% endfor %}
             </tbody>
           </table>
-        </div>
 
         <div class="pagination-wrapper" style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center;">
           <span class="page-info" style="color: #64748b; font-size: 0.9rem;">Showing page {{ disposal_items.number }} of {{ disposal_items.paginator.num_pages }}</span>
