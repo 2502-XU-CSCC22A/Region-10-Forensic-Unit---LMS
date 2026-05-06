@@ -1,153 +1,197 @@
-import uuid
 import json
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
+import uuid
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+from django.shortcuts import render, redirect
 from django.utils import timezone
-from django.db import connection
+from django.http import JsonResponse, HttpResponse
+from .forms import FirearmsPARForm
 from .models import Firearm
-from config.models import Asset, AssetStatus, Category
- 
- 
+from config.models import AssetStatus, Category
+
 def index(request):
+    """Main Firearms Dashboard stats."""
+    # This pulls the real count (e.g., if Ariana is the only one, this will show 1)
+    total_firearms = Firearm.objects.count()
+    validated_count = Firearm.objects.filter(validated='VALIDATED').count()
+    
     return render(request, 'firearms/firearms_main.html', {
-        'active_page': 'firearms',
+        'validated_par_count': validated_count, 
+        'total_par': total_firearms,
     })
- 
- 
-@require_http_methods(['GET'])
-def firearm_list(request):
-    firearms = Firearm.objects.all()
-    return JsonResponse({'firearms': [_serialize(f) for f in firearms]})
 
- 
-@csrf_exempt
-@require_http_methods(['POST'])
-def firearm_create(request):
-    try:
-        body = json.loads(request.body)
- 
-        category, _ = Category.objects.get_or_create(category_name='Firearm')
-
-        with connection.cursor() as cursor:
-            cursor.execute(
-                'SELECT "StatusID" FROM "Asset_Status" WHERE "Status_Name" = %s LIMIT 1',
-                [body.get('status', 'Serviceable')]
-            )
-            row = cursor.fetchone()
-            status_id = row[0] if row else 6
-
- #      status_name = body.get('status', 'SERVICEABLE')
- #      status_obj, _ = AssetStatus.objects.get_or_create(status_name=status_name)
- 
-        uid          = str(uuid.uuid4())[:8]
-        serial_no    = body.get('serialNo') or f"SN-{uid}"
-        property_no  = f"PROP-{uid}"
- 
-        firearm = Firearm.objects.create(
-      
-            property_no   = property_no,
-            serial_no     = serial_no,
-            model         = body.get('makeModel', ''),
-            date_acquired = timezone.now().date(),
-            category      = category,
-#           status        = status_obj,
-            status_id     = status_id,
- 
-            type          = body.get('makeModel', ''),
-            caliber       = body.get('makeModel', ''),
-            faid_serial   = body.get('faid', ''),
-            assigned_to   = body.get('name', ''),
-            unit          = body.get('unit', ''),
-            subunit       = body.get('subunit', ''),
-            station       = body.get('station', ''),
-            issuing_unit  = body.get('issuingUnit', ''),
-            validated     = body.get('validated', 'PENDING'),
-        )
-        return JsonResponse({'success': True, 'firearm': _serialize(firearm)}, status=201)
- 
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
- 
- 
-@csrf_exempt
-@require_http_methods(['POST'])
-def firearm_update(request, pk):
-    try:
-        firearm = Firearm.objects.get(pk=pk)
-        body    = json.loads(request.body)
-
-        if 'status' in body:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                'SELECT "StatusID" FROM "Asset_Status" WHERE "Status_Name" = %s LIMIT 1',
-                [body['status']]
-                )
-                row = cursor.fetchone()
-                if row:
-                    firearm.status_id = row[0]
-
-        if 'serialNo'    in body: firearm.serial_no    = body['serialNo']
-        if 'makeModel'   in body:
-            firearm.model = body['makeModel']
-            firearm.type  = body['makeModel']
-        if 'faid'        in body: firearm.faid_serial  = body['faid']
-        if 'name'        in body: firearm.assigned_to  = body['name']
-        if 'unit'        in body: firearm.unit         = body['unit']
-        if 'subunit'     in body: firearm.subunit      = body['subunit']
-        if 'station'     in body: firearm.station      = body['station']
-        if 'issuingUnit' in body: firearm.issuing_unit = body['issuingUnit']
-        if 'validated'   in body: firearm.validated    = body['validated']
- 
-        firearm.save()
-        return JsonResponse({'success': True, 'firearm': _serialize(firearm)})
- 
-    except Firearm.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Not found'}, status=404)
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
- 
- 
-@csrf_exempt
-@require_http_methods(['POST'])
-def firearm_delete(request, pk):
-    try:
-        Firearm.objects.get(pk=pk).delete()
-        return JsonResponse({'success': True})
-    except Firearm.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Not found'}, status=404)
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
- 
- 
-def _serialize(f):
-    status_name = 'SERVICEABLE'
-
-    if f.status_id:
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    'SELECT "Status_Name" FROM "Asset_Status" WHERE "StatusID" = %s LIMIT 1',
-                    [f.status_id]
-                )
-                row = cursor.fetchone()
-                if row:
-                    status_name = row[0]
-                    
-        except Exception:
-            status_name = 'SERVICEABLE'
-
-    return {
-        'id':          f.pk,
-        'name':        f.assigned_to  or 'N/A',
-        'unit':        f.unit         or 'N/A',
-        'subunit':     f.subunit      or 'N/A',
-        'station':     f.station      or 'N/A',
-        'issuingUnit': f.issuing_unit or 'N/A',
-        'faid':        f.faid_serial  or 'N/A',
-        'serialNo':    f.serial_no    or 'N/A',
-        'makeModel':   f.model        or 'N/A',
-        'status':      status_name.upper(),
-        'validated':   f.validated    or 'PENDING',
+def print_par(request, pk):
+    """Printable PAR voucher view."""
+    # Placeholder data for the print view
+    dummy_par = {
+        'pk': pk,
+        'par_number': f'PAR-2026-{pk:03d}',
+        'firearm': {'make': 'AK47', 'model': 'PERIOD', 'serial_no': 'AGG8', 'faid': 'SFA69696'},
+        'issued_to': 'Precious',
+        'date_issued': timezone.now(),
     }
+    return render(request, 'firearms/print_par.html', {'par': dummy_par})
+
+def firearm_list(request):
+    firearms_query = Firearm.objects.all()
+    firearms_data = []
+    for f in firearms_query:
+        firearms_data.append({
+            'id': f.id,
+            'name': f.assigned_to, 
+            'unit': f.unit,
+            'subunit': f.subunit,
+            'station': f.station,
+            'issuingUnit': f.issuing_unit,
+            'faid': f.faid_serial,
+            'serialNo': f.serial_no,
+            'makeModel': f.type,
+            # Pull the status_name string from the related object
+            'status': f.status.status_name if f.status else "Unknown", 
+            'validated': f.validated
+        })
+    return JsonResponse({'firearms': firearms_data})
+
+@csrf_exempt
+def firearm_create(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            status_obj = AssetStatus.objects.get(status_name=data.get('status'))
+            category, _ = Category.objects.get_or_create(category_name='firearms')
+            property_no = f"FA-{timezone.now().strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6].upper()}"
+
+            Firearm.objects.create(
+                assigned_to=data.get('name'),
+                unit=data.get('unit'),
+                subunit=data.get('subunit'),
+                station=data.get('station'),
+                issuing_unit=data.get('issuingUnit'),
+                faid_serial=data.get('faid'),
+                serial_no=data.get('serialNo'),
+                type=data.get('makeModel'),
+                status=status_obj,
+                validated=data.get('validated'),
+                date_acquired=data.get('dateAcquired', '2026-01-01'),
+                property_no=property_no,
+                model=data.get('makeModel'),
+                category=category,
+            )
+            return JsonResponse({'success': True})
+
+        except AssetStatus.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Status not found in database'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+         
+def par_management(request):
+    if request.method == 'POST':
+        form = FirearmsPARForm(request.POST)
+        if form.is_valid():
+            from .models import FirearmPARRecord
+            FirearmPARRecord.objects.create(
+                firearm_id=form.cleaned_data.get('firearm') or None,
+                par_number=form.cleaned_data['par_number'],
+                fund_cluster=form.cleaned_data.get('fund_cluster'),
+                reference_no=form.cleaned_data.get('reference_no'),
+                issued_to=form.cleaned_data['issued_to'],
+                date_issued=form.cleaned_data['date_issued'],
+                expiry_date=form.cleaned_data.get('expiry_date'),
+                remarks=form.cleaned_data.get('remarks'),
+            )
+            return redirect('firearms:par_management')
+    else:
+        form = FirearmsPARForm()
+
+    from .models import FirearmPARRecord
+    pars = FirearmPARRecord.objects.all().order_by('-created_at')
+
+    return render(request, 'firearms/par_management.html', {
+        'pars': pars,
+        'p_form': form,
+    })
+
+@csrf_exempt
+def firearm_update(request, pk):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            firearm = Firearm.objects.get(pk=pk)
+            status_obj = AssetStatus.objects.get(status_name=data.get('status'))
+
+            firearm.assigned_to  = data.get('name')
+            firearm.unit         = data.get('unit')
+            firearm.subunit      = data.get('subunit')
+            firearm.station      = data.get('station')
+            firearm.issuing_unit = data.get('issuingUnit')
+            firearm.faid_serial  = data.get('faid')
+            firearm.serial_no    = data.get('serialNo')
+            firearm.type         = data.get('makeModel')
+            firearm.status       = status_obj
+            firearm.validated    = data.get('validated')
+            firearm.save()
+
+            return JsonResponse({'success': True})
+        except Firearm.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Firearm not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@csrf_exempt
+def firearm_delete(request, pk):
+    if request.method == 'POST':
+        try:
+            Firearm.objects.get(pk=pk).delete()
+            return JsonResponse({'success': True})
+        except Firearm.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Firearm not found'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+def edit_par(request, pk):
+    from .models import FirearmPARRecord
+    par = FirearmPARRecord.objects.get(pk=pk)
+
+    if request.method == 'POST':
+        form = FirearmsPARForm(request.POST)
+        if form.is_valid():
+            par.par_number   = form.cleaned_data['par_number']
+            par.fund_cluster = form.cleaned_data.get('fund_cluster')
+            par.reference_no = form.cleaned_data.get('reference_no')
+            par.issued_to    = form.cleaned_data['issued_to']
+            par.date_issued  = form.cleaned_data['date_issued']
+            par.expiry_date  = form.cleaned_data.get('expiry_date')
+            par.remarks      = form.cleaned_data.get('remarks')
+            par.firearm_id   = form.cleaned_data.get('firearm') or None
+            par.save()
+            return redirect('firearms:par_management')
+    else:
+        form = FirearmsPARForm(initial={
+            'par_number':   par.par_number,
+            'fund_cluster': par.fund_cluster,
+            'reference_no': par.reference_no,
+            'issued_to':    par.issued_to,
+            'date_issued':  par.date_issued,
+            'expiry_date':  par.expiry_date,
+            'remarks':      par.remarks,
+            'firearm':      par.firearm_id,
+        })
+
+    return render(request, 'firearms/edit_par.html', {
+        'form': form,
+        'record': par,  # ← template uses 'record' not 'par'
+    })
+
+
+def delete_par(request, pk):
+    from .models import FirearmPARRecord
+    FirearmPARRecord.objects.filter(pk=pk).delete()
+    return redirect('firearms:par_management')
+
+def api_par_list(request):
+    from .models import FirearmPARRecord
+    pars = list(FirearmPARRecord.objects.values(
+        'id', 'par_number', 'issued_to', 'date_issued', 'expiry_date'
+    ))
+    return JsonResponse({'pars': pars})

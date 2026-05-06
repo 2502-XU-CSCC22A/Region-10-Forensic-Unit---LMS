@@ -1,0 +1,236 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Update PAR Record - Regional Forensic Unit 10 LMS</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{% static 'firearms/css/firearms_sidebar.css' %}" />
+  <link rel="stylesheet" href="{% static 'firearms/css/firearms_main.css' %}" />
+
+  <style>
+    :root {
+      --navy: #0a1d43;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f1f5f9;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 28px;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    .btn-back {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none !important;
+      transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .btn-back:hover { color: var(--navy); }
+
+    .section-title { 
+      font-weight: 800; 
+      color: var(--navy); 
+      letter-spacing: -0.02em;
+    }
+
+    .form-label { 
+      font-size: 0.75rem; 
+      font-weight: 700; 
+      color: var(--muted); 
+      text-transform: uppercase; 
+      letter-spacing: 0.025em; 
+      margin-bottom: 0.5rem; 
+    }
+
+    .form-control, .form-select { 
+      border-radius: 8px; 
+      border: 1px solid var(--border); 
+      padding: 0.6rem 0.8rem; 
+      font-size: 0.9rem; 
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn-update { 
+      background-color: var(--navy); 
+      color: white;
+      border: none; 
+      font-weight: 600; 
+      padding: 0.6rem 2rem; 
+      border-radius: 8px; 
+    }
+
+    .card { 
+      background: #fff; 
+      border-radius: 12px; 
+      border: none; 
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+
+    .navbar-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 72px; 
+      background: #ffffff;
+      border-bottom: none; 
+      box-shadow: 0 2px 12px rgba(13, 33, 85, .12); 
+      z-index: 1100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+    }
+
+    
+    .layout {
+      display: flex;
+      padding-top: 72px; 
+    }
+
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 28px;
+      min-height: calc(100vh - 72px);
+      flex: 1;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+    <div class="header-brand d-flex align-items-center">
+      <div class="header-logo">
+        PNP<br />FORENSIC<br />GROUP
+      </div>
+      <div class="header-divider"></div>
+      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
+    </div>
+
+    <div class="header-user d-flex align-items-center">
+      <div class="notification-wrapper mr-4">
+        <i class="fas fa-bell text-muted"></i>
+      </div>
+      <div class="profile-group d-flex align-items-center">
+        <div class="user-avatar d-flex align-items-center justify-content-center">
+          <i class="fas fa-user text-muted"></i>
+        </div>
+        <div class="user-text ml-2">
+          <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
+          <div class="user-role text-muted">Logistics Officer</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    {% include 'firearms/firearms_sidebar.html' %}
+
+    <main class="main-content">
+      <div class="container-fluid" style="max-width: 1400px;">
+        <div class="mb-4">
+          <a href="{% url 'firearms:par_management' %}" class="btn-back">
+            <i class="fas fa-arrow-left mr-2"></i> Back to PAR Registry
+          </a>
+          <div class="d-flex justify-content-between align-items-end">
+            <div>
+              <h2 class="section-title mb-0">Update PAR Record</h2>
+              <p class="text-muted small mb-0">
+                Editing Registry Entry: <span class="font-weight-bold" style="color: var(--navy);">{{ record.par_number }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-body p-4">
+            <form method="POST">
+              {% csrf_token %}
+              <div class="row g-3">
+                <div class="col-md-3">
+                  <label class="form-label">PAR NO.</label>
+                  {{ form.par_number }}
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">FUND CLUSTER</label>
+                  {{ form.fund_cluster }}
+                </div>
+                <div class="col-md-3">
+                  <!-- CHANGED: Vehicle Asset → Firearm Asset -->
+                  <label class="form-label">FIREARM ASSET</label>
+                  {{ form.firearm }}
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">REFERENCE NO.</label>
+                  {{ form.reference_no }}
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label">ISSUED TO</label>
+                  {{ form.issued_to }}
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">DATE ISSUED</label>
+                  {{ form.date_issued }}
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">EXPIRY DATE</label>
+                  {{ form.expiry_date }}
+                </div>
+
+                <div class="col-12 mt-2">
+                  <label class="form-label">REMARKS</label>
+                  {{ form.remarks }}
+                  <small class="text-muted" style="font-size: 0.7rem;">Update specific conditions or observations for this firearm assignment.</small>
+                </div>
+              </div>
+              
+              <hr class="my-4" style="border-top: 1px solid var(--border);">
+              
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'firearms:delete_par' record.pk %}" 
+                   class="text-danger small font-weight-bold" 
+                   style="text-decoration: none;"
+                   onclick="return confirm('Are you sure you want to archive this record?');">
+                  <i class="fas fa-trash-alt mr-1"></i> ARCHIVE RECORD
+                </a>
+
+                <div>
+                  <a href="{% url 'firearms:par_management' %}" class="btn btn-sm text-muted mr-2" style="font-weight: 600;">Cancel</a>
+                  <button type="submit" class="btn-update shadow-sm">
+                    <i class="fas fa-save mr-2"></i> Update Registry
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

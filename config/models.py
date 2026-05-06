@@ -1,13 +1,13 @@
 from django.db import models
 
 class AssetStatus(models.Model):
-    """
-    Independent lookup table for Asset Statuses.
-    Matches 'Asset_Status' in your ERD.
-    """
+    status_id = models.AutoField(
+        primary_key=True,
+        db_column='StatusID'
+    )
     status_name = models.CharField(
-        max_length=50, 
-        db_column='StatusName',  # Matches Supabase column name
+        max_length=50,
+        db_column='Status_Name',  # note: Supabase shows "Status_Name" not "StatusName"
         unique=True
     )
 
