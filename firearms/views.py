@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 from django.utils import timezone
 from django.db import connection
 from config.models import Asset
@@ -18,8 +19,20 @@ def index(request):
     
     vehicle_all = Vehicle.objects.count()
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
-    disposal_all = DisposalItem.objects.count()
+    disposal_all = DisposalItem.objects.exclude(status_id__in=[5])
     firearm_all = Firearm.objects.exclude(status_id__in=[4, 5]).count()
+    
+    users = User.objects.select_related('userprofile') \
+        .filter(is_active=True) \
+        .order_by('-last_login')[:50]
+        
+    try:
+        current_user_role = request.user.userprofile.role
+        print("USER DEBUG:", repr(request.user.username))
+        print("ROLE DEBUG:", repr(current_user_role))
+    except Exception as e:
+        print("ROLE ERROR:", e)
+        current_user_role = None
     
     return render(request, 'firearms/firearms_main.html', {
         'active_page': 'firearms',
@@ -27,6 +40,7 @@ def index(request):
         'comms_all': comms_all,
         'disposal_all': disposal_all,
         'firearm_all': firearm_all,
+        'current_user_role': current_user_role,
     })
  
  
