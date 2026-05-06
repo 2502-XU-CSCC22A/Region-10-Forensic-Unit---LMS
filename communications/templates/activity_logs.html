@@ -13,8 +13,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
@@ -59,32 +58,9 @@
       margin: 0;
     }
 
-    .notification-wrapper i {
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      background-color: #e9ecef;
-      border-radius: 50%;
-      font-size: 1.1rem;
-    }
-
-    .user-name {
-      font-size: 14px;
-      line-height: 1.2;
-    }
-
-    .user-role {
-      font-size: 12px;
-      line-height: 1;
-    }
-
     main {
-      margin-left: 315px;
-      padding: 95px 24px 40px;
+      margin-left: 315px !important;
+      padding: 95px 24px 40px !important;
       min-height: 100vh;
       background: #f1f5f9;
     }
@@ -186,18 +162,6 @@
       height: calc(100vh - 70px) !important;
       z-index: 999 !important;
     }
-
-    .navbar-header {
-      top: 0 !important;
-      left: 0 !important;
-      width: 100% !important;
-      z-index: 1000 !important;
-    }
-
-    main {
-      margin-left: 315px !important;
-      padding: 95px 24px 40px !important;
-    }
   </style>
 </head>
 
@@ -237,12 +201,19 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h3 class="page-title mb-0">Activity History</h3>
-        <p class="text-muted small">Tracking Communications modifications, additions, and stock updates</p>
+        <p class="text-muted small">
+          Tracking Communications modifications, additions, and stock updates
+        </p>
       </div>
 
       <div class="btn-group">
-        <button class="btn filter-btn btn-primary">Last 7 Days</button>
-        <button class="btn filter-btn btn-outline-primary">Last 30 Days</button>
+        <button id="btnLast7" class="btn filter-btn btn-primary">
+          Last 7 Days
+        </button>
+
+        <button id="btnLast30" class="btn filter-btn btn-outline-primary">
+          Last 30 Days
+        </button>
       </div>
     </div>
 
@@ -271,22 +242,61 @@
       return date.toLocaleString();
     }
 
-    async function loadActivityLogs() {
-      const { data, error } = await sb
-        .from("communications_activitylog")
-        .select("*")
-        .order("created_at", { ascending: false });
+    function getDateDaysAgo(days) {
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      return date.toISOString();
+    }
+
+    function setActiveButton(days) {
+      const btn7 = document.getElementById("btnLast7");
+      const btn30 = document.getElementById("btnLast30");
+
+      if (days === 7) {
+        btn7.classList.remove("btn-outline-primary");
+        btn7.classList.add("btn-primary");
+
+        btn30.classList.remove("btn-primary");
+        btn30.classList.add("btn-outline-primary");
+      } else {
+        btn30.classList.remove("btn-outline-primary");
+        btn30.classList.add("btn-primary");
+
+        btn7.classList.remove("btn-primary");
+        btn7.classList.add("btn-outline-primary");
+      }
+    }
+
+    async function loadActivityLogs(days = 7) {
+      setActiveButton(days);
 
       const list = document.getElementById("activityLogList");
 
+      list.innerHTML = `
+        <div class="text-center py-5">
+          <i class="fas fa-history fa-3x text-light mb-3"></i>
+          <p class="text-muted">Loading activity logs...</p>
+        </div>
+      `;
+
+      const startDate = getDateDaysAgo(days);
+
+      const { data, error } = await sb
+        .from("communications_activitylog")
+        .select("*")
+        .gte("created_at", startDate)
+        .order("created_at", { ascending: false });
+
       if (error) {
         console.error(error);
+
         list.innerHTML = `
           <div class="text-center py-5">
             <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
             <p class="text-muted">Failed to load activity logs.</p>
           </div>
         `;
+
         return;
       }
 
@@ -294,9 +304,12 @@
         list.innerHTML = `
           <div class="text-center py-5">
             <i class="fas fa-history fa-3x text-light mb-3"></i>
-            <p class="text-muted">No activity logs found.</p>
+            <p class="text-muted">
+              No activity logs found in the last ${days} days.
+            </p>
           </div>
         `;
+
         return;
       }
 
@@ -346,7 +359,17 @@
       `).join("");
     }
 
-    document.addEventListener("DOMContentLoaded", loadActivityLogs);
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("btnLast7").addEventListener("click", () => {
+        loadActivityLogs(7);
+      });
+
+      document.getElementById("btnLast30").addEventListener("click", () => {
+        loadActivityLogs(30);
+      });
+
+      loadActivityLogs(7);
+    });
   </script>
 
 </body>

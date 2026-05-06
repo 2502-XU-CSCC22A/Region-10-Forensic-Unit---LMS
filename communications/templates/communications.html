@@ -253,13 +253,6 @@
                         <input type="text" id="searchInput" placeholder="Search by name, serial, station&#x2026;"
                             oninput="filterTable()" />
                     </div>
-                    <select id="statusFilter" class="btn btn-outline" style="font-size:13px;padding:7px 12px;"
-                        onchange="filterTable()">
-                        <option value="">All Status</option>
-                        <option value="SERVICEABLE">Serviceable</option>
-                        <option value="UNSERVICEABLE">Unserviceable</option>
-                        <option value="LOST">Lost</option>
-                    </select>
                     <button id="addRecordBtn" class="btn btn-primary">＋ Add Record</button>
                     <a href="{% url 'par_monitoring' %}" class="btn btn-outline">📋 PAR Records</a>
                     <a href="{% url 'activity_logs' %}" class="btn btn-outline">📊 Activity Logs</a>
