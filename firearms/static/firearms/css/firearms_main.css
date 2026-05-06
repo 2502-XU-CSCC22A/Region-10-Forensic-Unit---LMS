@@ -143,6 +143,14 @@
   flex-wrap: wrap;
 }
 
+/* NEW: Ensure anchor buttons align properly with flex buttons */
+.table-controls a.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
 .search-wrap {
   position: relative;
   flex: 1;
@@ -183,7 +191,7 @@
   font-family: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity .2s, transform .1s;
+  transition: opacity .2s, transform .1s, background .2s, color .2s;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -193,8 +201,33 @@
 .btn:active { transform: scale(.97); }
 
 .btn-primary { background: var(--accent); color: #fff; }
-.btn-outline { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
+.btn-outline { 
+  background: #fff; 
+  color: var(--accent); 
+  border: 1.5px solid var(--accent); 
+}
+.btn-outline:hover {
+  background: var(--accent);
+  color: #fff;
+  opacity: 1;
+}
+
 .btn-sm      { padding: 5px 13px; font-size: 12px; border-radius: 6px; }
+
+/* NEW: PAR Records button specific styling */
+.btn-par {
+  background: #fff;
+  color: var(--navy);
+  border: 1.5px solid var(--navy-mid);
+}
+.btn-par:hover {
+  background: var(--navy-mid);
+  color: #fff;
+  opacity: 1;
+}
+.btn-par i {
+  font-size: 14px;
+}
 
 /* --- Table --- */
 

@@ -38,7 +38,7 @@ class DisposalItem(Asset):
         related_name='disposed_items'
     )
     personnel_assigned = models.ForeignKey(
-        Personnel,
+        'config.Personnel',
         on_delete=models.SET_NULL,
         null=True,
         db_column='personnel_assigned'

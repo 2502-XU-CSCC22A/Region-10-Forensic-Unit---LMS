@@ -9,7 +9,7 @@ class Communication(Asset):
     stock_level = models.IntegerField(default=0)
 
     par_assignment = models.ForeignKey(
-        PARRecord,
+        'config.PARRecord',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

@@ -18,8 +18,10 @@ def user_list(request):
         
     vehicle_all = Vehicle.objects.count()
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
-    dispsal_all = DisposalItem.objects.exclude(status_id__in=[5])
     firearm_all = Firearm.objects.exclude(status_id__in=[4, 5]).count()
+    disposal_all = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+    ).count()
 
     try:
         current_user_role = request.user.userprofile.role

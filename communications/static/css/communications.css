@@ -21,7 +21,8 @@
 .navbar-header {
   height: 73px;
   background-color: #ffffff;
-  border-bottom: 3px solid var(--accent);
+  border-bottom: none;
+  box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
   width: 100%;
 }
 

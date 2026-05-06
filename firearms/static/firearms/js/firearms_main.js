@@ -5,6 +5,11 @@ const API = {
   delete: (id) => `/firearms/api/delete/${id}/`,
 };
 
+
+const PAR_API = {
+  list: '/firearms/api/par/list/', 
+};
+
 let allFirearms = [];
 let filtered    = [];
 let currentPage = 1;
@@ -47,19 +52,55 @@ async function loadFirearms() {
   }
 }
 
+/* ─── NEW: Load PAR Stats for Dashboard Card ─── */
+function updatePARStatsFromFallback() {
+  const el = document.getElementById('par-initial-data');
+  if (!el) return false;
+  try {
+    const data = JSON.parse(el.textContent);
+    const count = data.validated || data.count || 0;
+    document.getElementById('parCount').textContent = count;
+    document.getElementById('parBar').style.width   = count > 0 ? '100%' : '0%';
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function loadPARStats() {
+  // Try API first
+  try {
+    const res = await fetch(PAR_API.list);
+    if (!res.ok) throw new Error('PAR API not available');
+    const data = await res.json();
+    const pars = data.pars || [];
+
+    const now = new Date();
+    const validatedPAR = pars.filter(p => {
+      if (!p.expiry_date) return true;
+      return new Date(p.expiry_date) >= now;
+    }).length;
+
+    document.getElementById('parCount').textContent = validatedPAR;
+    document.getElementById('parBar').style.width   = validatedPAR > 0 ? '100%' : '0%';
+  } catch (err) {
+    console.error('Failed to load PAR stats:', err);
+    // Fallback to template-rendered data
+    if (!updatePARStatsFromFallback()) {
+      document.getElementById('parCount').textContent = '—';
+      document.getElementById('parBar').style.width   = '0%';
+    }
+  }
+}
+
 function updateStats() {
   const total     = allFirearms.length;
   const validated = allFirearms.filter(f => f.validated === 'VALIDATED').length;
-  const pending   = allFirearms.filter(f => f.validated === 'PENDING').length;
-  const pct       = v => Math.max(4, Math.round((v / (total || 1)) * 100)) + '%';
-  
+
   document.getElementById('totalCount').textContent  = total;
   document.getElementById('issuedCount').textContent = validated;
-  document.getElementById('pendingCount').textContent= pending;
-
   document.getElementById('totalBar').style.width    = '100%';
-  document.getElementById('issuedBar').style.width   = pct(validated);
-  document.getElementById('pendingBar').style.width  = pct(pending);
+  document.getElementById('issuedBar').style.width   = Math.max(4, Math.round((validated / (total || 1)) * 100)) + '%';
 }
 
 function statusBadge(s) {
@@ -287,4 +328,5 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === document.getElementById('modalOverlay')) closeModal();
   });
   loadFirearms();
+  loadPARStats();   // NEW: Load PAR stats on page ready
 });

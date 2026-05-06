@@ -31,7 +31,8 @@ body {
   position: fixed;
   height: 70px;
   background-color: #ffffff;
-  border-bottom: 3px solid var(--accent);
+  border-bottom: none;
+  box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
   width: 100%;
   top: 0;
   left: 0;
@@ -100,7 +101,7 @@ body {
 
 main {
   margin-top: var(--header-h);
-  margin-left: var(--sidebar-w);
+  margin-left: 300px;
   height: calc(100vh - 70px);
   overflow-y: auto;
   flex: 1;
@@ -113,7 +114,7 @@ main {
 /* ── Stat Cards ──────────────────────────────────────────────────────────── */
 .stat-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 20px;
 }
 
@@ -143,6 +144,7 @@ main {
 
 .stat-label {
   font-size: 13px; color: var(--muted);
+  white-space: nowrap;
   font-weight: 500; margin-bottom: 2px;
 }
 
@@ -268,17 +270,6 @@ main {
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-/* ── Responsive ──────────────────────────────────────────────────────────── */
-@media (max-width: 960px) {
-  .stat-cards { grid-template-columns: repeat(2, 1fr); }
-  .two-col    { flex-direction: column; }
-}
-
-@media (max-width: 640px) {
-  .stat-cards { grid-template-columns: 1fr; }
-  main        { padding: 16px; }
-  .header-title { font-size: 18px; }
-}
 /* ── Additional stat card colors ─────────────────────────────────────────── */
 .stat-icon.gray   { background: #f1f5f9; color: #64748b; }
 .stat-bar.gray    { background: linear-gradient(90deg, #64748b, #94a3b8); }
@@ -313,8 +304,3 @@ main {
 
 /* ── Widget actions group ────────────────────────────────────────────────── */
 .widget-actions { display: flex; align-items: center; gap: 2px; }
-
-/* Stat grid — 6 cards in one row on wide screens */
-@media (min-width: 1200px) {
-  .stat-cards { grid-template-columns: repeat(6, 1fr); }
-}

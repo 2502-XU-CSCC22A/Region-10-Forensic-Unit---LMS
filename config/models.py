@@ -17,7 +17,7 @@ class Personnel(models.Model):
 
 class AssetStatus(models.Model):
     status_id = models.BigAutoField(primary_key=True, db_column='StatusID')
-    status_name = models.CharField(max_length=50, db_column='Status_Name', unique=True)  # ← add this
+    status_name = models.CharField(max_length=50, db_column='Status_Name', unique=True) 
 
     class Meta:
         db_table = 'Asset_Status'

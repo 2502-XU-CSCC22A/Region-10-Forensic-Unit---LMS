@@ -18,7 +18,9 @@ def communications_list(request):
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
-    all_d = DisposalItem.objects.all()
+    all_d = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+    ).count()
     
     users = User.objects.select_related('userprofile') \
         .filter(is_active=True) \

@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="{% static 'firearms/css/firearms_main.css' %}" />
 
   <style>
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -61,7 +60,6 @@
       z-index: 1100;
     }
 
-
     .layout {
       display: flex;
       min-height: 100vh;
@@ -74,7 +72,6 @@
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
   </style>
-
 </head>
 
 <body>
@@ -91,7 +88,6 @@
 
   <div class="header-user d-flex align-items-center">
     <div class="notification-wrapper mr-4">
-
       <i class="fas fa-bell {% if upcoming_pms|default:0 > 0 or upcoming_repairs|default:0 > 0 %}text-danger{% else %}text-muted{% endif %}"></i>
     </div>
 
@@ -108,16 +104,11 @@
 </header>
 
 <div class="layout">
-
   {% include 'firearms/firearms_sidebar.html' %}
 
-
   <main class="main-content">
-
     <div class="stat-cards">
-
       <!-- Total Firearms -->
-
       <div class="stat-card">
         <div class="stat-top">
           <div class="stat-icon blue">
@@ -156,15 +147,14 @@
             <i class="fas fa-file-alt"></i>
           </div>
           <div>
-            <div class="stat-value" id="pendingCount">&#8212;</div>
+            <div class="stat-value" id="parCount">{{ validated_par_count|default:"&#8212;" }}</div>
             <div class="stat-label">Validated PAR</div>
           </div>
         </div>
         <div class="stat-bar-wrap">
-          <div class="stat-bar red" id="pendingBar" style="width:0%"></div>
+          <div class="stat-bar red" id="parBar" style="width:0%"></div>
         </div>
       </div>
-
     </div>
 
     <div class="table-section">
@@ -178,14 +168,21 @@
                  oninput="filterTable()"/>
         </div>
         <select id="statusFilter"
-                class="btn btn-outline"
-                style="font-size:13px;padding:7px 12px;"
-                onchange="filterTable()">
-          <option value="">All Status</option>
-          <option value="SERVICEABLE">Serviceable</option>
-          <option value="UNSERVICEABLE">Unserviceable</option>
-          <option value="LOST">Lost</option>
-        </select>
+        class="btn btn-outline"
+        style="font-size:13px;padding:7px 12px;"
+        onchange="filterTable()">
+            <option value="">All Status</option>
+            <option value="Serviceable">Serviceable</option>
+            <option value="Unserviceable">Unserviceable</option>
+            <option value="Lost">Lost</option>
+         </select>
+        
+        <!-- NEW: PAR Records Button -->
+        <a href="{% url 'firearms:par_management' %}" class="btn btn-outline" 
+           style="font-size:13px;padding:7px 16px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fas fa-file-contract"></i> PAR Records
+        </a>
+        
         <button class="btn btn-primary" onclick="openAddModal()">&#xFF0B; Add Record</button>
         <button class="btn btn-outline" onclick="exportCSV()">&#x2B07; Export CSV</button>
       </div>
@@ -216,14 +213,12 @@
         <div class="pagination" id="pagination"></div>
       </div>
     </div>
-
   </main>
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div>
-      
       <button type="button" class="close-modal" onclick="closeModal()">&#x2715;</button>
       <h3 id="modalTitle">Firearm Details</h3>
       <div id="modalBody"></div>
@@ -238,14 +233,21 @@
 <script id="supabase-data" type="application/json">
   [ {% for f in firearms %} ... {% endfor %} ]
 </script>
+
+<!-- NEW: PAR initial data fallback -->
+<script id="par-initial-data" type="application/json">
+{
+  "count": {{ total_par|default:0 }},
+  "validated": {{ validated_par_count|default:0 }}
+}
+</script>
+
 <script>
   const supabaseData = JSON.parse(document.getElementById('supabase-data').textContent);
 </script>
 
 <script src="{% static 'firearms/js/firearms_main.js' %}"></script>
-
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>

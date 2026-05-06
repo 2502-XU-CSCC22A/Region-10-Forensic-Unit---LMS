@@ -2,6 +2,17 @@ from django.db import models
 from config.models import Asset
 from django.contrib.auth.models import User
 from django.utils import timezone
+from config.models import Asset
+
+class ConfigAsset(models.Model):
+    class Meta:
+        managed = False  # Django will not try to modify this table
+        db_table = 'config_asset'
+    
+    property_no = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.property_no
 
 class Vehicle(models.Model):
     # Link to the main Asset registry
@@ -35,7 +46,7 @@ class Vehicle(models.Model):
         return f"{self.make} {self.model} ({self.plate_number or self.conduction_number})"
 
 class PARRecord(models.Model):
-    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='par_records')
+    vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, related_name='vehicle_par_records')
     issued_to = models.CharField(max_length=255)
     date_issued = models.DateField()
     is_active = models.BooleanField(default=True)
