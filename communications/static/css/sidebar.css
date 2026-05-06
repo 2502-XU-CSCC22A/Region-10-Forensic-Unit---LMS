@@ -7,17 +7,19 @@
 body {
   background-color: #f8f9fc;
   overflow-x: hidden;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 #sidebar {
   width: 315px;
-  height: 100vh;
+  height: calc(100vh - 70px);
   position: fixed;
+  top: 70px;
+  left: 0;
   background: #1a2b6d;
   color: white;
   transition: all 0.3s;
-  z-index: 1000;
+  z-index: 999;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -54,7 +56,7 @@ body {
   transition: 0.2s;
 }
 
-#sidebar ul li.active>a {
+#sidebar ul li.active > a {
   color: #fff !important;
   background: var(--figma-active);
   border-radius: 12px;
@@ -82,8 +84,8 @@ body {
 }
 
 .UM {
-  position: absolute; 
+  position: absolute;
   bottom: 100px;
-  width: 100%; 
-  padding: 0px
+  width: 100%;
+  padding: 0px;
 }

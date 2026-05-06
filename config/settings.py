@@ -6,7 +6,6 @@ import os
 import ssl
 from pathlib import Path
 import dj_database_url
-import ssl
 from dotenv import load_dotenv
 import ssl
 from dotenv import load_dotenv
@@ -25,6 +24,9 @@ DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.vercel.app', '.supabase.co']
 
 
+=========
+# --- Application Definition ---
+>>>>>>>>> Temporary merge branch 2
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -32,7 +34,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions', 
     'disposal',
     'login',
-    'config',
     'firearms',
     'communications',
     'dashboard',
@@ -130,3 +131,20 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@rfu10.gov.ph')
+=========
+
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
+# Set default sender to the authenticated user or a system noreply address
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL', 
+    EMAIL_HOST_USER or 'noreply@rfu10.pnp.gov.ph'
+)
+
+# Fix for certificate verify failed errors on certain SMTP servers
+EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
+>>>>>>>>> Temporary merge branch 2
