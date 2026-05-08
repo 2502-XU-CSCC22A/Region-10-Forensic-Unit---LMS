@@ -46,10 +46,8 @@ async function fetchData() {
       id: item.asset_ptr_id,
       type: item.type || "",
       serial: item.imei_serial || "",
-      frequency: item.frequency_range || "",
-      stock: item.stock_level || 0,
+      radioID: item.radioID || "",
     }))
-    .filter((item) => item.stock > 0);
 
   filtered = [...communications];
   currentPage = 1;
@@ -80,8 +78,7 @@ function renderTable() {
     <tr>
       <td>${c.type}</td>
       <td>${c.serial}</td>
-      <td>${c.frequency}</td>
-      <td>${c.stock}</td>
+      <td>${c.radioID}</td>
       <td>
         <button class="edit-btn" data-id="${c.id}">Edit</button>
       </td>
@@ -138,7 +135,7 @@ function filterTable() {
   filtered = communications.filter((c) =>
     c.type.toLowerCase().includes(q) ||
     c.serial.toLowerCase().includes(q) ||
-    c.frequency.toLowerCase().includes(q)
+    c.radioID.toLowerCase().includes(q)
   );
 
   currentPage = 1;
@@ -160,9 +157,9 @@ function inputField(label, id, val = "", type = "text") {
 function buildForm(c = {}) {
   return (
     inputField("Type", "c_type", c.type || "") +
-    inputField("IMEI / Serial", "c_serial", c.serial || "") +
-    inputField("Frequency Range", "c_frequency", c.frequency || "") +
-    inputField("Stock Level", "c_stock", c.stock || 1, "number")
+    inputField("Item Description", "c_itemD", c.itemD || "") +
+    inputField("Serial", "c_serial", c.serial || "") +
+    inputField("Radio ID", "c_radioID", c.radioID || "") 
   );
 }
 
@@ -195,8 +192,8 @@ function closeModal() {
 async function saveRecord() {
   const type = getValue("c_type");
   const serial = getValue("c_serial");
-  const frequency = getValue("c_frequency");
-  const stock = parseInt(getValue("c_stock")) || 0;
+  const radioID = getValue("c_radioID");
+  const itemD = parseInt(getValue("c_itemD")) || 0;
 
   console.log("TYPE:", type);
   console.log("SERIAL:", serial);
@@ -215,8 +212,8 @@ async function saveRecord() {
       .update({
         type: type,
         imei_serial: serial,
-        frequency_range: frequency,
-        stock_level: stock,
+        radioID: radioID,
+        itemD: itemD,
       })
       .eq("asset_ptr_id", editingId);
 
@@ -271,8 +268,8 @@ async function saveRecord() {
         asset_ptr_id: parentData.id,
         type: type,
         imei_serial: serial,
-        frequency_range: frequency,
-        stock_level: stock
+        radioID: radioID,
+        item_description: stock
       }]);
 
     if (childError) {
@@ -297,10 +294,10 @@ async function saveRecord() {
 
 /* ---------------- EXPORT ---------------- */
 function exportCSV() {
-  const headers = ["TYPE", "SERIAL", "FREQUENCY", "STOCK"];
+  const headers = ["TYPE", "MODEL", "SERIAL", "RADIO ID"];
 
   const rows = filtered.map((c) =>
-    [c.type, c.serial, c.frequency, c.stock]
+    [c.type, c.serial, c.radioID, c.model]
       .map((v) => `"${v}"`)
       .join(",")
   );

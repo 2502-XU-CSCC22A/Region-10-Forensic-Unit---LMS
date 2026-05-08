@@ -23,10 +23,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', 'false').lower() == 'true'
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.vercel.app', '.supabase.co']
 
-
-=========
 # --- Application Definition ---
->>>>>>>>> Temporary merge branch 2
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -35,6 +32,7 @@ INSTALLED_APPS = [
     'disposal',
     'login',
     'firearms',
+    'config',
     'communications',
     'dashboard',
     'usermanagement',
@@ -131,7 +129,6 @@ EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER or 'noreply@rfu10.gov.ph')
-=========
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
@@ -147,4 +144,4 @@ DEFAULT_FROM_EMAIL = os.environ.get(
 
 # Fix for certificate verify failed errors on certain SMTP servers
 EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
->>>>>>>>> Temporary merge branch 2
+

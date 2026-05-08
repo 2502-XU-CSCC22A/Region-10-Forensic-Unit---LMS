@@ -227,7 +227,7 @@
 
         <div class="user-info">
             <div class="font-weight-bold small text-dark">{{ user.get_full_name|default:user.username }}</div>
-            <div class="text-muted small">Logistics Officer</div>
+            <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
         </div>
     </div>
 </header>
@@ -269,20 +269,29 @@
           </li>
       
           <p class="mt-4">Monitoring</p>
-          <li>
-            <a href="{% url 'disposal:history_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
-          </li>
-      
           <li class="active">
             <a href="{% url 'communications:par_monitoring' %}">
               <i class="fas fa-clipboard-list"></i>
               <span class="sidebar-item-label">PAR Monitoring</span>
             </a>
           </li>
+
+          <li>
+            <a href="{% url 'communications:activity_logs' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
+          </li>
       
-        <li class = "UM">
-          <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
-        </li>
+          <li>
+            <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
+          </li>
+      
+          <div class = "UM">
+      
+            <p>System Action</p>
+            
+            <li>
+              <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
+            </li>
+          </div>
       </ul>
       </nav>
       

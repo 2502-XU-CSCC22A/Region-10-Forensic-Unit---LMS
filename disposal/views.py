@@ -56,10 +56,6 @@ def disposal_list(request):
     sync_time = last_item.last_sync if last_item else None
     
     today = timezone.now().date()
-    
-    users = User.objects.select_related('userprofile') \
-        .filter(is_active=True) \
-        .order_by('-last_login')[:50]
         
     try:
         current_user_role = request.user.userprofile.role
@@ -145,6 +141,7 @@ def history_log(request):
     firearms_all = Firearm.objects.count()
     inves_all = InvestigativeDetails.objects.count()
     total_ber = DisposalItem.objects.filter(asset_ptr__status_id = 4,).count()
+    current_user_role = request.user.userprofile.role
     
     return render(request, 'disposal/history.html', {
         'items': logs,
@@ -152,7 +149,8 @@ def history_log(request):
         'comms_all': comms_all,
         'total_ber': total_ber,
         'firearms_all': firearms_all,
-        'inves_all': inves_all
+        'inves_all': inves_all,
+        'current_user_role': current_user_role,
         })
 
 def finalize_removal(request, pk):

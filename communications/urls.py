@@ -1,4 +1,5 @@
 from django.urls import path
+from login.views import logout_view
 from . import views
 
 app_name= 'communications'
@@ -8,4 +9,5 @@ urlpatterns = [
     path('par/print/<int:pk>/', views.print_par, name='print_par'),
     path('par/', views.par_monitoring, name='par_monitoring'),
     path('reports/', views.activity_logs, name='activity_logs'),
+    path('logout/', logout_view, name='logout'),
 ]

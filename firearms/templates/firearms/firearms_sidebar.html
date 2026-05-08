@@ -19,13 +19,13 @@
       </a>
     </li>
 
-    <li class="{% if active_page == 'firearms' %}active{% endif %}">
+    <li class="active">
       <a href="{% url 'firearms:index' %}">
         <span>
           <i class="fas fa-crosshairs"></i>
           <span class="sidebar-item-label">Firearms</span>
         </span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ firearm_all|default:'0' }}</span>
+        <span class="badge badge-light badge-pill">{{ total_firearms|default:'0' }}</span>
       </a>
     </li>
 
@@ -43,7 +43,7 @@
       <a href="{% url 'InvestigativeEquipment:investigative_view'%}">
         <i class="fas fa-microscope"></i>
         <span class="sidebar-item-label">Investigative Equipment</span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ inves_all|default:'0' }}</span>
       </a>
     </li>
 
@@ -51,11 +51,18 @@
       <a href="{% url 'disposal:disposal_list' %}">
         <i class="fas fa-recycle"></i>
         <span class="sidebar-item-label">BER & Disposal</span>
-        <span class="badge badge-light badge-pill">{{ disposal_all|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_ber|default:'0' }}</span>
       </a>
     </li>
 
     <p class="mt-4">Monitoring</p>
+
+    <li class="{% if active_page == 'reports' %}active{% endif %}">
+      <a href="{% url 'firearms:par_management' %}">
+        <i class="fas fa-clipboard-list"></i>
+        <span class="sidebar-item-label">PAR Monitoring</span>
+      </a>
+    </li>
 
     <li class="{% if active_page == 'reports' %}active{% endif %}">
       <a href="#">
@@ -64,11 +71,18 @@
       </a>
     </li>
 
-  </ul>
+    <li>
+      <a href="{% url 'user_management:user_list' %}">
+        <i class="fas fa-user-shield mr-2"></i> 
+        <span class="sidebar-item-label"> User Management </span>
+      </a>
+    </li>
 
-  <div class="p-3" style="position: absolute; bottom: 10px; width: 100%;">
-    <a href="#" class="btn btn-link btn-block text-white-50 text-decoration-none text-left small">
-      <i class="fas fa-user-shield mr-2"></i> User Management
-    </a>
-  </div>
+    <div class = "UM">
+      <p>System Action</p>
+      <li>
+        <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
+      </li>
+    </div>
+  </ul>
 </nav>

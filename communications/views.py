@@ -21,10 +21,6 @@ def communications_list(request):
     all_d = DisposalItem.objects.filter(
         asset_ptr__status_id=4, 
     ).count()
-    
-    users = User.objects.select_related('userprofile') \
-        .filter(is_active=True) \
-        .order_by('-last_login')[:50]
         
     try:
         current_user_role = request.user.userprofile.role
@@ -37,7 +33,7 @@ def communications_list(request):
     return render(request, 'communications/communications.html', {
         'items': items,
         'total_comms': all_c.count() ,
-        'total_ber': all_d.count(),
+        'total_ber': all_d,
         'total_vehicles': all_v.count(),
         'total_firearms': all_f.count(),
         'current_user_role':  current_user_role
@@ -51,10 +47,6 @@ def activity_logs(request):
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
     all_d = DisposalItem.objects.all()
-    
-    users = User.objects.select_related('userprofile') \
-        .filter(is_active=True) \
-        .order_by('-last_login')[:50]
         
     try:
         current_user_role = request.user.userprofile.role
@@ -79,6 +71,8 @@ def par_monitoring(request):
     all_v = Vehicle.objects.all()
     all_d = DisposalItem.objects.all()
     
+    current_user_role = request.user.userprofile.role
+    
     if request.method == "POST":
         p_form = CommunicationPARForm(request.POST)
         if p_form.is_valid():
@@ -93,7 +87,8 @@ def par_monitoring(request):
         'total_comms': all_c.count() ,
         'total_ber': all_d.count(),
         'total_vehicles': all_v.count(),
-        'total_firearms': all_f.count()
+        'total_firearms': all_f.count(),
+        'current_user_role': current_user_role,
     })
 def print_par(request, pk):
     par = CommunicationPARRecord.objects.select_related("communication").get(pk=pk)

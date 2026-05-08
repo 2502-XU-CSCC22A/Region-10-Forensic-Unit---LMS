@@ -157,14 +157,101 @@
         </div>
         <div class="user-text ml-2">
           <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-          <div class="user-role text-muted">Logistics Officer</div>
+          <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
         </div>
       </div>
     </div>
   </header>
 
   <div class="layout">
-    {% include 'firearms/firearms_sidebar.html' %}
+    <nav id="sidebar">
+        <ul class="list-unstyled components">
+          <p>Dashboard</p>
+      
+          <li class="{% if active_page == 'home' %}active{% endif %}">
+            <a href="{% url 'dashboard:dashboard_view'%}">
+              <i class="fas fa-home"></i>
+              <span class="sidebar-item-label">Home</span>
+            </a>
+          </li>
+      
+          <li class="{% if active_page == 'mobility' %}active{% endif %}">
+            <a href="{% url 'mobility:vehicle_management' %}">
+              <span>
+                <i class="fas fa-car"></i>
+                <span class="sidebar-item-label">Mobility</span>
+              </span>
+              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ vehicle_all|default:'0' }}</span>
+            </a>
+          </li>
+      
+          <li>
+            <a href="{% url 'firearms:index' %}">
+              <span>
+                <i class="fas fa-crosshairs"></i>
+                <span class="sidebar-item-label">Firearms</span>
+              </span>
+              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span>
+            </a>
+          </li>
+      
+          <li class="{% if active_page == 'communications' %}active{% endif %}">
+            <a href="{% url 'communications:communications_list' %}">
+              <span>
+                <i class="fas fa-broadcast-tower"></i>
+                <span class="sidebar-item-label">Communications</span>
+              </span>
+              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ comms_all|default:'0' }}</span>
+            </a>
+          </li>
+      
+          <li class="{% if active_page == 'investigative' %}active{% endif %}">
+            <a href="{% url 'InvestigativeEquipment:investigative_view'%}">
+              <i class="fas fa-microscope"></i>
+              <span class="sidebar-item-label">Investigative Equipment</span>
+              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ inves_all|default:'0' }}</span>
+            </a>
+          </li>
+      
+          <li class="{% if active_page == 'disposal' %}active{% endif %}">
+            <a href="{% url 'disposal:disposal_list' %}">
+              <i class="fas fa-recycle"></i>
+              <span class="sidebar-item-label">BER & Disposal</span>
+              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_ber|default:'0' }}</span>
+            </a>
+          </li>
+      
+          <p class="mt-4">Monitoring</p>
+      
+          <li class="active">
+            <a href="{% url 'firearms:par_management' %}">
+              <i class="fas fa-clipboard-list"></i>
+              <span class="sidebar-item-label">PAR Monitoring</span>
+            </a>
+          </li>
+      
+          <li class="{% if active_page == 'reports' %}active{% endif %}">
+            <a href="#">
+              <i class="fas fa-file-invoice"></i>
+              <span class="sidebar-item-label">Reports</span>
+            </a>
+          </li>
+
+        <li>
+            <a href="{% url 'user_management:user_list' %}">
+                <i class="fas fa-user-shield mr-2"></i> 
+                <span class="sidebar-item-label"> User Management </span>
+            </a>
+          </li>
+
+      <div class = "UM">
+        <p>System Action</p>
+            <li>
+            <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
+            </li>
+      </div>
+    </ul>
+      </nav>
 
     <main class="main-content">
       <div class="registry-container">

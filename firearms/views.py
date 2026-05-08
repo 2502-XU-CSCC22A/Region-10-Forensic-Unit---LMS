@@ -8,21 +8,38 @@ from django.http import JsonResponse, HttpResponse
 from .forms import FirearmsPARForm
 from .models import Firearm
 from config.models import AssetStatus, Category
+from mobility.models import Vehicle
+from communications.models import Communication
+from config.models import Asset, AssetStatus, Personnel
+from InvestigativeEquipment.models import InvestigativeDetails
+from disposal.models import DisposalItem
 
 def index(request):
-    """Main Firearms Dashboard stats."""
-    # This pulls the real count (e.g., if Ariana is the only one, this will show 1)
+
     total_firearms = Firearm.objects.count()
     validated_count = Firearm.objects.filter(validated='VALIDATED').count()
+    current_user_role = request.user.userprofile.role
+    
+    vehicle_all = Vehicle.objects.count()
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    inves_all = InvestigativeDetails.objects.count()
+    total_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+    ).count()
     
     return render(request, 'firearms/firearms_main.html', {
         'validated_par_count': validated_count, 
         'total_par': total_firearms,
+        'vehicle_all': vehicle_all,
+        'comms_all': comms_all,
+        'inves_all': inves_all,
+        'total_ber': total_ber,
+        'total_firearms': total_firearms,
+        'current_user_role': current_user_role,
     })
 
 def print_par(request, pk):
-    """Printable PAR voucher view."""
-    # Placeholder data for the print view
+
     dummy_par = {
         'pk': pk,
         'par_number': f'PAR-2026-{pk:03d}',
@@ -46,7 +63,6 @@ def firearm_list(request):
             'faid': f.faid_serial,
             'serialNo': f.serial_no,
             'makeModel': f.type,
-            # Pull the status_name string from the related object
             'status': f.status.status_name if f.status else "Unknown", 
             'validated': f.validated
         })
@@ -86,6 +102,15 @@ def firearm_create(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
          
 def par_management(request):
+    current_user_role = request.user.userprofile.role
+    total_firearms = Firearm.objects.count()
+    vehicle_all = Vehicle.objects.count()
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    inves_all = InvestigativeDetails.objects.count()
+    total_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4, 
+    ).count()
+    
     if request.method == 'POST':
         form = FirearmsPARForm(request.POST)
         if form.is_valid():
@@ -110,6 +135,12 @@ def par_management(request):
     return render(request, 'firearms/par_management.html', {
         'pars': pars,
         'p_form': form,
+        'current_user_role': current_user_role,
+        'vehicle_all': vehicle_all,
+        'comms_all': comms_all,
+        'inves_all': inves_all,
+        'total_ber': total_ber,
+        'total_firearms': total_firearms,
     })
 
 @csrf_exempt
@@ -152,6 +183,8 @@ def firearm_delete(request, pk):
 def edit_par(request, pk):
     from .models import FirearmPARRecord
     par = FirearmPARRecord.objects.get(pk=pk)
+    
+    current_user_role = request.user.userprofile.role
 
     if request.method == 'POST':
         form = FirearmsPARForm(request.POST)
@@ -180,7 +213,8 @@ def edit_par(request, pk):
 
     return render(request, 'firearms/edit_par.html', {
         'form': form,
-        'record': par,  # ← template uses 'record' not 'par'
+        'record': par, 
+        'current_user_role': current_user_role,
     })
 
 

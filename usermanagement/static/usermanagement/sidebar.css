@@ -1,35 +1,24 @@
 :root {
   --pnp-blue: #1a237e;
-  --sidebar-width: 308px;
+  --sidebar-width: 315px;
   --figma-active: #4338ca;
 }
 
 body {
   background-color: #f8f9fc;
   overflow-x: hidden;
-  font-family: 'Inter', sans-serif;
-}
-
-:root {
-  --pnp-blue: #1a237e;
-  --sidebar-width: 290px;
-  --figma-active: #4338ca;
-}
-
-body {
-  background-color: #f8f9fc;
-  overflow-x: hidden;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 #sidebar {
-  width: var(--sidebar-width);
-  height: 100vh;
+  width: 315px;
+  height: calc(100vh - 70px);
   position: fixed;
+  top: 70px;
+  left: 0;
   background: #1a2b6d;
   color: white;
   transition: all 0.3s;
-  z-index: 1000;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -66,14 +55,13 @@ body {
   transition: 0.2s;
 }
 
-#sidebar ul li.active>a {
+#sidebar ul li.active > a {
   color: #fff !important;
   background: var(--figma-active);
   border-radius: 12px;
   margin: 0 15px;
   font-weight: 700;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  
 }
 
 #sidebar ul li a:hover:not(.active) {
@@ -92,7 +80,11 @@ body {
 .sidebar-item-label {
   flex-grow: 1;
   font-weight: 500;
-  font-family: 'Inter', sans-serif;
-  margin: 0;
 }
 
+.UM {
+  position: absolute;
+  bottom: 100px;
+  width: 100%;
+  padding: 0px;
+}

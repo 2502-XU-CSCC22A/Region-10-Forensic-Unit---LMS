@@ -4,7 +4,7 @@ from config.models import Asset, AssetStatus, Category
 from mobility.models import Vehicle
 from disposal.models import DisposalItem
 from communications.models import Communication
-from InvestigativeEquipment.models import InvestigativeDetails
+from .models import InvestigativeDetails
 from firearms.models import Firearm
 import datetime
 import uuid

@@ -171,10 +171,9 @@
         class="btn btn-outline"
         style="font-size:13px;padding:7px 12px;"
         onchange="filterTable()">
-            <option value="">All Status</option>
+            <option value="">Serviceability</option>
             <option value="Serviceable">Serviceable</option>
             <option value="Unserviceable">Unserviceable</option>
-            <option value="Lost">Lost</option>
          </select>
         
         <!-- NEW: PAR Records Button -->
@@ -192,15 +191,14 @@
           <thead>
             <tr>
               <th onclick="sortTable('name')">NAME &#x21C5;</th>
-              <th onclick="sortTable('unit')">UNIT &#x21C5;</th>
               <th onclick="sortTable('subunit')">SUBUNIT &#x21C5;</th>
               <th onclick="sortTable('station')">STATION &#x21C5;</th>
               <th onclick="sortTable('issuingUnit')">ISSUING UNIT &#x21C5;</th>
-              <th onclick="sortTable('faid')">FAID &#x21C5;</th>
               <th onclick="sortTable('serialNo')">SERIAL NO. &#x21C5;</th>
-              <th onclick="sortTable('makeModel')">MAKE/MODEL/KIND/CALIBER &#x21C5;</th>
+              <th onclick="sortTable('unit')">PAR NUMBER &#x21C5;</th>
+              <th onclick="sortTable('makeModel')">ITEM DESCRIPTION &#x21C5;</th>
               <th onclick="sortTable('status')">STATUS &#x21C5;</th>
-              <th onclick="sortTable('validated')">VALIDATED &#x21C5;</th>
+              <th onclick="sortTable('validated')">REMARKS &#x21C5;</th>
               <th>ACTION</th>
             </tr>
           </thead>

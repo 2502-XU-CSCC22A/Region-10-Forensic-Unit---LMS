@@ -11,7 +11,7 @@ body {
 }
 
 #sidebar {
-  width: 315px;
+  width: 320px;
   position: fixed;
   top: var(--header-h);                  
   left: 0;

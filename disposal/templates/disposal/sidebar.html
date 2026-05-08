@@ -44,9 +44,16 @@
     <li>
       <a href="{% url 'disposal:history_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
     </li>
-  
-    <li class="UM">
+    <li>
       <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
     </li>
+
+    <div class = "UM">
+      <p>System Action</p>
+
+      <li>
+        <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
+      </li>
+    </div>
   </ul>
 </nav>

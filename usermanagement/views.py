@@ -8,6 +8,7 @@ from .models import UserProfile
 from mobility.models import Vehicle
 from disposal.models import DisposalItem
 from communications.models import Communication
+from InvestigativeEquipment.models import InvestigativeDetails
 from firearms.models import Firearm
 
 @login_required
@@ -22,6 +23,7 @@ def user_list(request):
     disposal_all = DisposalItem.objects.filter(
         asset_ptr__status_id=4, 
     ).count()
+    inves_all = InvestigativeDetails.objects.count()
 
     try:
         current_user_role = request.user.userprofile.role
@@ -38,6 +40,7 @@ def user_list(request):
         'disposal_all': disposal_all,
         'firearm_all': firearm_all,
         'current_user_role': current_user_role,
+        'inves_all': inves_all,
     })
 
 

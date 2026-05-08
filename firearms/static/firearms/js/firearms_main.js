@@ -106,14 +106,13 @@ function updateStats() {
 function statusBadge(s) {
   if (s === 'Serviceable')   return `<span class="badge badge-green">${s}</span>`;
   if (s === 'Unserviceable') return `<span class="badge badge-red">${s}</span>`;
-  if (s === 'Lost')          return `<span class="badge badge-orange">${s}</span>`;
   return `<span class="badge badge-orange">${s}</span>`;
 }
 
 function validatedBadge(v) {
   return v === 'VALIDATED'
-    ? `<span class="badge badge-blue">${v}</span>`
-    : `<span class="badge badge-orange">${v}</span>`;
+    ? `<span class="badge badge-green">${v}</span>`
+    : `<span class="badge badge-red">${v}</span>`;
 }
 
 function renderTable() {
@@ -125,11 +124,10 @@ function renderTable() {
     ? page.map(f => `
         <tr>
           <td><strong>${f.name}</strong></td>
-          <td>${f.unit}</td>
           <td>${f.subunit}</td>
           <td>${f.station}</td>
           <td>${f.issuingUnit}</td>
-          <td style="font-family:monospace;font-size:12px">${f.faid}</td>
+          <td style="font-family:monospace;font-size:12px">${f.firearm_par}</td>
           <td><strong>${f.serialNo}</strong></td>
           <td>${f.makeModel}</td>
           <td>${statusBadge(f.status)}</td>
@@ -220,16 +218,15 @@ function selectField(label, id, options, val = '') {
 
 function buildForm(f = {}) {
   return (
-    inputField('Name (Assigned To)',            'f_name',        f.name        || '') +
-    inputField('Unit',                          'f_unit',        f.unit        !== 'N/A' ? f.unit        || 'PNP FG' : 'PNP FG') +
+    inputField('Name (Issued To)',            'f_name',        f.name        || '') +
     inputField('Subunit',                       'f_subunit',     f.subunit     !== 'N/A' ? f.subunit     || '' : '') +
     inputField('Station',                       'f_station',     f.station     !== 'N/A' ? f.station     || '' : '') +
     inputField('Issuing Unit',                  'f_issuingUnit', f.issuingUnit !== 'N/A' ? f.issuingUnit || 'PNP FG' : 'PNP FG') +
-    inputField('FAID / Serial',                 'f_faid',        f.faid        !== 'N/A' ? f.faid        || '' : '') +
+    inputField('PAR No.',                 'f_firearms_par',        f.firearms_par        !== 'N/A' ? f.firearms_par        || '' : '') +
     inputField('Serial No.',                    'f_serialNo',    f.serialNo    !== 'N/A' ? f.serialNo    || '' : '') +
-    inputField('Make / Model / Kind / Caliber', 'f_makeModel',   f.makeModel   !== 'N/A' ? f.makeModel   || '' : '') +
-    selectField('Status',    'f_status',    ['Serviceable', 'Unserviceable', 'Lost'], f.status    || 'SERVICEABLE') +
-    selectField('Validated', 'f_validated', ['VALIDATED', 'PENDING'],                 f.validated || 'PENDING')
+    inputField('Item Description', 'f_makeModel',   f.makeModel   !== 'N/A' ? f.makeModel   || '' : '') +
+    selectField('Status',    'f_status',    ['Serviceable', 'Unserviceable'], f.status    || 'SERVICEABLE') +
+    selectField('Remarks', 'f_validated', ['Validated', 'Expired/For Renewal'],                 f.validated || 'VALIDATED')
   );
 }
 
@@ -259,7 +256,6 @@ async function saveRecord() {
   const get  = id => document.getElementById(id)?.value?.trim() || '';
   const data = {
     name:        get('f_name'),
-    unit:        get('f_unit'),
     subunit:     get('f_subunit'),
     station:     get('f_station'),
     issuingUnit: get('f_issuingUnit'),

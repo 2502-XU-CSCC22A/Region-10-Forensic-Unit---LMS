@@ -99,16 +99,21 @@
           </li>
           <li>
             <a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span>
-              <span class="badge badge-primary badge-pill">{{ total_ber|default:'0' }}</span></a>
+              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_ber|default:'0' }}</span></a>
           </li>
-      
-        <li class = "UM">
-          <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
-        </li>
+
+          <p class="mt-4">Monitoring</p>
+          <li>
+            <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
+          </li>
+
+      <div class = "UM">
+        <p>System Action</p>
 
         <li>
-          <a href="{% url 'dashboard:logout' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
+          <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
         </li>
+      </div>
         </ul>
       </nav>
       
