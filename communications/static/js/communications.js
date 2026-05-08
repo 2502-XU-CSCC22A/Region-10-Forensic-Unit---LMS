@@ -1,6 +1,5 @@
 console.log("COMM JS LOADED");
 
-/* ---------------- SAFE SUPABASE INIT ---------------- */
 window.supabaseClient = window.supabaseClient || window.supabase.createClient(
   "https://vamjajitzyspdyfxisac.supabase.co",
   "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54"
@@ -8,14 +7,12 @@ window.supabaseClient = window.supabaseClient || window.supabase.createClient(
 
 const sb = window.supabaseClient;
 
-/* ---------------- STATE ---------------- */
 let communications = [];
 let filtered = [];
 let currentPage = 1;
 const pageSize = 5;
 let editingId = null;
 
-/* ---------------- HELPERS ---------------- */
 function getValue(id) {
   return document.getElementById(id)?.value?.trim() || "";
 }
@@ -28,28 +25,91 @@ function generatePropertyNo() {
   return "PN-" + Date.now();
 }
 
-/* ---------------- FETCH DATA ---------------- */
+function statusBadge(status) {
+  if (status === "SERVICEABLE") {
+    return `<span class="badge badge-green">SERVICEABLE</span>`;
+  }
+
+  if (status === "UNSERVICEABLE") {
+    return `<span class="badge badge-red">UNSERVICEABLE</span>`;
+  }
+
+  return `<span class="badge badge-orange">${status || "N/A"}</span>`;
+}
+
+function remarksBadge(remarks) {
+  if (remarks === "VALIDATED") {
+    return `<span class="badge badge-green">VALIDATED</span>`;
+  }
+
+  return `<span class="badge badge-red">${remarks || "N/A"}</span>`;
+}
+
+async function addActivityLog({ communicationId, action, details }) {
+  const { error } = await sb
+    .from("communications_activitylog")
+    .insert([{
+      communication_id: communicationId,
+      action: action,
+      details: details,
+      old_stock: null,
+      new_stock: null
+    }]);
+
+  if (error) {
+    console.error("ACTIVITY LOG ERROR:", error);
+  }
+}
+
 async function fetchData() {
-  const { data, error } = await sb
+  const { data: commData, error: commError } = await sb
     .from("communications_communication")
     .select("*")
     .order("asset_ptr_id", { ascending: false });
 
-  if (error) {
-    console.error("FETCH ERROR:", error);
+  if (commError) {
+    console.error("FETCH COMM ERROR:", commError);
     alert("Failed to load communications.");
     return;
   }
 
-  communications = data
+  const communicationIds = commData.map(item => item.asset_ptr_id);
+
+  let parMap = {};
+
+  if (communicationIds.length > 0) {
+    const { data: parData, error: parError } = await sb
+      .from("communications_parrecord")
+      .select("communication_id, par_number, created_at")
+      .in("communication_id", communicationIds)
+      .order("created_at", { ascending: false });
+
+    if (parError) {
+      console.error("FETCH PAR ERROR:", parError);
+    }
+
+    if (parData) {
+      parData.forEach(par => {
+        const commId = Number(par.communication_id);
+
+        if (!parMap[commId]) {
+          parMap[commId] = par.par_number;
+        }
+      });
+    }
+  }
+
+  communications = commData
+    .filter(item => item.is_deleted !== true)
     .map((item) => ({
       id: item.asset_ptr_id,
       type: item.type || "",
       serial: item.imei_serial || "",
-      frequency: item.frequency_range || "",
-      stock: item.stock_level || 0,
-    }))
-    .filter((item) => item.stock > 0);
+      parNo: parMap[Number(item.asset_ptr_id)] || "N/A",
+      radioId: item.radio_id || "",
+      status: item.status || "SERVICEABLE",
+      remarks: item.remarks || "VALIDATED",
+    }));
 
   filtered = [...communications];
   currentPage = 1;
@@ -59,7 +119,6 @@ async function fetchData() {
   updateStats();
 }
 
-/* ---------------- TABLE ---------------- */
 function renderTable() {
   const tbody = document.getElementById("tableBody");
 
@@ -69,9 +128,12 @@ function renderTable() {
   if (pageItems.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="5" style="text-align:center;">No records found</td>
+        <td colspan="7" style="text-align:center;">
+          No records found
+        </td>
       </tr>
     `;
+
     document.getElementById("rowInfo").textContent = "No records";
     return;
   }
@@ -80,34 +142,46 @@ function renderTable() {
     <tr>
       <td>${c.type}</td>
       <td>${c.serial}</td>
-      <td>${c.frequency}</td>
-      <td>${c.stock}</td>
+      <td>${c.parNo}</td>
+      <td>${c.radioId}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td>${remarksBadge(c.remarks)}</td>
       <td>
-        <button class="edit-btn" data-id="${c.id}">Edit</button>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <button
+            class="action-btn"
+            onclick="openActionModal('${c.id}')"
+          >
+            Edit ▸
+          </button>
+
+          <button
+            class="delete-btn"
+            onclick="softDelete('${c.id}')"
+          >
+            Delete
+          </button>
+        </div>
       </td>
     </tr>
   `).join("");
-
-  document.querySelectorAll(".edit-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      openActionModal(btn.dataset.id);
-    });
-  });
 
   document.getElementById("rowInfo").textContent =
     `Showing ${start + 1}-${Math.min(start + pageSize, filtered.length)} of ${filtered.length}`;
 }
 
-/* ---------------- PAGINATION ---------------- */
 function renderPagination() {
   const pages = Math.ceil(filtered.length / pageSize);
+
   const el = document.getElementById("pagination");
 
   el.innerHTML = "";
 
   for (let i = 1; i <= pages; i++) {
     const b = document.createElement("button");
+
     b.className = "page-btn" + (i === currentPage ? " active" : "");
+
     b.textContent = i;
 
     b.onclick = () => {
@@ -120,39 +194,112 @@ function renderPagination() {
   }
 }
 
-/* ---------------- STATS ---------------- */
 function updateStats() {
-  document.getElementById("totalCount").textContent = communications.length;
-  document.getElementById("issuedCount").textContent = communications.length;
-  document.getElementById("parCount").textContent = 0;
+  const total = communications.length;
 
-  document.getElementById("totalBar").style.width = "100%";
-  document.getElementById("issuedBar").style.width = "100%";
-  document.getElementById("parBar").style.width = "0%";
+  const serviceable = communications.filter(
+    c => c.status === "SERVICEABLE"
+  ).length;
+
+  const validated = communications.filter(
+    c => c.remarks === "VALIDATED"
+  ).length;
+
+  document.getElementById("totalCount").textContent = total;
+
+  document.getElementById("issuedCount").textContent = serviceable;
+
+  document.getElementById("parCount").textContent = validated;
+
+  document.getElementById("totalBar").style.width =
+    total > 0 ? "100%" : "0%";
+
+  document.getElementById("issuedBar").style.width =
+    total > 0
+      ? Math.max(5, Math.round((serviceable / total) * 100)) + "%"
+      : "0%";
+
+  document.getElementById("parBar").style.width =
+    total > 0
+      ? Math.max(5, Math.round((validated / total) * 100)) + "%"
+      : "0%";
 }
 
-/* ---------------- FILTER ---------------- */
 function filterTable() {
-  const q = document.getElementById("searchInput").value.toLowerCase();
+  const q = document.getElementById("searchInput")
+    .value
+    .toLowerCase();
 
-  filtered = communications.filter((c) =>
-    c.type.toLowerCase().includes(q) ||
-    c.serial.toLowerCase().includes(q) ||
-    c.frequency.toLowerCase().includes(q)
-  );
+  const statusFilter =
+    document.getElementById("statusFilter").value;
+
+  filtered = communications.filter((c) => {
+    const searchMatch =
+      c.type.toLowerCase().includes(q) ||
+      c.serial.toLowerCase().includes(q) ||
+      c.parNo.toLowerCase().includes(q) ||
+      c.radioId.toLowerCase().includes(q) ||
+      c.status.toLowerCase().includes(q) ||
+      c.remarks.toLowerCase().includes(q);
+
+    const statusMatch =
+      !statusFilter ||
+      c.status === statusFilter;
+
+    return searchMatch && statusMatch;
+  });
 
   currentPage = 1;
+
   renderTable();
   renderPagination();
 }
 
-/* ---------------- MODAL ---------------- */
 function inputField(label, id, val = "", type = "text") {
   return `
     <div style="margin-bottom:10px">
       <label>${label}</label>
-      <input id="${id}" type="${type}" value="${val}"
-        style="width:100%;padding:7px;border:1px solid #ccc;border-radius:6px;margin-top:3px"/>
+
+      <input
+        id="${id}"
+        type="${type}"
+        value="${val}"
+        style="
+          width:100%;
+          padding:7px;
+          border:1px solid #ccc;
+          border-radius:6px;
+          margin-top:3px
+        "
+      />
+    </div>
+  `;
+}
+
+function selectField(label, id, options, selected = "") {
+  return `
+    <div style="margin-bottom:10px">
+      <label>${label}</label>
+
+      <select
+        id="${id}"
+        style="
+          width:100%;
+          padding:7px;
+          border:1px solid #ccc;
+          border-radius:6px;
+          margin-top:3px
+        "
+      >
+        ${options.map(option => `
+          <option
+            value="${option}"
+            ${option === selected ? "selected" : ""}
+          >
+            ${option}
+          </option>
+        `).join("")}
+      </select>
     </div>
   `;
 }
@@ -161,45 +308,70 @@ function buildForm(c = {}) {
   return (
     inputField("Type", "c_type", c.type || "") +
     inputField("IMEI / Serial", "c_serial", c.serial || "") +
-    inputField("Frequency Range", "c_frequency", c.frequency || "") +
-    inputField("Stock Level", "c_stock", c.stock || 1, "number")
+    inputField("Radio ID", "c_radioId", c.radioId || "") +
+    selectField(
+      "Status",
+      "c_status",
+      ["SERVICEABLE", "UNSERVICEABLE"],
+      c.status || "SERVICEABLE"
+    ) +
+    selectField(
+      "Remarks",
+      "c_remarks",
+      ["VALIDATED", "EXPIRED/FOR RENEWAL"],
+      c.remarks || "VALIDATED"
+    )
   );
 }
 
 function openActionModal(id) {
   editingId = id;
+
   const c = communications.find(x => x.id == id);
 
-  document.getElementById("modalTitle").textContent = "Edit Record";
-  document.getElementById("modalBody").innerHTML = buildForm(c);
-  document.getElementById("modalSaveBtn").textContent = "Save";
+  document.getElementById("modalTitle").textContent =
+    "Edit Record";
 
-  document.getElementById("modalOverlay").classList.add("open");
+  document.getElementById("modalBody").innerHTML =
+    buildForm(c);
+
+  document.getElementById("modalSaveBtn").textContent =
+    "Save";
+
+  document
+    .getElementById("modalOverlay")
+    .classList.add("open");
 }
 
 function openAddModal() {
   editingId = null;
 
-  document.getElementById("modalTitle").textContent = "Add Record";
-  document.getElementById("modalBody").innerHTML = buildForm();
-  document.getElementById("modalSaveBtn").textContent = "Add";
+  document.getElementById("modalTitle").textContent =
+    "Add Record";
 
-  document.getElementById("modalOverlay").classList.add("open");
+  document.getElementById("modalBody").innerHTML =
+    buildForm();
+
+  document.getElementById("modalSaveBtn").textContent =
+    "Add";
+
+  document
+    .getElementById("modalOverlay")
+    .classList.add("open");
 }
 
 function closeModal() {
-  document.getElementById("modalOverlay").classList.remove("open");
+  document
+    .getElementById("modalOverlay")
+    .classList.remove("open");
 }
 
-/* ---------------- SAVE ---------------- */
 async function saveRecord() {
   const type = getValue("c_type");
   const serial = getValue("c_serial");
-  const frequency = getValue("c_frequency");
-  const stock = parseInt(getValue("c_stock")) || 0;
-
-  console.log("TYPE:", type);
-  console.log("SERIAL:", serial);
+  const radioId = getValue("c_radioId");
+  const status = getValue("c_status");
+  const remarks = getValue("c_remarks");
 
   if (!type || !serial) {
     alert("Type and IMEI / Serial are required.");
@@ -208,15 +380,37 @@ async function saveRecord() {
 
   if (editingId) {
     const oldRecord = communications.find(c => c.id == editingId);
-    const oldStock = oldRecord ? oldRecord.stock : null;
+
+    const changes = [];
+
+    if (oldRecord.type !== type) {
+      changes.push(`Type changed from "${oldRecord.type}" to "${type}"`);
+    }
+
+    if (oldRecord.serial !== serial) {
+      changes.push(`Serial changed from "${oldRecord.serial}" to "${serial}"`);
+    }
+
+    if (oldRecord.radioId !== radioId) {
+      changes.push(`Radio ID changed from "${oldRecord.radioId}" to "${radioId}"`);
+    }
+
+    if (oldRecord.status !== status) {
+      changes.push(`Status changed from "${oldRecord.status}" to "${status}"`);
+    }
+
+    if (oldRecord.remarks !== remarks) {
+      changes.push(`Remarks changed from "${oldRecord.remarks}" to "${remarks}"`);
+    }
 
     const { error } = await sb
       .from("communications_communication")
       .update({
         type: type,
         imei_serial: serial,
-        frequency_range: frequency,
-        stock_level: stock,
+        radio_id: radioId,
+        status: status,
+        remarks: remarks,
       })
       .eq("asset_ptr_id", editingId);
 
@@ -226,26 +420,16 @@ async function saveRecord() {
       return;
     }
 
-    // Save to activity log only if stock changed
-    if (oldStock !== stock) {
-      const { error: logError } = await sb
-        .from("communications_activitylog")
-        .insert([{
-          communication_id: editingId,
-          action: "Stock Updated",
-          old_stock: oldStock,
-          new_stock: stock,
-          details: `${type} stock changed from ${oldStock} to ${stock}`
-        }]);
-
-      if (logError) {
-        console.error("ACTIVITY LOG ERROR:", logError);
-        alert("Stock updated, but activity log failed: " + logError.message);
-        return;
-      }
+    if (changes.length > 0) {
+      await addActivityLog({
+        communicationId: editingId,
+        action: "Communication Updated",
+        details: changes.join("; ")
+      });
     }
 
   } else {
+
     const { data: parentData, error: parentError } = await sb
       .from("config_asset")
       .insert([{
@@ -271,8 +455,10 @@ async function saveRecord() {
         asset_ptr_id: parentData.id,
         type: type,
         imei_serial: serial,
-        frequency_range: frequency,
-        stock_level: stock
+        radio_id: radioId,
+        status: status,
+        remarks: remarks,
+        is_deleted: false,
       }]);
 
     if (childError) {
@@ -280,53 +466,129 @@ async function saveRecord() {
       alert(childError.message);
       return;
     }
+
+    await addActivityLog({
+      communicationId: parentData.id,
+      action: "Communication Created",
+      details: `Added ${type} with Serial ${serial}`
+    });
   }
 
-  const { error: disposalError } = await sb
-  .from("disposal_disposalitems")
-  .insert([{
-    asset_ptr_id: editingId,
-    disposal_reason: "Stock reached zero",
-    disposal_date: new Date().toISOString(),
-    last_sync: new Date().toISOString()
-  }]);
-
   await fetchData();
+
   closeModal();
 }
 
-/* ---------------- EXPORT ---------------- */
+async function softDelete(id) {
+  const confirmed = confirm(
+    "Remove this communication from the table?"
+  );
+
+  if (!confirmed) return;
+
+  const { error } = await sb
+    .from("communications_communication")
+    .update({
+      is_deleted: true
+    })
+    .eq("asset_ptr_id", id);
+
+  if (error) {
+    console.error("SOFT DELETE ERROR:", error);
+
+    alert("Failed to remove communication.");
+
+    return;
+  }
+
+  await addActivityLog({
+    communicationId: id,
+    action: "Communication Deleted",
+    details: "Communication removed from UI"
+  });
+
+  await fetchData();
+}
+
 function exportCSV() {
-  const headers = ["TYPE", "SERIAL", "FREQUENCY", "STOCK"];
+  const headers = [
+    "TYPE",
+    "SERIAL NO.",
+    "PAR NO.",
+    "RADIO ID",
+    "STATUS",
+    "REMARKS"
+  ];
 
   const rows = filtered.map((c) =>
-    [c.type, c.serial, c.frequency, c.stock]
-      .map((v) => `"${v}"`)
+    [
+      c.type,
+      c.serial,
+      c.parNo,
+      c.radioId,
+      c.status,
+      c.remarks
+    ]
+      .map((v) => `"${v || ""}"`)
       .join(",")
   );
 
-  const csv = [headers.join(","), ...rows].join("\n");
+  const csv =
+    [headers.join(","), ...rows].join("\n");
 
-  const a = document.createElement("a");
-  a.href = "data:text/csv," + encodeURIComponent(csv);
-  a.download = "communications_export.csv";
+  const a =
+    document.createElement("a");
+
+  a.href =
+    "data:text/csv," +
+    encodeURIComponent(csv);
+
+  a.download =
+    "communications_export.csv";
+
   a.click();
 }
 
-/* ---------------- INIT ---------------- */
-document.addEventListener("DOMContentLoaded", () => {
-  fetchData();
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
 
-  document.getElementById("addRecordBtn")?.addEventListener("click", openAddModal);
-  document.getElementById("modalSaveBtn")?.addEventListener("click", saveRecord);
-  document.getElementById("closeModalBtn")?.addEventListener("click", closeModal);
-  document.getElementById("closeModalBtn2")?.addEventListener("click", closeModal);
-});
+    fetchData();
 
-/* ---------------- GLOBAL ---------------- */
+    document
+      .getElementById("addRecordBtn")
+      ?.addEventListener(
+        "click",
+        openAddModal
+      );
+
+    document
+      .getElementById("modalSaveBtn")
+      ?.addEventListener(
+        "click",
+        saveRecord
+      );
+
+    document
+      .getElementById("closeModalBtn")
+      ?.addEventListener(
+        "click",
+        closeModal
+      );
+
+    document
+      .getElementById("closeModalBtn2")
+      ?.addEventListener(
+        "click",
+        closeModal
+      );
+  }
+);
+
 window.openAddModal = openAddModal;
 window.openActionModal = openActionModal;
 window.closeModal = closeModal;
 window.saveRecord = saveRecord;
+window.softDelete = softDelete;
 window.filterTable = filterTable;
 window.exportCSV = exportCSV;

@@ -4,9 +4,25 @@ from config.models import Asset, PARRecord
 
 class Communication(Asset):
     type = models.CharField(max_length=100)
-    imei_serial = models.CharField(max_length=100, null=True, blank=True)
-    frequency_range = models.CharField(max_length=100)
-    stock_level = models.IntegerField(default=0)
+
+    imei_serial = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+    radio_id = models.CharField(
+        max_length=100,
+        null=True,
+        blank=True
+    )
+
+    remarks = models.CharField(
+        max_length=100,
+        default="VALIDATED"
+    )
+
+    is_deleted = models.BooleanField(default=False)
 
     par_assignment = models.ForeignKey(
         PARRecord,
@@ -19,6 +35,8 @@ class Communication(Asset):
     class Meta:
         db_table = "communications_communication"
 
+    def __str__(self):
+        return f"{self.type} - {self.imei_serial}"
 
 class CommunicationPARRecord(models.Model):
     communication = models.ForeignKey(

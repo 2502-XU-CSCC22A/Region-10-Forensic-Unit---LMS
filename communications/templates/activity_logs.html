@@ -202,7 +202,7 @@
       <div>
         <h3 class="page-title mb-0">Activity History</h3>
         <p class="text-muted small">
-          Tracking Communications modifications, additions, and stock updates
+          Tracking Communications modifications, additions, and updates
         </p>
       </div>
 
@@ -267,6 +267,19 @@
       }
     }
 
+    function getActionIcon(action) {
+      if (!action) return "fa-history";
+
+      const lower = action.toLowerCase();
+
+      if (lower.includes("delete")) return "fa-trash-alt";
+      if (lower.includes("create")) return "fa-plus-circle";
+      if (lower.includes("update")) return "fa-edit";
+      if (lower.includes("move")) return "fa-undo";
+
+      return "fa-history";
+    }
+
     async function loadActivityLogs(days = 7) {
       setActiveButton(days);
 
@@ -329,17 +342,17 @@
                   </span>
 
                   <span class="action-label">
+                    <i class="fas ${getActionIcon(log.action)} mr-1"></i>
                     ${log.action || "Activity"}
                   </span>
                 </div>
 
                 <div class="log-title">
-                  ${log.details || "Activity recorded"}
+                  ${log.action || "Activity Recorded"}
                 </div>
 
                 <p class="log-stock">
-                  Old Stock: ${log.old_stock ?? "-"} &nbsp; | &nbsp;
-                  New Stock: ${log.new_stock ?? "-"}
+                  ${log.details || "No details available"}
                 </p>
 
                 <small class="text-muted">
