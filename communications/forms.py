@@ -73,6 +73,17 @@ class CommunicationPARForm(forms.ModelForm):
 
         super().__init__(*args, **kwargs)
 
+        used_communication_ids = CommunicationPARRecord.objects.values_list(
+            "communication_id",
+            flat=True
+        )
+
+        self.fields["communication"].queryset = (
+        self.fields["communication"].queryset.exclude(
+            asset_ptr_id__in=used_communication_ids
+            )
+        )
+
         self.fields["communication"].label = "COMMUNICATION ASSET"
         self.fields["par_number"].label = "PAR NO."
         self.fields["reference_no"].label = "REFERENCE NO."
@@ -176,6 +187,17 @@ class CommunicationICSForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
+
+        used_communication_ids = CommunicationICSRecord.objects.values_list(
+        "communication_id",
+        flat=True
+        )
+
+        self.fields["communication"].queryset = (
+        self.fields["communication"].queryset.exclude(
+        asset_ptr_id__in=used_communication_ids
+            )
+        )
 
         self.fields["communication"].label = "COMMUNICATION ASSET"
         self.fields["ics_number"].label = "ICS NO."
