@@ -10,8 +10,6 @@ from .models import Firearm
 from config.models import AssetStatus, Category
 from django.contrib.auth.decorators import login_required
 
-SUPABASE_URL = "https://vamjajitzyspdyfxisac.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhbWphaml0enlzcGR5Znhpc2FjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjI1OTAwNSwiZXhwIjoyMDkxODM1MDA1fQ.sOZIyBDnS0UFRn9i6sDmoZhYT1cNWhG2Uqf4HQyrFHA"
 
 def log_firearm_activity(firearm_id, action, details, user=None):
     try:
@@ -250,3 +248,25 @@ def api_par_list(request):
 
 def firearms_activitylog(request):
     return render(request, 'firearms/firearms_activitylog.html')
+
+
+def firearms_activitylog_api(request):
+    days = int(request.GET.get('days', 7))
+    from datetime import timedelta
+    since = (timezone.now() - timedelta(days=days)).isoformat()
+
+    try:
+        url = (
+            f"{SUPABASE_URL}/rest/v1/firearms_activitylog"
+            f"?created_at=gte.{since}"
+            f"&order=created_at.desc"
+        )
+        req = _urllib.Request(url, headers={
+            "apikey": SUPABASE_KEY,
+            "Authorization": f"Bearer {SUPABASE_KEY}",
+        })
+        with _urllib.urlopen(req) as resp:
+            data = json.loads(resp.read())
+        return JsonResponse(data, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

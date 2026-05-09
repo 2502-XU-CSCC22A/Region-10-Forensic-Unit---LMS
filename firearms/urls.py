@@ -21,5 +21,7 @@ urlpatterns = [
     path('par/edit/<int:pk>/',   views.edit_par,        name='edit_par'),
     path('par/delete/<int:pk>/', views.delete_par,      name='delete_par'),
     path('api/par/list/',        views.api_par_list,    name='api_par_list'),
-    path('activity-logs/', views.firearms_activitylog, name='firearms_activitylog'),
+
+    path('activity-logs/', views.firearms_activitylog, name='activity_logs'),
+    path('activity-logs/api/', views.firearms_activitylog_api, name='activity_logs_api'),
 ]
