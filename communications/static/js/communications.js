@@ -157,7 +157,7 @@ function renderTable() {
 
           <button
             class="delete-btn"
-            onclick="softDelete('${c.id}')"
+            onclick="moveToBER('${c.id}')"
           >
             BER
           </button>
@@ -206,11 +206,8 @@ function updateStats() {
   ).length;
 
   document.getElementById("totalCount").textContent = total;
-
   document.getElementById("issuedCount").textContent = serviceable;
-
   document.getElementById("parCount").textContent = validated;
-
   document.getElementById("totalBar").style.width =
     total > 0 ? "100%" : "0%";
 
@@ -479,32 +476,57 @@ async function saveRecord() {
   closeModal();
 }
 
-async function softDelete(id) {
+async function moveToBER(id) {
   const confirmed = confirm(
-    "Remove this communication from the table?"
+    "Move this communication asset to BER & Disposal?"
   );
 
   if (!confirmed) return;
 
-  const { error } = await sb
+  const c = communications.find(item => item.id == id);
+
+  if (!c) {
+    alert("Communication record not found.");
+    return;
+  }
+
+  const { error: disposalError } = await sb
+    .from("disposal_disposalitems")
+    .insert([{
+      asset_ptr_id: id,
+      days_overdue: 0,
+      expiry_date: todayDate(),
+      disposal_reason: "Marked as BER from Communications",
+      disposal_date: new Date().toISOString(),
+      processed_by: null,
+      personnel_assigned: null,
+      last_sync: new Date().toISOString()
+    }]);
+
+  if (disposalError) {
+    console.error("DISPOSAL INSERT ERROR:", disposalError);
+    alert(disposalError.message);
+    return;
+  }
+
+  const { error: commError } = await sb
     .from("communications_communication")
     .update({
-      is_deleted: true
+      is_deleted: true,
+      status: "UNSERVICEABLE"
     })
     .eq("asset_ptr_id", id);
 
-  if (error) {
-    console.error("SOFT DELETE ERROR:", error);
-
-    alert("Failed to remove communication.");
-
+  if (commError) {
+    console.error("COMMUNICATION UPDATE ERROR:", commError);
+    alert(commError.message);
     return;
   }
 
   await addActivityLog({
     communicationId: id,
-    action: "Communication Deleted",
-    details: "Communication removed from UI"
+    action: "Moved to BER",
+    details: `${c.type} with Serial ${c.serial} was moved to BER & Disposal`
   });
 
   await fetchData();
@@ -589,6 +611,6 @@ window.openAddModal = openAddModal;
 window.openActionModal = openActionModal;
 window.closeModal = closeModal;
 window.saveRecord = saveRecord;
-window.softDelete = softDelete;
+window.moveToBER = moveToBER;
 window.filterTable = filterTable;
 window.exportCSV = exportCSV;
