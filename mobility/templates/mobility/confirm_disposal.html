@@ -1,179 +1,37 @@
 {% extends 'base_generic.html' %}
-{% load static %}
 
 {% block content %}
-<style>
-    :root {
-        --navy: #0a1d43; 
-        --muted: #64748b;
-        --border: #e2e8f0;
-        --bg-light: #f8fafc;
-        --danger: #dc3545;
-    }
-
-    .registry-container { font-family: 'Inter', sans-serif; padding: 2rem 1.5rem; }
-
-    .btn-back {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--muted);
-        text-decoration: none !important;
-        transition: color 0.2s;
-        display: inline-flex;
-        align-items: center;
-        margin-bottom: 1.5rem;
-    }
-    .btn-back:hover { color: var(--navy); }
-
-    .card-confirm {
-        border-radius: 12px;
-        overflow: hidden;
-        border: none;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-
-    .card-confirm .card-header {
-        background-color: var(--danger);
-        color: white;
-        padding: 1.25rem;
-        border: none;
-    }
-
-    .asset-summary {
-        background-color: var(--bg-light);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 1rem;
-    }
-
-    .form-label { 
-        font-size: 0.75rem; 
-        font-weight: 700; 
-        color: var(--muted); 
-        text-transform: uppercase; 
-        letter-spacing: 0.025em; 
-        margin-bottom: 0.5rem; 
-        display: block;
-    }
-
-    .form-control { 
-        border-radius: 8px; 
-        border: 1px solid var(--border); 
-        padding: 0.75rem; 
-        font-size: 0.95rem; 
-    }
-
-    .btn-confirm-action {
-        background-color: var(--danger);
-        color: white;
-        border: none;
-        font-weight: 700;
-        padding: 0.75rem 1.5rem;
-        border-radius: 8px;
-        transition: opacity 0.2s;
-    }
-    .btn-confirm-action:hover { opacity: 0.9; color: white; }
-
-    .warning-text {
-        font-size: 0.85rem;
-        color: var(--danger);
-        font-weight: 600;
-        line-height: 1.4;
-    }
-</style>
-
-<div class="container registry-container">
-    {% if current_user_role == "Logistics Officer" %}
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <!-- Navigation -->
-                <a href="{% url 'mobility:vehicle_management' %}" class="btn-back">
-                    <i class="fas fa-arrow-left mr-2"></i> Return to Vehicle Management
-                </a>
-
-                <!-- Confirmation Card -->
-                <div class="card card-confirm">
-                    <div class="card-header d-flex align-items-center">
-                        <i class="fas fa-exclamation-triangle mr-3" style="font-size: 1.5rem;"></i>
-                        <h5 class="mb-0 font-weight-bold">Confirm Asset Decommissioning</h5>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle mr-2"></i> Confirm Asset Disposal</h5>
+                </div>
+                <div class="card-body">
+                    <p>You are about to move the following vehicle to the <strong>Disposal Registry</strong>:</p>
+                    <div class="alert alert-secondary">
+                        <strong>Vehicle:</strong> {{ vehicle.make} } {{ vehicle.model }}<br>
+                        <strong>Plate/Conduction:</strong> {{ vehicle.plate_number|default:vehicle.conduction_number }}
                     </div>
-                    <div class="card-body p-4">
-                        <p class="text-muted">
-                            You are initiating the disposal process for this unit. This will move the record to the <strong>Disposal Registry</strong> and mark it as <strong>Beyond Economic Repair (BER)</strong>.
-                        </p>
-
-                        <!-- Asset Detail Box -->
-                        <div class="asset-summary mb-4">
-                            <div class="row">
-                                <div class="col-6">
-                                    <span class="form-label text-muted">Vehicle Description</span>
-                                    <div class="font-weight-bold text-uppercase">{{ vehicle.make }} {{ vehicle.model }}</div>
-                                </div>
-                                <div class="col-6 border-left">
-                                    <span class="form-label text-muted">Identification</span>
-                                    <div class="font-weight-bold" style="color: var(--navy);">
-                                        {{ vehicle.plate_number|default:vehicle.conduction_number }}
-                                    </div>
-                                </div>
-                            </div>
+                    
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="disposal_reason"><strong>Reason for Disposal/BER:</strong></label>
+                            <textarea name="disposal_reason" id="disposal_reason" class="form-control" rows="4" placeholder="e.g., Beyond Economic Repair, End of Life, etc." required></textarea>
+                            <small class="text-muted">This explanation will be saved in the Disposal Activity Log.</small>
                         </div>
-
-                        <!-- Formal Reason Form -->
-                        <form method="POST" action="{% url 'mobility:move_vehicle_to_disposal' vehicle.pk %}">
-                            {% csrf_token %}
-                            <div class="mb-4">
-                                <label class="form-label" for="disposal_reason">Official Reason for Disposal</label>
-                                <textarea
-                                    name="disposal_reason"
-                                    id="disposal_reason"
-                                    class="form-control"
-                                    rows="4"
-                                    placeholder="Provide detailed justification (e.g., Unserviceable, End of Life Cycle, Major Engine Failure)..."
-                                    required
-                                ></textarea>
-                                <div class="mt-2 d-flex align-items-start">
-                                    <i class="fas fa-info-circle text-muted mr-2 mt-1" style="font-size: 0.8rem;"></i>
-                                    <small class="text-muted" style="font-size: 0.75rem;">
-                                        This justification is mandatory and will be permanently recorded in the Regional Forensic Unit's activity logs.
-                                    </small>
-                                </div>
-                            </div>
-
-                            <hr class="my-4">
-
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{% url 'mobility:vehicle_management' %}" class="btn btn-sm text-muted font-weight-bold">
-                                    Cancel Request
-                                </a>
-                                <button type="submit" class="btn-confirm-action shadow-sm">
-                                    <i class="fas fa-shipping-fast mr-2"></i> Confirm & Move to Disposal
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- Warning Alert -->
-                <div class="mt-4 p-3 bg-white border rounded d-flex align-items-center shadow-sm">
-                    <i class="fas fa-shield-alt text-warning mr-3" style="font-size: 1.2rem;"></i>
-                    <span class="warning-text">
-                        System Note: This action updates the status of related Property Acknowledgement Receipts (PAR).
-                    </span>
+                        
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'mobility:vehicle_management' %}" class="btn btn-light">Cancel</a>
+                            <button type="submit" class="btn btn-danger">Confirm and Move to Disposal</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
-    {% else %}
-        <!-- Unauthorized View -->
-        <div class="row justify-content-center mt-5">
-            <div class="col-md-6 text-center">
-                <i class="fas fa-lock text-muted mb-4" style="font-size: 3rem; opacity: 0.5;"></i>
-                <h2 class="section-title" style="color: var(--navy);">Access Restricted</h2>
-                <p class="text-muted">Decommissioning of government assets is restricted to the <strong>Logistics Officer</strong> role.</p>
-                <a href="{% url 'mobility:vehicle_management' %}" class="btn mt-3" style="background: var(--navy); color: white; border-radius: 8px;">
-                    Return to Management
-                </a>
-            </div>
-        </div>
-    {% endif %}
+    </div>
 </div>
 {% endblock %}

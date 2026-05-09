@@ -1,0 +1,100 @@
+:root {
+  --pnp-blue: #1a237e;
+  --sidebar-width: 315px;
+  --figma-active: #4338ca;
+}
+
+body {
+  background-color: #f8f9fc;
+  overflow-x: hidden;
+  font-family: "Inter", sans-serif;
+}
+
+#sidebar {
+  width: 315px;
+  height: calc(100vh - 70px);
+  position: fixed;
+  top: 70px;
+  left: 0;
+  background: #1a2b6d;
+  color: white;
+  transition: all 0.3s;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#sidebar .sidebar-header {
+  padding: 30px 20px;
+  text-align: center;
+}
+
+#sidebar ul.components {
+  padding: 10px 0;
+}
+
+#sidebar ul p {
+  color: #fff;
+  padding: 10px 25px;
+  font-weight: bold;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+#sidebar ul li a {
+  padding: 12px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.95em;
+  transition: 0.2s;
+}
+
+#sidebar ul li.active > a {
+  color: #fff !important;
+  background: var(--figma-active);
+  border-radius: 12px;
+  margin: 0 15px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+#sidebar ul li a:hover:not(.active) {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin: 0 15px;
+}
+
+#sidebar ul li a i {
+  margin-right: 12px;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar-item-label {
+  flex-grow: 1;
+  font-weight: 500;
+}
+
+.sidebar-badge {
+  background: rgba(255,255,255,0.18);
+  color: white;
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.UM {
+  position: absolute;
+  bottom: 100px;
+  width: 100%;
+  padding: 0px;
+}
