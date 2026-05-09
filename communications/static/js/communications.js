@@ -509,6 +509,7 @@ async function moveToBER(id) {
     return;
   }
 
+  // UPDATE COMMUNICATION TABLE
   const { error: commError } = await sb
     .from("communications_communication")
     .update({
@@ -520,6 +521,20 @@ async function moveToBER(id) {
   if (commError) {
     console.error("COMMUNICATION UPDATE ERROR:", commError);
     alert(commError.message);
+    return;
+  }
+
+  // UPDATE ASSET STATUSID TO BER (4)
+  const { error: assetError } = await sb
+    .from("config_asset")
+    .update({
+      StatusID: 4
+    })
+    .eq("id", id);
+
+  if (assetError) {
+    console.error("ASSET STATUS UPDATE ERROR:", assetError);
+    alert(assetError.message);
     return;
   }
 
