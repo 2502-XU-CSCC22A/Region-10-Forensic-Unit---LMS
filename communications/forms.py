@@ -115,6 +115,30 @@ class CommunicationPARForm(forms.ModelForm):
                 "This PAR number already exists."
             )
         return par_number
+    
+    def clean_reference_no(self):
+
+        reference_no = self.cleaned_data.get(
+            "reference_no"
+        )
+
+        if not reference_no:
+            return reference_no
+
+        qs = CommunicationPARRecord.objects.filter(
+            reference_no__iexact=reference_no
+        )
+
+        if self.instance.pk:
+            qs = qs.exclude(
+                pk=self.instance.pk
+            )
+
+        if qs.exists():
+            raise forms.ValidationError(
+                "This PAR reference number already exists."
+            )
+        return reference_no
 
 
 class CommunicationICSForm(forms.ModelForm):
@@ -230,3 +254,27 @@ class CommunicationICSForm(forms.ModelForm):
                 "This ICS number already exists."
             )
         return ics_number
+    
+    def clean_reference_no(self):
+
+        reference_no = self.cleaned_data.get(
+            "reference_no"
+        )
+
+        if not reference_no:
+            return reference_no
+
+        qs = CommunicationICSRecord.objects.filter(
+            reference_no__iexact=reference_no
+        )
+
+        if self.instance.pk:
+            qs = qs.exclude(
+                pk=self.instance.pk
+            )
+
+        if qs.exists():
+            raise forms.ValidationError(
+                "This ICS reference number already exists."
+            )
+        return reference_no

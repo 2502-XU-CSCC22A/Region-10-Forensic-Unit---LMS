@@ -159,7 +159,7 @@ function renderTable() {
             class="delete-btn"
             onclick="softDelete('${c.id}')"
           >
-            Delete
+            BER
           </button>
         </div>
       </td>

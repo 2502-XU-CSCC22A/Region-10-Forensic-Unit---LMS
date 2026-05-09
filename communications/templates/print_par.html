@@ -81,12 +81,8 @@
         <div class="info-block">
             <table style="width: 100%;">
                 <tr>
-                    <td style="width: 70%;">Entity Name: <u>PHILIPPINE NATIONAL POLICE</u> &nbsp; <b>FORENSIC GROUP</b></td>
+                    <td style="width: 70%;">Entity Name: <u>PHILIPPINE NATIONAL POLICE FORENSIC GROUP</u> &nbsp;</td>
                     <td style="text-align: right;">PAR NO: <b contenteditable="true" class="u-line">{{ par.par_number }}</b></td>
-                </tr>
-                <tr>
-                    <td>Fund Cluster: <span contenteditable="true" class="u-line">{{ par.fund_cluster|default:"&nbsp;" }}</span></td>
-                    <td></td>
                 </tr>
             </table>
         </div>
@@ -99,7 +95,6 @@
                     <th>Description</th>
                     <th style="width: 18%;">Property No.</th>
                     <th style="width: 18%;">Date Acquired</th>
-                    <th style="width: 15%;">Amount</th>
                 </tr>
             </thead>
             <tbody>
@@ -109,26 +104,16 @@
                     <td style="text-align: left;" contenteditable="true">
                         <strong>{{ par.communication.type }}</strong><br>
                         IMEI / Serial: {{ par.communication.imei_serial|default:"-" }}<br>
-                        Frequency Range: {{ par.communication.frequency_range|default:"-" }}<br>
-                        Stock Level: {{ par.communication.stock_level|default:"0" }}
+                        Radio ID: {{ par.communication.radioID|default:"-" }}<br>
                     </td>
                     <td contenteditable="true">{{ par.communication.property_no|default:"-" }}</td>
                     <td contenteditable="true">{{ par.communication.date_acquired|date:"M d, Y"|default:"-" }}</td>
-                    <td contenteditable="true">0.00</td>
                 </tr>
                 <tr>
                     <td colspan="6" style="font-style: italic; font-size: 9pt;">****** Nothing Follows ******</td>
                 </tr>
             </tbody>
         </table>
-
-        <div class="section-box">
-            <b>STENCIL / SERIAL OF COMMUNICATION ASSET</b><br>
-            <span contenteditable="true">
-                {{ par.communication.type }} - {{ par.communication.imei_serial|default:"No serial" }}
-            </span>
-            <div class="stencil-placeholder"></div>
-        </div>
 
         <div class="section-box">
             Purpose: <u contenteditable="true">{{ par.purpose|default:"For official use of RFU 10" }}</u><br>
@@ -153,7 +138,7 @@
                     <span class="sig-label">Signature over Printed Name of End-User</span>
                 </div>
                 <div class="sig-entry" style="margin-top: 15px;">
-                    <span class="sig-subline" contenteditable="true">{{ par.designation|default:"____________________" }}</span>
+                    <span class="sig-subline" contenteditable="true">{{ par.designation|default:"" }}</span>
                     <span class="sig-label">Position / Designation</span>
                 </div>
                 <div class="sig-entry" style="margin-top: 15px;">
@@ -180,9 +165,6 @@
         </div>
 
         <div style="border: 1px solid #000; border-top: none; padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 8pt;">
-            <div>
-                <strong>Prepared by:</strong> <span contenteditable="true" style="border-bottom: 1px solid #000; min-width: 150px; display: inline-block; text-align: center;"></span>
-            </div>
             <div>
                 <strong>System Print Date:</strong> {{ par.date_issued|date:"M d, Y" }}
             </div>
