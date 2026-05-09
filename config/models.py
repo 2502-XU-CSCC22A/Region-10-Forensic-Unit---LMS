@@ -30,25 +30,30 @@ class Category(models.Model):
 
 
 class Asset(models.Model):
-    # Core attributes from your diagram
-    date_acquired = models.DateField()
-    property_no = models.CharField(max_length=100, unique=True)
-    serial_no = models.CharField(max_length=100, unique=True)
-    model = models.CharField(max_length=100)
-    
-    # NEW: Link to independent AssetStatus table
-    # We use db_column='StatusID' to match the Foreign Key column in Supabase
-    status = models.ForeignKey(
-        AssetStatus, 
-        on_delete=models.SET_NULL, 
-        null=True, 
-        blank=True,
-        db_column='StatusID', 
-        related_name='assets'
-    )
+    date_acquired = models.DateField(null=True, blank=True)
+    property_no   = models.CharField(max_length=100, unique=True)
+    serial_no     = models.CharField(max_length=100, unique=True)
+    model         = models.CharField(max_length=100)
+    quantity      = models.IntegerField(default=1)
+    office        = models.CharField(max_length=100, null=True, blank=True, db_column='Office')
+    status        = models.ForeignKey(
+                        AssetStatus,
+                        on_delete=models.SET_NULL,
+                        null=True,
+                        blank=True,
+                        db_column='StatusID',
+                        related_name='assets'
+                    )
+    category      = models.ForeignKey(
+                        Category,
+                        on_delete=models.SET_NULL,  
+                        null=True,
+                        blank=True,
+                        related_name='assets'
+                    )
 
-    # The connection to the Category table
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='assets')
+    class Meta:
+        db_table = 'config_asset'
 
     def __str__(self):
         return f"{self.property_no} - {self.model}"

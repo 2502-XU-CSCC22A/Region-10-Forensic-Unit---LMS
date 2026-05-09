@@ -63,12 +63,23 @@
       margin-bottom: 0.5rem; 
     }
 
-    .form-control, .form-select { 
+    .form-control, .form-select, 
+    .form-control select, 
+    input[type="text"], input[type="date"], select, textarea { 
       border-radius: 8px; 
       border: 1px solid var(--border); 
       padding: 0.6rem 0.8rem; 
       font-size: 0.9rem; 
       font-family: 'Inter', sans-serif;
+      width: 100%;
+      display: block;
+    }
+
+
+    select {
+      appearance: auto;
+      background-color: #fff;
+      height: calc(1.5em + 1.2rem + 2px);
     }
 
     .btn-save { 
@@ -116,23 +127,20 @@
     }
 
     .navbar-header {
-        height: 72px; 
-        background: #ffffff;
-        border-bottom: none !important; 
-        box-shadow: 0 2px 12px rgba(13, 33, 85, .12); 
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1100;
+      height: 72px; 
+      background: #ffffff;
+      border-bottom: none !important; 
+      box-shadow: 0 2px 12px rgba(13, 33, 85, .12); 
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1100;
     }
 
-    
     .layout {
-        padding-top: 72px; 
+      padding-top: 72px; 
     }
-
-
   </style>
 </head>
 <body>
@@ -157,18 +165,105 @@
         </div>
         <div class="user-text ml-2">
           <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-          <div class="user-role text-muted">Logistics Officer</div>
+          <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
         </div>
       </div>
     </div>
   </header>
 
   <div class="layout">
-    {% include 'firearms/firearms_sidebar.html' %}
+    <nav id="sidebar">
+      <ul class="list-unstyled components">
+        <p>Dashboard</p>
+
+        <li class="{% if active_page == 'home' %}active{% endif %}">
+          <a href="#">
+            <i class="fas fa-home"></i>
+            <span class="sidebar-item-label">Home</span>
+          </a>
+        </li>
+
+        <li class="{% if active_page == 'mobility' %}active{% endif %}">
+          <a href="#">
+            <span>
+              <i class="fas fa-car"></i>
+              <span class="sidebar-item-label">Mobility</span>
+            </span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ vehicle_all|default:'0' }}</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="{% url 'firearms:index' %}">
+            <span>
+              <i class="fas fa-crosshairs"></i>
+              <span class="sidebar-item-label">Firearms</span>
+            </span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span>
+          </a>
+        </li>
+
+        <li class="{% if active_page == 'communications' %}active{% endif %}">
+          <a href="#">
+            <span>
+              <i class="fas fa-broadcast-tower"></i>
+              <span class="sidebar-item-label">Communications</span>
+            </span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ comms_all|default:'0' }}</span>
+          </a>
+        </li>
+
+        <li class="{% if active_page == 'investigative' %}active{% endif %}">
+          <a href="#">
+            <i class="fas fa-microscope"></i>
+            <span class="sidebar-item-label">Investigative Equipment</span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ inves_all|default:'0' }}</span>
+          </a>
+        </li>
+
+        <li class="{% if active_page == 'disposal' %}active{% endif %}">
+          <a href="#">
+            <i class="fas fa-recycle"></i>
+            <span class="sidebar-item-label">BER & Disposal</span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_ber|default:'0' }}</span>
+          </a>
+        </li>
+
+        <p class="mt-4">Monitoring</p>
+
+        <li class="active">
+          <a href="{% url 'firearms:par_management' %}">
+            <i class="fas fa-clipboard-list"></i>
+            <span class="sidebar-item-label">PAR Monitoring</span>
+          </a>
+        </li>
+
+        <li class="{% if active_page == 'reports' %}active{% endif %}">
+          <a href="#">
+            <i class="fas fa-file-invoice"></i>
+            <span class="sidebar-item-label">Reports</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#">
+            <i class="fas fa-user-shield mr-2"></i> 
+            <span class="sidebar-item-label">User Management</span>
+          </a>
+        </li>
+
+        <div class="UM">
+          <p>System Action</p>
+          <li>
+            <a href="#"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label">Logout</span></a>
+          </li>
+        </div>
+      </ul>
+    </nav>
 
     <main class="main-content">
       <div class="registry-container">
-        <!-- Header with Back Button -->
+        <!-- Header -->
         <div class="mb-4">
           <a href="{% url 'firearms:index' %}" class="btn-back">
             <i class="fas fa-arrow-left mr-2"></i> Back to Firearms
@@ -187,24 +282,22 @@
             <form method="POST">
               {% csrf_token %}
               <div class="row g-3">
-                <div class="col-md-3">
+
+
+                <div class="col-md-4">
                   <label class="form-label">PAR Number</label>
                   {{ p_form.par_number }}
                 </div>
-                <div class="col-md-3">
-                  <label class="form-label">Fund Cluster</label>
-                  {{ p_form.fund_cluster }}
-                </div>
-                <div class="col-md-3">
-                  <!-- CHANGED: Vehicle Asset → Firearm Asset -->
+                <div class="col-md-4">
                   <label class="form-label">Firearm Asset</label>
                   {{ p_form.firearm }}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                   <label class="form-label">Reference No.</label>
                   {{ p_form.reference_no }}
                 </div>
 
+                <!-- Row 2: Issued To | Date Issued | Expiry Date -->
                 <div class="col-md-4">
                   <label class="form-label">Issued To</label>
                   {{ p_form.issued_to }}
@@ -218,12 +311,13 @@
                   {{ p_form.expiry_date }}
                 </div>
 
+
                 <div class="col-12 mt-2">
                   <label class="form-label">Remarks</label>
                   {{ p_form.remarks }}
                 </div>
 
-                <div class="col-12 mt-4 text-end">
+                <div class="col-12 mt-4 text-right">
                   <button type="submit" class="btn-save shadow-sm">
                     <i class="fas fa-check-circle mr-2"></i> Save to Registry
                   </button>
@@ -242,7 +336,6 @@
                 <tr>
                   <th class="pl-4">PAR No.</th>
                   <th>Personnel</th>
-                  <!-- CHANGED: Asset Description now shows firearm info -->
                   <th>Asset Description</th>
                   <th>Issue Date</th>
                   <th class="text-right pr-4">Actions</th>
@@ -254,8 +347,8 @@
                   <td class="pl-4"><strong style="color: var(--navy);">{{ par.par_number }}</strong></td>
                   <td><div class="font-weight-bold">{{ par.issued_to }}</div></td>
                   <td>
-                    <div class="font-weight-bold">{{ par.firearm.make }} {{ par.firearm.model }}</div>
-                    <small class="text-muted">{{ par.firearm.serial_no }}</small>
+                    <div class="font-weight-bold">{{ par.firearm.type }}</div>
+                    <small class="text-muted">{{ par.firearm.faid_serial }}</small>
                   </td>
                   <td>{{ par.date_issued|date:"M d, Y" }}</td>
                   <td class="text-right pr-4">
@@ -275,6 +368,7 @@
             </table>
           </div>
         </div>
+
       </div>
     </main>
   </div>

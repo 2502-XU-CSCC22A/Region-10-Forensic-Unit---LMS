@@ -97,7 +97,7 @@
       </div>
       <div class="user-text ml-2">
         <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-        <div class="user-role text-muted">Logistics Officer</div>
+        <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
       </div>
     </div>
   </div>
@@ -171,19 +171,24 @@
         class="btn btn-outline"
         style="font-size:13px;padding:7px 12px;"
         onchange="filterTable()">
-            <option value="">All Status</option>
+            <option value="">Serviceability</option>
             <option value="Serviceable">Serviceable</option>
             <option value="Unserviceable">Unserviceable</option>
-            <option value="Lost">Lost</option>
          </select>
         
-        <!-- NEW: PAR Records Button -->
         <a href="{% url 'firearms:par_management' %}" class="btn btn-outline" 
            style="font-size:13px;padding:7px 16px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
           <i class="fas fa-file-contract"></i> PAR Records
         </a>
         
         <button class="btn btn-primary" onclick="openAddModal()">&#xFF0B; Add Record</button>
+        
+        <a href="{% url 'firearms:firearms_activitylog' %}" 
+        class="btn btn-outline"
+        style="font-size:13px;padding:7px 16px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+        <i class="fas fa-history"></i> Activity Logs
+      </a>
+        
         <button class="btn btn-outline" onclick="exportCSV()">&#x2B07; Export CSV</button>
       </div>
 
@@ -192,15 +197,14 @@
           <thead>
             <tr>
               <th onclick="sortTable('name')">NAME &#x21C5;</th>
-              <th onclick="sortTable('unit')">UNIT &#x21C5;</th>
               <th onclick="sortTable('subunit')">SUBUNIT &#x21C5;</th>
               <th onclick="sortTable('station')">STATION &#x21C5;</th>
               <th onclick="sortTable('issuingUnit')">ISSUING UNIT &#x21C5;</th>
-              <th onclick="sortTable('faid')">FAID &#x21C5;</th>
               <th onclick="sortTable('serialNo')">SERIAL NO. &#x21C5;</th>
-              <th onclick="sortTable('makeModel')">MAKE/MODEL/KIND/CALIBER &#x21C5;</th>
+              <th onclick="sortTable('unit')">PAR NUMBER &#x21C5;</th>
+              <th onclick="sortTable('makeModel')">ITEM DESCRIPTION &#x21C5;</th>
               <th onclick="sortTable('status')">STATUS &#x21C5;</th>
-              <th onclick="sortTable('validated')">VALIDATED &#x21C5;</th>
+              <th onclick="sortTable('validated')">REMARKS &#x21C5;</th>
               <th>ACTION</th>
             </tr>
           </thead>
@@ -234,7 +238,6 @@
   [ {% for f in firearms %} ... {% endfor %} ]
 </script>
 
-<!-- NEW: PAR initial data fallback -->
 <script id="par-initial-data" type="application/json">
 {
   "count": {{ total_par|default:0 }},

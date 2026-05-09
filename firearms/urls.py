@@ -1,10 +1,10 @@
-from django.urls import path  # This is the missing line!
+from django.urls import path  
 from . import views
 
 app_name = 'firearms'
 
 urlpatterns = [
-    # Adding the root path so 127.0.0.1:8000/firearms/ works
+  
     path('', views.index, name='index'), 
     
     path('management/', views.par_management, name='par_management'),
@@ -21,4 +21,5 @@ urlpatterns = [
     path('par/edit/<int:pk>/',   views.edit_par,        name='edit_par'),
     path('par/delete/<int:pk>/', views.delete_par,      name='delete_par'),
     path('api/par/list/',        views.api_par_list,    name='api_par_list'),
+    path('activity-logs/', views.firearms_activitylog, name='firearms_activitylog'),
 ]

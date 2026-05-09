@@ -39,9 +39,27 @@ async function apiPost(url, data) {
 
 async function loadFirearms() {
   try {
-    const res  = await fetch(API.list);
-    const data = await res.json();
-    allFirearms = data.firearms || [];
+
+    const [firearmsRes, parRes] = await Promise.all([
+      fetch(API.list),
+      fetch(PAR_API.list)
+    ]);
+
+    const firearmsData = await firearmsRes.json();
+    const parData      = await parRes.json();
+
+    const parMap = {};
+    (parData.pars || []).forEach(p => {
+      if (!parMap[p.firearm_id]) {        
+        parMap[p.firearm_id] = p.par_number;
+      }
+    });
+
+    allFirearms = (firearmsData.firearms || []).map(f => ({
+      ...f,
+      parNumber: parMap[f.id] || 'N/A',
+    }));
+
     filterTable();
   } catch (err) {
     console.error('Failed to load firearms:', err);
@@ -68,7 +86,7 @@ function updatePARStatsFromFallback() {
 }
 
 async function loadPARStats() {
-  // Try API first
+
   try {
     const res = await fetch(PAR_API.list);
     if (!res.ok) throw new Error('PAR API not available');
@@ -85,7 +103,7 @@ async function loadPARStats() {
     document.getElementById('parBar').style.width   = validatedPAR > 0 ? '100%' : '0%';
   } catch (err) {
     console.error('Failed to load PAR stats:', err);
-    // Fallback to template-rendered data
+   
     if (!updatePARStatsFromFallback()) {
       document.getElementById('parCount').textContent = '—';
       document.getElementById('parBar').style.width   = '0%';
@@ -104,16 +122,15 @@ function updateStats() {
 }
 
 function statusBadge(s) {
-  if (s === 'Serviceable')   return `<span class="badge badge-green">${s}</span>`;
-  if (s === 'Unserviceable') return `<span class="badge badge-red">${s}</span>`;
-  if (s === 'Lost')          return `<span class="badge badge-orange">${s}</span>`;
-  return `<span class="badge badge-orange">${s}</span>`;
+  if (s === 'Serviceable')   return `<span class="badge badge-green">${s.toUpperCase()}</span>`;
+  if (s === 'Unserviceable') return `<span class="badge badge-red">${s.toUpperCase()}</span>`;
+  return `<span class="badge badge-orange">${s.toUpperCase()}</span>`;
 }
 
 function validatedBadge(v) {
   return v === 'VALIDATED'
-    ? `<span class="badge badge-blue">${v}</span>`
-    : `<span class="badge badge-orange">${v}</span>`;
+    ? `<span class="badge badge-green">${v}</span>`
+    : `<span class="badge badge-red">${v}</span>`;
 }
 
 function renderTable() {
@@ -124,13 +141,12 @@ function renderTable() {
   tbody.innerHTML = page.length
     ? page.map(f => `
         <tr>
-          <td><strong>${f.name}</strong></td>
-          <td>${f.unit}</td>
-          <td>${f.subunit}</td>
-          <td>${f.station}</td>
-          <td>${f.issuingUnit}</td>
-          <td style="font-family:monospace;font-size:12px">${f.faid}</td>
-          <td><strong>${f.serialNo}</strong></td>
+          <td><strong>${f.name || 'N/A'}</strong></td>
+          <td>${f.subunit || 'N/A'}</td>
+          <td>${f.station || 'N/A'}</td>
+          <td>${f.issuingUnit || 'N/A'}</td>
+          <td style="font-family:monospace;font-size:12px">${f.faid || 'N/A'}</td>   
+          <td><strong>${f.parNumber || 'N/A'}</strong></td>                           
           <td>${f.makeModel}</td>
           <td>${statusBadge(f.status)}</td>
           <td>${validatedBadge(f.validated)}</td>
@@ -220,16 +236,15 @@ function selectField(label, id, options, val = '') {
 
 function buildForm(f = {}) {
   return (
-    inputField('Name (Assigned To)',            'f_name',        f.name        || '') +
-    inputField('Unit',                          'f_unit',        f.unit        !== 'N/A' ? f.unit        || 'PNP FG' : 'PNP FG') +
-    inputField('Subunit',                       'f_subunit',     f.subunit     !== 'N/A' ? f.subunit     || '' : '') +
-    inputField('Station',                       'f_station',     f.station     !== 'N/A' ? f.station     || '' : '') +
-    inputField('Issuing Unit',                  'f_issuingUnit', f.issuingUnit !== 'N/A' ? f.issuingUnit || 'PNP FG' : 'PNP FG') +
-    inputField('FAID / Serial',                 'f_faid',        f.faid        !== 'N/A' ? f.faid        || '' : '') +
-    inputField('Serial No.',                    'f_serialNo',    f.serialNo    !== 'N/A' ? f.serialNo    || '' : '') +
-    inputField('Make / Model / Kind / Caliber', 'f_makeModel',   f.makeModel   !== 'N/A' ? f.makeModel   || '' : '') +
-    selectField('Status',    'f_status',    ['Serviceable', 'Unserviceable', 'Lost'], f.status    || 'SERVICEABLE') +
-    selectField('Validated', 'f_validated', ['VALIDATED', 'PENDING'],                 f.validated || 'PENDING')
+    inputField('Name (Issued To)',   'f_name',        f.name        || '') +
+    inputField('Subunit',            'f_subunit',     f.subunit     || '') +
+    inputField('Station',            'f_station',     f.station     || '') +
+    inputField('Issuing Unit',       'f_issuingUnit', f.issuingUnit || 'PNP FG') +
+    inputField('FA ID / Serial No.', 'f_faid',        f.faid        || '') +  
+    inputField('PAR No.',            'f_parNumber',   f.parNumber   || '') +  
+    inputField('Item Description', 'f_makeModel',   f.makeModel   !== 'N/A' ? f.makeModel   || '' : '') +
+    selectField('Status',    'f_status',    ['Serviceable', 'Unserviceable'], f.status    || 'SERVICEABLE') +
+    selectField('Remarks', 'f_validated', ['Validated', 'Expired/For Renewal'],                 f.validated || 'VALIDATED')
   );
 }
 
@@ -258,16 +273,14 @@ function closeModal() {
 async function saveRecord() {
   const get  = id => document.getElementById(id)?.value?.trim() || '';
   const data = {
-    name:        get('f_name'),
-    unit:        get('f_unit'),
-    subunit:     get('f_subunit'),
-    station:     get('f_station'),
-    issuingUnit: get('f_issuingUnit'),
-    faid:        get('f_faid'),
-    serialNo:    get('f_serialNo'),
-    makeModel:   get('f_makeModel'),
-    status:      get('f_status'),
-    validated:   get('f_validated'),
+      name:        get('f_name'),
+      subunit:     get('f_subunit'),
+      station:     get('f_station'),
+      issuingUnit: get('f_issuingUnit'),
+      faid:        get('f_faid'),        
+      makeModel:   get('f_makeModel'),
+      status:      get('f_status'),
+      validated:   get('f_validated').toUpperCase(),  
   };
 
   if (!data.name) { alert('Name is required.'); return; }
@@ -328,5 +341,5 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === document.getElementById('modalOverlay')) closeModal();
   });
   loadFirearms();
-  loadPARStats();   // NEW: Load PAR stats on page ready
+  loadPARStats();   
 });

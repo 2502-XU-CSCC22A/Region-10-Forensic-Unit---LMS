@@ -1,0 +1,392 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity Logs</title>
+
+  <link rel="stylesheet" href="{% static 'firearms/css/firearms_sidebar.css' %}">
+  <link rel="stylesheet" href="{% static 'firearms/css/firearms_main.css' %}">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f1f5f9;
+      margin: 0;
+      overflow-x: hidden;
+      overflow-y: auto;  
+      color: #1e293b;
+    }
+
+    .navbar-header {
+      height: 70px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .header-logo {
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: #1a2b6d;
+      text-transform: uppercase;
+    }
+
+    .header-divider {
+      height: 40px;
+      width: 2px;
+      background-color: #1a2b6d;
+      margin: 0 15px;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1a2b6d;
+      margin: 0;
+    }
+
+    main {
+      margin-left: 315px !important;
+      padding: 95px 24px 40px !important;
+      min-height: 100vh;
+      background: #f1f5f9;
+      overflow-y: auto;   
+    }
+
+    .page-title {
+      font-weight: 700;
+      color: #1a2b6d;
+      margin: 20px 0 4px 0;
+      font-size: 28px;
+    }
+
+    .filter-btn {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 5px 15px;
+      border-radius: 20px;
+    }
+
+    .activity-timeline {
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      margin: 0;
+    }
+
+    .log-card-delete,
+    .log-card-update,
+    .log-card-create,
+    .log-card-moved {
+      border-left: 4px solid #ef4444 !important;
+      border-radius: 3px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
+      margin-bottom: 16px !important;
+      background: #ffffff;
+    }
+
+    .log-card-delete .card-body,
+    .log-card-update .card-body,
+    .log-card-create .card-body,
+    .log-card-moved .card-body {
+      padding: 22px 34px !important;
+    }
+
+    .asset-id-badge {
+      background-color: #f1f5f9;
+      color: #475569;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .badge-secondary {
+      background-color: #6b7280 !important;
+      color: white;
+      font-size: 11px;
+    }
+
+    .action-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+      margin-left: 10px;
+    }
+
+    .log-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #000;
+      margin-bottom: 6px;
+    }
+
+    .log-stock {
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .log-time {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .return-link {
+      display: block;
+      text-align: center;
+      margin-top: 30px;
+      color: #64748b;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .return-link:hover {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    #sidebar {
+      top: 70px !important;
+      height: calc(100vh - 70px) !important;
+      z-index: 999 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+    <div class="header-brand d-flex align-items-center">
+      <div class="header-logo">
+        PNP<br>FORENSIC<br>GROUP
+      </div>
+      <div class="header-divider"></div>
+      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
+    </div>
+
+    <div class="header-user d-flex align-items-center">
+      <div class="notification-wrapper mr-4">
+        <i class="fas fa-bell text-muted"></i>
+      </div>
+
+      <div class="profile-group d-flex align-items-center">
+        <div class="user-avatar d-flex align-items-center justify-content-center">
+          <i class="fas fa-user text-muted"></i>
+        </div>
+        <div class="user-text ml-2">
+          <div class="user-name font-weight-bold text-dark">
+            {{ user.get_full_name|default:user.username }}
+          </div>
+          <div class="user-role text-muted">Logistics Officer</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  {% include 'firearms/firearms_sidebar.html' %}
+
+  <main>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h3 class="page-title mb-0">Activity History</h3>
+        <p class="text-muted small">
+          Tracking Firearms modifications, additions, and updates
+        </p>
+      </div>
+
+      <div class="btn-group">
+        <button id="btnLast7" class="btn filter-btn btn-primary">
+          Last 7 Days
+        </button>
+
+        <button id="btnLast30" class="btn filter-btn btn-outline-primary">
+          Last 30 Days
+        </button>
+      </div>
+    </div>
+
+    <div class="activity-timeline" id="activityLogList">
+      <div class="text-center py-5">
+        <i class="fas fa-history fa-3x text-light mb-3"></i>
+        <p class="text-muted">Loading activity logs...</p>
+      </div>
+    </div>
+
+    <a href="{% url 'firearms:index' %}" class="return-link">
+      <i class="fas fa-arrow-left mr-1"></i> Return to Firearms
+    </a>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <script>
+    const sb = window.supabase.createClient(
+      "https://vamjajitzyspdyfxisac.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhbWphaml0enlzcGR5Znhpc2FjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjI1OTAwNSwiZXhwIjoyMDkxODM1MDA1fQ.sOZIyBDnS0UFRn9i6sDmoZhYT1cNWhG2Uqf4HQyrFHA"
+    );
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString();
+    }
+
+    function getDateDaysAgo(days) {
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      return date.toISOString();
+    }
+
+    function setActiveButton(days) {
+      const btn7 = document.getElementById("btnLast7");
+      const btn30 = document.getElementById("btnLast30");
+
+      if (days === 7) {
+        btn7.classList.remove("btn-outline-primary");
+        btn7.classList.add("btn-primary");
+
+        btn30.classList.remove("btn-primary");
+        btn30.classList.add("btn-outline-primary");
+      } else {
+        btn30.classList.remove("btn-outline-primary");
+        btn30.classList.add("btn-primary");
+
+        btn7.classList.remove("btn-primary");
+        btn7.classList.add("btn-outline-primary");
+      }
+    }
+
+    function getActionIcon(action) {
+      if (!action) return "fa-history";
+
+      const lower = action.toLowerCase();
+
+      if (lower.includes("delete")) return "fa-trash-alt";
+      if (lower.includes("create")) return "fa-plus-circle";
+      if (lower.includes("update")) return "fa-edit";
+      if (lower.includes("move")) return "fa-undo";
+
+      return "fa-history";
+    }
+
+    async function loadActivityLogs(days = 7) {
+      setActiveButton(days);
+
+      const list = document.getElementById("activityLogList");
+
+      list.innerHTML = `
+        <div class="text-center py-5">
+          <i class="fas fa-history fa-3x text-light mb-3"></i>
+          <p class="text-muted">Loading activity logs...</p>
+        </div>
+      `;
+
+      const startDate = getDateDaysAgo(days);
+
+      const { data, error } = await sb
+        .from("firearms_activitylog")
+        .select("*")
+        .gte("created_at", startDate)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error(error);
+
+        list.innerHTML = `
+          <div class="text-center py-5">
+            <i class="fas fa-exclamation-circle fa-3x text-danger mb-3"></i>
+            <p class="text-muted">Failed to load activity logs.</p>
+          </div>
+        `;
+
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-5">
+            <i class="fas fa-history fa-3x text-light mb-3"></i>
+            <p class="text-muted">
+              No activity logs found in the last ${days} days.
+            </p>
+          </div>
+        `;
+
+        return;
+      }
+
+      list.innerHTML = data.map(log => `
+        <div class="card shadow-sm log-card-delete">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+
+              <div>
+                <div class="d-flex align-items-center mb-2">
+                  <span class="badge asset-id-badge mr-2">
+                    ID: ${log.firearm_id ?? log.id ?? "-"}
+                  </span>
+
+                  <span class="badge badge-pill badge-secondary">
+                    firearms
+                  </span>
+
+                  <span class="action-label">
+                    <i class="fas ${getActionIcon(log.action)} mr-1"></i>
+                    ${log.action || "Activity"}
+                  </span>
+                </div>
+
+                <div class="log-title">
+                  ${log.action || "Activity Recorded"}
+                </div>
+
+                <p class="log-stock">
+                  ${log.details || "No details available"}
+                </p>
+
+                <small class="text-muted">
+                  ${log.details || "Action by: System"}
+                </small>
+              </div>
+
+              <div class="text-right">
+                <span class="log-time text-nowrap">
+                  <i class="far fa-clock"></i> ${formatDate(log.created_at)}
+                </span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("btnLast7").addEventListener("click", () => {
+        loadActivityLogs(7);
+      });
+
+      document.getElementById("btnLast30").addEventListener("click", () => {
+        loadActivityLogs(30);
+      });
+
+      loadActivityLogs(7);
+    });
+  </script>
+
+</body>
+
+</html>

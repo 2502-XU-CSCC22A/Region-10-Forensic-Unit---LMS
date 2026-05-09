@@ -143,7 +143,6 @@
   flex-wrap: wrap;
 }
 
-/* NEW: Ensure anchor buttons align properly with flex buttons */
 .table-controls a.btn {
   display: inline-flex;
   align-items: center;
@@ -214,7 +213,6 @@
 
 .btn-sm      { padding: 5px 13px; font-size: 12px; border-radius: 6px; }
 
-/* NEW: PAR Records button specific styling */
 .btn-par {
   background: #fff;
   color: var(--navy);
@@ -271,13 +269,29 @@ td, th {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 120px;
+  max-width: 140px;
 }
 
+td:nth-child(7), th:nth-child(7) {
+  max-width: 200px;
+  min-width: 160px;
+}
+
+td:nth-child(8), th:nth-child(8) {
+  max-width: none;
+  width: auto;
+}
+
+td:nth-child(9), th:nth-child(9) {
+  max-width: none;
+  width: auto;
+}
+
+/* Action column */
 td:last-child, th:last-child {
   max-width: none;
-  width: 150px;
-  white-space: normal;
+  width: auto;
+  white-space: nowrap;
 }
 
 /* --- Badges --- */
@@ -287,6 +301,7 @@ td:last-child, th:last-child {
   padding: 3px 10px;
   border-radius: 99px;
   font-size: 11px;
+  white-space: nowrap;
   font-weight: 700;
   letter-spacing: .3px;
 }
