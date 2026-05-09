@@ -13,7 +13,8 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
@@ -158,9 +159,27 @@
     }
 
     #sidebar {
+      position: fixed;
       top: 70px !important;
-      height: calc(100vh - 70px) !important;
+      left: 0;
+      width: 315px;
+      height: calc(100vh - 70px);
+      overflow-y: auto;
       z-index: 999 !important;
+    }
+
+    html,
+    body {
+      height: auto !important;
+      overflow-y: auto !important;
+    }
+
+    body {
+      overflow-x: hidden;
+    }
+
+    main {
+      overflow-y: visible !important;
     }
   </style>
 </head>
