@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Regional Forensic Unit 10 LMS – PAR Monitoring</title>
+    <title>Regional Forensic Unit 10 LMS – ICS Monitoring</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
@@ -242,8 +242,11 @@
             <a href="{% url 'communications_list' %}" class="btn-back"><i class="fas fa-arrow-left mr-2"></i> Back to Communications</a>
 
             <div class="d-flex justify-content-between align-items-center">
-              <h2 class="section-title mb-0">PAR Management</h2>
-              <span class="badge badge-light border text-muted px-3 py-2" style="border-radius: 20px; font-weight: 600;">{{ pars.count|default:'0' }} Total Records</span>
+              <h2 class="section-title mb-0">ICS Management</h2>
+
+              <span class="badge badge-light border text-muted px-3 py-2" style="border-radius: 20px; font-weight: 600;">
+                {{ icss.count|default:'0' }} Total Records
+              </span>
             </div>
           </div>
 
@@ -252,90 +255,95 @@
               <form method="POST">
                 {% csrf_token %}
 
-                {% if p_form.non_field_errors %}
-                  <div class="alert alert-danger">{{ p_form.non_field_errors }}</div>
+                {% if i_form.non_field_errors %}
+                  <div class="alert alert-danger">{{ i_form.non_field_errors }}</div>
                 {% endif %}
 
                 <div class="row">
-                  <div class="col-md-3 mb-3">
-                    <label class="form-label">PAR Number</label>
-                    {{ p_form.par_number }}
 
-                    {% if p_form.par_number.errors %}
-                      <small class="text-danger">{{ p_form.par_number.errors.0 }}</small>
+                  <div class="col-md-3 mb-3">
+                    <label class="form-label">ICS Number</label>
+                    {{ i_form.ics_number }}
+
+                    {% if i_form.ics_number.errors %}
+                      <small class="text-danger">{{ i_form.ics_number.errors.0 }}</small>
                     {% endif %}
                   </div>
 
                   <div class="col-md-3 mb-3">
                     <label class="form-label">Communication Asset</label>
-                    {{ p_form.communication }}
+                    {{ i_form.communication }}
 
-                    {% if p_form.communication.errors %}
-                      <small class="text-danger">{{ p_form.communication.errors.0 }}</small>
+                    {% if i_form.communication.errors %}
+                      <small class="text-danger">{{ i_form.communication.errors.0 }}</small>
                     {% endif %}
                   </div>
 
                   <div class="col-md-3 mb-3">
                     <label class="form-label">Reference No.</label>
-                    {{ p_form.reference_no }}
+                    {{ i_form.reference_no }}
 
-                    {% if p_form.reference_no.errors %}
-                      <small class="text-danger">{{ p_form.reference_no.errors.0 }}</small>
+                    {% if i_form.reference_no.errors %}
+                      <small class="text-danger">{{ i_form.reference_no.errors.0 }}</small>
                     {% endif %}
                   </div>
 
                   <div class="col-md-3 mb-3">
                     <label class="form-label">Issued To</label>
-                    {{ p_form.issued_to }}
+                    {{ i_form.issued_to }}
 
-                    {% if p_form.issued_to.errors %}
-                      <small class="text-danger">{{ p_form.issued_to.errors.0 }}</small>
+                    {% if i_form.issued_to.errors %}
+                      <small class="text-danger">{{ i_form.issued_to.errors.0 }}</small>
                     {% endif %}
                   </div>
 
                   <div class="col-md-4 mb-3">
-                    <label class="form-label">Date Acquired</label>
-                    {{ p_form.date_issued }}
+                    <label class="form-label">Date Issued</label>
+                    {{ i_form.date_issued }}
 
-                    {% if p_form.date_issued.errors %}
-                      <small class="text-danger">{{ p_form.date_issued.errors.0 }}</small>
+                    {% if i_form.date_issued.errors %}
+                      <small class="text-danger">{{ i_form.date_issued.errors.0 }}</small>
                     {% endif %}
                   </div>
 
                   <div class="col-md-4 mb-3">
                     <label class="form-label">Expiry Date</label>
-                    {{ p_form.expiry_date }}
+                    {{ i_form.expiry_date }}
 
-                    {% if p_form.expiry_date.errors %}
-                      <small class="text-danger">{{ p_form.expiry_date.errors.0 }}</small>
+                    {% if i_form.expiry_date.errors %}
+                      <small class="text-danger">{{ i_form.expiry_date.errors.0 }}</small>
                     {% endif %}
                   </div>
 
                   <div class="col-12 mb-3">
                     <label class="form-label">Remarks</label>
-                    {{ p_form.remarks }}
+                    {{ i_form.remarks }}
 
-                    {% if p_form.remarks.errors %}
-                      <small class="text-danger">{{ p_form.remarks.errors.0 }}</small>
+                    {% if i_form.remarks.errors %}
+                      <small class="text-danger">{{ i_form.remarks.errors.0 }}</small>
                     {% endif %}
                   </div>
 
                   <div class="col-12 mt-2 text-right">
-                    <button type="submit" class="btn-save shadow-sm"><i class="fas fa-check-circle mr-2"></i> Save to Registry</button>
+                    <button type="submit" class="btn-save shadow-sm">
+                      <i class="fas fa-check-circle mr-2"></i> Save to Registry
+                    </button>
                   </div>
+
                 </div>
               </form>
             </div>
           </div>
 
-          <h3 class="section-title mb-3" style="font-size: 1.5rem;">PAR History Registry</h3>
+          <h3 class="section-title mb-3" style="font-size: 1.5rem;">ICS History Registry</h3>
 
           <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
             <div class="table-responsive">
               <table class="table table-hover mb-0">
+
                 <thead>
                   <tr>
-                    <th>PAR No.</th>
+                    <th>ICS No.</th>
                     <th>Personnel</th>
                     <th>Asset Description</th>
                     <th>Issue Date</th>
@@ -344,37 +352,66 @@
                 </thead>
 
                 <tbody>
-                  {% for par in pars %}
+
+                  {% for ics in icss %}
                     <tr>
+
                       <td>
-                        <strong style="color: var(--navy);">{{ par.par_number }}</strong>
+                        <strong style="color: var(--navy);">
+                          {{ ics.ics_number }}
+                        </strong>
                       </td>
 
                       <td>
-                        <div class="font-weight-bold">{{ par.issued_to }}</div>
+                        <div class="font-weight-bold">
+                          {{ ics.issued_to }}
+                        </div>
                       </td>
 
                       <td>
-                        <div class="font-weight-bold">{{ par.communication.type|default:'Communication Asset' }}</div>
+                        <div class="font-weight-bold">
+                          {{ ics.communication.type|default:'Communication Asset' }}
+                        </div>
 
-                        <small class="text-muted">{{ par.communication.imei_serial|default:'No serial' }}</small>
+                        <small class="text-muted">
+                          {{ ics.communication.imei_serial|default:'No serial' }}
+                        </small>
                       </td>
 
-                      <td>{{ par.date_issued|date:'M d, Y' }}</td>
+                      <td>
+                        {{ ics.date_issued|date:'M d, Y' }}
+                      </td>
 
                       <td class="text-right">
-                        <a href="{% url 'print_par' par.id %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
 
-                        <a href="{% url 'edit_par' par.id %}" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                        <a href="{% url 'print_ics' ics.id %}" class="btn-icon btn-print" title="Print">
+                          <i class="fas fa-print"></i>
+                        </a>
 
-                        <a href="{% url 'delete_par' par.id %}" class="btn-icon btn-delete" title="Delete" onclick="return confirm('Delete this PAR record?')"><i class="fas fa-trash-alt"></i></a>
+                        <a href="{% url 'edit_ics' ics.id %}" class="btn-icon btn-edit" title="Edit">
+                          <i class="fas fa-edit"></i>
+                        </a>
+
+                        <a href="{% url 'delete_ics' ics.id %}"
+                           class="btn-icon btn-delete"
+                           title="Delete"
+                           onclick="return confirm('Delete this ICS record?')">
+                          <i class="fas fa-trash-alt"></i>
+                        </a>
+
                       </td>
                     </tr>
+
                   {% empty %}
+
                     <tr>
-                      <td colspan="5" class="text-center text-muted py-4">No PAR records yet.</td>
+                      <td colspan="5" class="text-center text-muted py-4">
+                        No ICS records yet.
+                      </td>
                     </tr>
+
                   {% endfor %}
+
                 </tbody>
               </table>
             </div>
@@ -384,6 +421,7 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

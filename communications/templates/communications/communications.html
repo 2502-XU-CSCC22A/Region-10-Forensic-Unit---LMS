@@ -5,17 +5,14 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Regional Forensic Unit 10 LMS &#8211; Firearms</title>
+    <title>Regional Forensic Unit 10 LMS – Communications</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/regular.min.css" integrity="sha512-x3gns+l9p4mIK7vYLOCUoFS2P1gavFvnO9Its8sr0AkUk46bgf9R51D8xeRUwCSk+W93YbXWi19BYzXDNBH5SA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet" />
 
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/communications.css' %}" />
-
 
     <style>
         *,
@@ -32,7 +29,7 @@
             --navy-light: #1e3d8f;
             --accent: #2563eb;
             --accent-2: #3b82f6;
-            --sidebar-w: 315px;
+            --sidebar-w: 290px;
             --header-h: 72px;
             --red: #ef4444;
             --text: #1e293b;
@@ -70,20 +67,6 @@
             box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
         }
 
-        .navbar-header {
-            display: flex;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: var(--header-h);
-            background: var(--white);
-            border-bottom: none;
-            box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
-            z-index: 1100;
-          }
-
         .header-brand {
             display: flex;
             align-items: center;
@@ -94,228 +77,219 @@
             height: 54px;
         }
 
-        /* --- Navbar --- */
+        .header-logo {
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1.1;
+            color: #1a2b6d;
+            text-transform: uppercase;
+        }
 
-.navbar-header {
-    height: 70px;
-    background-color: #ffffff;
-    border-bottom: 3px solid var(--accent);
-    width: 100%;
-  }
-  
-  .header-logo {
-    font-size: 11px;
-    font-weight: 800;
-    line-height: 1.1;
-    color: #1a2b6d;
-    text-transform: uppercase;
-  }
-  
-  .header-divider {
-    height: 40px;
-    width: 2px;
-    background-color: #1a2b6d;
-    margin: 0 15px;
-  }
-  
-  .header-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1a2b6d;
-    margin: 0;
-  }
-  
-  .notification-wrapper i {
-    font-size: 1.2rem;
-    cursor: pointer;
-  }
-  
-  .user-avatar {
-    width: 40px;
-    height: 40px;
-    background-color: #e9ecef;
-    border-radius: 50%;
-    font-size: 1.1rem;
-  }
-  
-  .user-text {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
-  .user-name {
-    color: #2563eb;
-    font-size: 14px;
-    line-height: 1.2;
-  }
-  
-  .user-role {
-    font-size: 12px;
-    line-height: 1;
-  }
+        .header-divider {
+            height: 40px;
+            width: 2px;
+            background-color: #1a2b6d;
+            margin: 0 15px;
+        }
+
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a2b6d;
+            margin: 0;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--bg);
+            border-radius: 50%;
+            border: 2px solid var(--border);
+        }
+
+        .layout {
+            display: flex;
+            padding-top: var(--header-h);
+            min-height: 100vh;
+        }
 
         main {
-            margin-top: 65px;
             margin-left: var(--sidebar-w);
             flex: 1;
             padding: 28px 28px 40px;
         }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--bg);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
     </style>
-
 </head>
 
 <body>
 
     <header class="navbar-header d-flex align-items-center justify-content-between px-4">
         <div class="header-brand d-flex align-items-center">
-          <div class="header-logo">
-            PNP<br />FORENSIC<br />GROUP
-          </div>
-          <div class="header-divider"></div>
-          <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
+            <div class="header-logo">
+                PNP<br />FORENSIC<br />GROUP
+            </div>
+
+            <div class="header-divider"></div>
+
+            <h1 class="header-title">
+                Regional Forensic Unit 10 LMS
+            </h1>
         </div>
-      
+
         <div class="header-user d-flex align-items-center">
-          {% comment %} <div class="notification-wrapper mr-4">
-            <i class="fas fa-bell {% if upcoming_pms|default:0 > 0 or upcoming_repairs|default:0 > 0 %}text-danger{% else %}text-muted{% endif %}"></i>
-          </div>
-       {% endcomment %}
-          <div class="profile-group d-flex align-items-center">
-            {% comment %} <div class="user-avatar d-flex align-items-center justify-content-center">
-              <i class="fas fa-user text-muted"></i> {% endcomment %}
+            <div class="profile-group d-flex align-items-center">
+
+                <div class="user-avatar d-flex align-items-center justify-content-center">
+                    <i class="fas fa-user text-muted"></i>
+                </div>
+
+                <div class="user-text ml-2">
+                    <div class="user-name font-weight-bold">
+                        {{ user.get_full_name|default:user.username }}
+                    </div>
+
+                    <div class="user-role text-muted">
+                        Logistics Officer
+                    </div>
+                </div>
+
             </div>
-            <div class="user-text ml-2">
-              <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-              <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
-            </div>
-          </div>
         </div>
-      </header>
-      
+    </header>
+
     <div class="layout">
 
-        {% include 'communications/sidebar.html' %}
+        {% include 'sidebar.html' %}
 
         <main>
 
             <div class="stat-cards">
-
-                <!-- Total Communications Items -->
                 <div class="stat-card">
                     <div class="stat-top">
-                        <div class="stat-icon blue">
+                        <div class="stat-icon purple">
                             <i class="fas fa-broadcast-tower"></i>
                         </div>
+
                         <div>
-                            <div class="stat-value" id="totalCount">&#8212;</div>
-                            <div class="stat-label">Total Communications</div>
+                            <div class="stat-value" id="totalCount">0</div>
+                            <div class="stat-label">
+                                Total Communications
+                            </div>
                         </div>
                     </div>
+
                     <div class="stat-bar-wrap">
-                        <div class="stat-bar blue" id="totalBar" style="width:0%"></div>
+                        <div class="stat-bar purple" id="totalBar" style="width:0%;">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Total Issued Communications -->
+                <div class="stat-card">
+                    <div class="stat-top">
+
+                        <div class="stat-icon orange">
+                            <i class="fas fa-check"></i>
+                        </div>
+
+                        <div>
+                            <div class="stat-value" id="issuedCount">0</div>
+
+                            <div class="stat-label">
+                                Serviceable Communications
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="stat-bar-wrap">
+                        <div class="stat-bar orange" id="issuedBar" style="width:0%;">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="stat-card">
                     <div class="stat-top">
                         <div class="stat-icon green">
-                            <i class="fas fa-clipboard-list"></i>
+                            <i class="fas fa-file-alt"></i>
                         </div>
                         <div>
-                            <div class="stat-value" id="issuedCount">&#8212;</div>
-                            <div class="stat-label">Issued Communications</div>
+                            <div class="stat-value" id="parCount">0</div>
+                            <div class="stat-label">Validated PAR</div>
                         </div>
                     </div>
                     <div class="stat-bar-wrap">
-                        <div class="stat-bar green" id="issuedBar" style="width:0%"></div>
+                        <div class="stat-bar green" id="parBar" style="width:0%;">
+                        </div>
                     </div>
-                </div>
-            
-            <!-- Validated PAR Items -->
-            <div class="stat-card">
-                <div class="stat-top">
-                    <div class="stat-icon green">
-                        <i class="fas fa-check-square"></i>
-                    </div>
-                    <div>
-                        <div class="stat-value" id="parCount">&#8212;</div>   
-                        <div class="stat-label">Validated PAR</div>                
-                    </div>
-                </div>
-                <div class="stat-bar-wrap">
-                    <div class="stat-bar green" id="parBar" style="width:0%;"></div>
                 </div>
             </div>
-        </div> <!-- /stat-cards -->
 
             <div class="table-section">
-                <div class="table-header">From Issuances Table</div>
+
+                <div class="table-header">
+                    From Issuances Table
+                </div>
 
                 <div class="table-controls">
+
                     <div class="search-wrap">
-                        <span class="search-icon">&#x1F50D;</span>
-                        <input type="text" id="searchInput" placeholder="Search by name, serial, station&#x2026;"
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="Search by type, serial, PAR, radio ID..."
                             oninput="filterTable()" />
                     </div>
+
                     <select id="statusFilter" class="btn btn-outline" style="font-size:13px;padding:7px 12px;"
                         onchange="filterTable()">
-                        <option value="">All Status</option>
+                        <option value="">Serviceability</option>
                         <option value="SERVICEABLE">Serviceable</option>
                         <option value="UNSERVICEABLE">Unserviceable</option>
                     </select>
-                    <button id="addRecordBtn" class="btn btn-primary">＋ Add Record</button>
-                    <a href="{% url 'communications:par_monitoring' %}" class="btn btn-outline">📋 PAR Records</a>
-                    <a href="{% url 'communications:activity_logs' %}" class="btn btn-outline">📊 Activity Logs</a>
-                    <button class="btn btn-outline" onclick="exportCSV()">&#x2B07; Export CSV</button>
+                    <button id="addRecordBtn" class="btn btn-primary">Add Record</button>
+                    <a href="{% url 'par_monitoring' %}" class="btn btn-outline">PAR Records</a>
+                    <a href="{% url 'ics_monitoring' %}" class="btn btn-outline">ICS Records</a>
+                    <a href="{% url 'activity_logs' %}" class="btn btn-outline">Activity Log</a>
+                    <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
                 </div>
 
                 <div class="table-wrap">
                     <table>
                         <thead>
                             <tr>
-                                <th>Type</th>
-                                <th>Item Description</th>
-                                <th>Serial No.</th>
-                                <th>Radio ID</th>
-                                <th onclick="sortTable('status')">STATUS</th>
-                                <th onclick="sortTable('validated')">REMARKS</th>
-                                <th>Action</th>
+                                <th>TYPE</th>
+                                <th>SERIAL NO.</th>
+                                <th>PAR NO.</th>
+                                <th>RADIO ID</th>
+                                <th>STATUS</th>
+                                <th>REMARKS</th>
+                                <th>ACTION</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBody"></tbody>
+                        <tbody id="tableBody">
+                        </tbody>
                     </table>
                 </div>
-
                 <div class="table-footer">
-                    <span id="rowInfo">Loading&#x2026;</span>
-                    <div class="pagination" id="pagination"></div>
+                    <span id="rowInfo">
+                        Loading…
+                    </span>
+                    <div class="pagination" id="pagination">
+                    </div>
                 </div>
             </div>
-
         </main>
     </div>
 
-    <!-- MODAL -->
     <div class="modal-overlay" id="modalOverlay">
+
         <div class="modal">
-            <button class="close-modal" id="closeModalBtn">&#x2715;</button>
-            <h3 id="modalTitle">Communications Details</h3>
+
+            <button class="close-modal" id="closeModalBtn">
+                ✕
+            </button>
+
+            <h3 id="modalTitle">
+                Communications Details
+            </h3>
             <div id="modalBody"></div>
             <div class="modal-actions">
                 <button class="btn btn-outline" id="closeModalBtn2">Close</button>
@@ -323,7 +297,8 @@
             </div>
         </div>
     </div>
-
-    <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="{% static 'js/communications.js' %}"></script>
+</body>
+
+</html>
