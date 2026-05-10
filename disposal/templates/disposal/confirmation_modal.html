@@ -1,0 +1,44 @@
+{% load static %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
+
+<style>
+    .filter-btn-reset {
+        font-family: 'Inter', sans-serif;
+        width: 100%;
+        border-color: #3C59DD;
+        color: #1a237e;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 20px;
+    }
+    .filter-btn-reset:hover {
+        background-color: #1a237e;
+        color: white;
+    }
+</style>
+
+<div id="confirmationModal" class="filter-modal-overlay">
+    <div class="filter-modal-content">
+        <div class="filter-modal-header">
+            <h2>Removal of BER Asset</h2>
+            <button class="filter-close-btn" type="button" onclick="closeConfirmationModal()">&times;</button>
+        </div>
+
+        <form id="confirmRemovalForm" method="POST">
+            {% csrf_token %}
+            <div class="filter-modal-body">
+                <div class="filter-section">
+                    <p>Are you sure you want to remove this asset? This action cannot be undone.</p>
+                </div>
+            </div>
+
+            <div class="filter-modal-footer">
+                <button type="submit" class="filter-btn-apply">Confirm Delete</button>
+                <button type="button" class="filter-btn-reset" onclick="closeConfirmationModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

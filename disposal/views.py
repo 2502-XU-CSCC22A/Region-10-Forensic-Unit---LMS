@@ -41,7 +41,7 @@ def export_disposal_csv(request):
 def disposal_list(request):
     all_items = DisposalItem.objects.filter(status_id = 4).order_by('-disposal_date')
     
-    paginator = Paginator(all_items, 15)
+    paginator = Paginator(all_items, 5)
     page_number = request.GET.get('page')
     disposal_items = paginator.get_page(page_number)
     
@@ -92,7 +92,6 @@ def disposal_list(request):
     if request.method == "POST":
         asset_id = request.POST.get('asset_id')
         reason = request.POST.get('reason')
-        category = request.POST.get('')
         personnel_id = request.POST.get('personnel_id') 
         
         asset = Asset.objects.get(id=asset_id)
@@ -106,7 +105,7 @@ def disposal_list(request):
         return redirect('disposal_list')
 
     return render(request, 'disposal/disposal.html', {
-        'items': all_items,
+        'items': disposal_items,
         'logs': logs,
         'last_sync_time': sync_time,
         'ber_today_count': ber_today_count,
@@ -124,11 +123,6 @@ def disposal_list(request):
         'inves_all': inves_all,
         'current_user_role': current_user_role,
     })
-
-def disposal_list_supervisor(request):
-    items = Asset.objects.filter(status_id = 4)
-
-    return render(request, 'disposal/disposal_supervisor.html', {'items': items})
 
 # --- ACTIVITY LOG ---
 def history_log(request):

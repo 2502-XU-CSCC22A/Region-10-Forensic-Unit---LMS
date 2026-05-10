@@ -23,8 +23,8 @@
     </li>
 
     <li>
-      <a href="{% url 'InvestigativeEquipment:investigative_view' %}"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</a>
+      <a href="{% url 'InvestigativeEquipment:investigative_view'%}"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span></a>
     </li>
 
     <li>
@@ -37,6 +37,13 @@
       <a href="{% url 'communications:par_monitoring' %}">
         <i class="fas fa-clipboard-list"></i>
         <span class="sidebar-item-label">PAR Monitoring</span>
+      </a>
+    </li>
+    
+    <li>
+      <a href="{% url 'communications:ics_monitoring' %}">
+        <i class="fas fa-clipboard-list"></i>
+        <span class="sidebar-item-label">ICS Monitoring</span>
       </a>
     </li>
 

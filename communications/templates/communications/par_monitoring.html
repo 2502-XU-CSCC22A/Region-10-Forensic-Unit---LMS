@@ -138,7 +138,7 @@
     <main>
       <div class="registry-container">
         <div class="mb-4">
-          <a href="{% url 'communications_list' %}" class="btn-back"><i class="fas fa-arrow-left mr-2"></i> Back to
+          <a href="{% url 'communications:communications_list' %}" class="btn-back"><i class="fas fa-arrow-left mr-2"></i> Back to
             Communications</a>
 
           <div class="d-flex justify-content-between align-items-center">
@@ -265,13 +265,13 @@
                   <td>{{ par.date_issued|date:'M d, Y' }}</td>
 
                   <td class="text-right">
-                    <a href="{% url 'print_par' par.id %}" class="btn-icon btn-print" title="Print"><i
+                    <a href="{% url 'communications:print_par' par.id %}" class="btn-icon btn-print" title="Print"><i
                         class="fas fa-print"></i></a>
 
-                    <a href="{% url 'edit_par' par.id %}" class="btn-icon btn-edit" title="Edit"><i
+                    <a href="{% url 'communications:edit_par' par.id %}" class="btn-icon btn-edit" title="Edit"><i
                         class="fas fa-edit"></i></a>
 
-                    <a href="{% url 'delete_par' par.id %}" class="btn-icon btn-delete" title="Delete"
+                    <a href="{% url 'communications:delete_par' par.id %}" class="btn-icon btn-delete" title="Delete"
                       onclick="return confirm('Delete this PAR record?')"><i class="fas fa-trash-alt"></i></a>
                   </td>
                 </tr>

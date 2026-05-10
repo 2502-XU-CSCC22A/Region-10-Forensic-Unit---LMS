@@ -5,6 +5,12 @@ h1 {
     color: #1a237e;
 }
 
+p {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: #1a237e;
+}
+
 .filter-section h1 {
     font-family: 'Inter', sans-serif;
     font-size: 24px;
@@ -13,7 +19,7 @@ h1 {
 }
 
 /* Modal Background Blur */
-#filterModal {
+#confirmationModal {
     display: none;
     position: fixed;
     top: 0;
@@ -27,7 +33,7 @@ h1 {
     align-items: center;
 }
 
-#filterModal.active {
+#confirmationModal.active {
     display: flex; 
 }
 
@@ -128,8 +134,8 @@ h1 {
 .filter-btn-apply {
     font-family: 'Inter', sans-serif;
     width: 100%;
-    border-color: #3C59DD;
-    color: #1a237e;
+    border-color: #de0e22;
+    color: #dc3545;
     padding: 16px;
     border-radius: 12px;
     font-weight: 700;
@@ -158,7 +164,7 @@ h1 {
 }
 
 .filter-btn-apply:hover {
-    background: #151b61;
+    background: #dc3545;
     border: none;
     color: #FFFFFF;
 }

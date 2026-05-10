@@ -14,10 +14,8 @@ html {
     margin: 0;
     padding: 0;
     height: 100vh;
-    /* Exactly 100% of the screen height */
     width: 100vw;
-    overflow: hidden;
-    /* This is the "Magic" line that stops the page scroll */
+    overflow-y: auto;
 }
 
 /* --- Dashboard Theme --- */
@@ -34,6 +32,8 @@ body {
     border-bottom: none;
     box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
     width: 100%;
+    position: sticky;
+    top: 0;
 }
 
 /* Brand Styles (Left) */
@@ -173,10 +173,10 @@ body {
 }
 
 .UM {
-    position: absolute; 
+    position: absolute;
     bottom: 100px;
     width: 100%;
-  }
+}
 
 /* --- Main Page Containers --- */
 .dashboard-container {
@@ -264,7 +264,7 @@ body {
     color: #64748b;
 }
 
-.btn-outline {
+button.outline {
     background: white;
     border: 1px solid var(--accent-2);
     color: var(--accent-2);
@@ -277,17 +277,17 @@ body {
     font-family: 'Inter', sans-serif;
     font-size: 14px;
     font-weight: 600;
-    transition: background 0.2s;
     text-decoration: none;
+    transition: .2s ease;
 }
 
-.btn-outline:hover {
+button.outline:hover {
     border-color: #3f51b5;
     color: #3f51b5;
     text-decoration: none;
 }
 
-a:has(.btn-outline) {
+a:has(.outline) {
     text-decoration: none;
     color: inherit;
 }
@@ -393,35 +393,38 @@ td {
 }
 
 /* Pagination */
-.pagination {
+.pagination-wrapper {
     font-family: 'Inter', sans-serif;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    gap: 8px;
-    margin-top: 30px;
+    padding: 5px;
 }
 
-.page-num:hover {
-    color: #FFFFFF;
-    background-color: var(--primary-blue);
-}
-
-.page-num {
-    font-family: 'Inter', sans-serif;
+.btn-page {
+    padding: 4px 6px;
+    height: 32px;
+    width: 32px;
+    font-size: 15px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    color: #64748b;
+    text-decoration: none;
+    transition: 0.2s;
     background: white;
-    border: 1px solid var(--border-color);
-    width: 35px;
-    height: 35px;
-    border-radius: 4px;
-    cursor: pointer;
 }
 
-.page-num.active {
-    background: var(--primary-blue);
-    color: white;
-    border-color: var(--primary-blue);
-    font-weight: 400;
+.btn-page:hover {
+    background-color:#2563eb;
+    color: #f1f5f9;
+}
+
+.active-page {
+    background-color: #2563eb;
+    color: white !important;
+    border-color: #2563eb;
+    font-weight: bold;
 }
 
 .section-title {
@@ -552,19 +555,33 @@ td {
     background: var(--border);
     border-radius: 99px;
     overflow: hidden;
-  }
-  
-  .stat-bar {
+}
+
+.stat-bar {
     height: 100%;
     border-radius: 99px;
     transition: width .8s ease;
-  }
-  
-  .stat-bar.blue  { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-  .stat-bar.green { background: linear-gradient(90deg, #10b981, #34d399); }
-  .stat-bar.red   { background: linear-gradient(90deg, #ef4444, #f87171); }
-  .stat-bar.purple { background: linear-gradient(90deg, #8b5cf6, #ede9fe);}
-  .stat-bar.orange { background: linear-gradient(90deg, #f59e0b, #eaba68);}
+}
+
+.stat-bar.blue {
+    background: linear-gradient(90deg, #3b82f6, #60a5fa);
+}
+
+.stat-bar.green {
+    background: linear-gradient(90deg, #10b981, #34d399);
+}
+
+.stat-bar.red {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+}
+
+.stat-bar.purple {
+    background: linear-gradient(90deg, #8b5cf6, #ede9fe);
+}
+
+.stat-bar.orange {
+    background: linear-gradient(90deg, #f59e0b, #eaba68);
+}
 
 /* ── Additional stat card colors ─────────────────────────────────────────── */
 .stat-icon.gray {
@@ -674,7 +691,8 @@ td {
 
 .page-info {
     font-family: 'Inter', sans-serif;
-    font-weight: 400;
+    font-weight: 800;
+    padding: 10px;
     color: #0d2155;
 }
 
