@@ -1,16 +1,8 @@
 from django import forms
 
 
-# ============================================================
-# FIREARMS PAR FORM (standalone - no model dependency yet)
-# ============================================================
-
 class FirearmsPARForm(forms.Form):
-    """
-    Standalone PAR form for the Firearms app.
-    Works without CommunicationPARRecord model from the communications branch.
-    When your teammates merge their branch, switch to ModelForm if needed.
-    """
+ 
     
     par_number = forms.CharField(
         max_length=50,
@@ -31,7 +23,7 @@ class FirearmsPARForm(forms.Form):
         label='FUND CLUSTER'
     )
     
-    # CHANGED: renamed from 'vehicle' to 'firearm', label updated to FIREARM ASSET
+
     firearm = forms.CharField(
         max_length=100,
         required=False,
@@ -90,10 +82,8 @@ class FirearmsPARForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        # Set initial date to today
         self.fields['date_issued'].initial = __import__('datetime').date.today()
         
-        # CHANGED: Populate firearm choices from Firearm model instead of vehicle
         try:
             from firearms.models import Firearm
             firearms = Firearm.objects.values_list('id', 'serial_no', 'model')

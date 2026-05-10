@@ -3,6 +3,7 @@ const API = {
   create: '/firearms/api/create/',
   update: (id) => `/firearms/api/update/${id}/`,
   delete: (id) => `/firearms/api/delete/${id}/`,
+  ber:    (id) => `/firearms/api/ber/${id}/`, 
 };
 
 
@@ -37,11 +38,50 @@ async function apiPost(url, data) {
   return res.json();
 }
 
+async function moveToBER(id) {
+  const confirmed = confirm("Move this firearm to BER & Disposal?");
+  if (!confirmed) return;
+
+  const f = allFirearms.find(item => item.id == id);
+  if (!f) { alert("Firearm record not found."); return; }
+
+  try {
+    const result = await apiPost(API.ber(id), {});
+    if (result.success) {
+      await loadFirearms();
+    } else {
+      alert('Error: ' + result.error);
+    }
+  } catch (err) {
+    alert('Network error.');
+    console.error(err);
+  }
+}
+
+
 async function loadFirearms() {
   try {
-    const res  = await fetch(API.list);
-    const data = await res.json();
-    allFirearms = data.firearms || [];
+
+    const [firearmsRes, parRes] = await Promise.all([
+      fetch(API.list),
+      fetch(PAR_API.list)
+    ]);
+
+    const firearmsData = await firearmsRes.json();
+    const parData      = await parRes.json();
+
+    const parMap = {};
+    (parData.pars || []).forEach(p => {
+      if (!parMap[p.firearm_id]) {        
+        parMap[p.firearm_id] = p.par_number;
+      }
+    });
+
+    allFirearms = (firearmsData.firearms || []).map(f => ({
+      ...f,
+      parNumber: parMap[f.id] || 'N/A',
+    }));
+
     filterTable();
   } catch (err) {
     console.error('Failed to load firearms:', err);
@@ -52,7 +92,7 @@ async function loadFirearms() {
   }
 }
 
-/* ─── NEW: Load PAR Stats for Dashboard Card ─── */
+
 function updatePARStatsFromFallback() {
   const el = document.getElementById('par-initial-data');
   if (!el) return false;
@@ -68,7 +108,7 @@ function updatePARStatsFromFallback() {
 }
 
 async function loadPARStats() {
-  // Try API first
+
   try {
     const res = await fetch(PAR_API.list);
     if (!res.ok) throw new Error('PAR API not available');
@@ -85,7 +125,7 @@ async function loadPARStats() {
     document.getElementById('parBar').style.width   = validatedPAR > 0 ? '100%' : '0%';
   } catch (err) {
     console.error('Failed to load PAR stats:', err);
-    // Fallback to template-rendered data
+   
     if (!updatePARStatsFromFallback()) {
       document.getElementById('parCount').textContent = '—';
       document.getElementById('parBar').style.width   = '0%';
@@ -104,9 +144,10 @@ function updateStats() {
 }
 
 function statusBadge(s) {
-  if (s === 'Serviceable')   return `<span class="badge badge-green">${s}</span>`;
-  if (s === 'Unserviceable') return `<span class="badge badge-red">${s}</span>`;
-  return `<span class="badge badge-orange">${s}</span>`;
+  if (s === 'Serviceable')   return `<span class="badge badge-green">SERVICEABLE</span>`;
+  if (s === 'Unserviceable') return `<span class="badge badge-red">UNSERVICEABLE</span>`;
+  if (s === 'BER')           return `<span class="badge badge-red">UNSERVICEABLE</span>`;
+  return `<span class="badge badge-orange">${s.toUpperCase()}</span>`;
 }
 
 function validatedBadge(v) {
@@ -123,19 +164,19 @@ function renderTable() {
   tbody.innerHTML = page.length
     ? page.map(f => `
         <tr>
-          <td><strong>${f.name}</strong></td>
-          <td>${f.subunit}</td>
-          <td>${f.station}</td>
-          <td>${f.issuingUnit}</td>
-          <td style="font-family:monospace;font-size:12px">${f.firearm_par}</td>
-          <td><strong>${f.serialNo}</strong></td>
+          <td><strong>${f.name || 'N/A'}</strong></td>
+          <td>${f.subunit || 'N/A'}</td>
+          <td>${f.station || 'N/A'}</td>
+          <td>${f.issuingUnit || 'N/A'}</td>
+          <td style="font-family:monospace;font-size:12px">${f.faid || 'N/A'}</td>   
+          <td><strong>${f.parNumber || 'N/A'}</strong></td>                           
           <td>${f.makeModel}</td>
           <td>${statusBadge(f.status)}</td>
           <td>${validatedBadge(f.validated)}</td>
           <td>
             <button class="action-btn" onclick="openActionModal(${f.id})">Edit ▸</button>
             <button class="action-btn" style="background:#ef4444;margin-left:4px"
-                    onclick="deleteRecord(${f.id})">Del</button>
+                    onclick="moveToBER(${f.id})">BER</button>
           </td>
         </tr>`).join('')
     : `<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted)">No records found.</td></tr>`;
@@ -218,12 +259,12 @@ function selectField(label, id, options, val = '') {
 
 function buildForm(f = {}) {
   return (
-    inputField('Name (Issued To)',            'f_name',        f.name        || '') +
-    inputField('Subunit',                       'f_subunit',     f.subunit     !== 'N/A' ? f.subunit     || '' : '') +
-    inputField('Station',                       'f_station',     f.station     !== 'N/A' ? f.station     || '' : '') +
-    inputField('Issuing Unit',                  'f_issuingUnit', f.issuingUnit !== 'N/A' ? f.issuingUnit || 'PNP FG' : 'PNP FG') +
-    inputField('PAR No.',                 'f_firearms_par',        f.firearms_par        !== 'N/A' ? f.firearms_par        || '' : '') +
-    inputField('Serial No.',                    'f_serialNo',    f.serialNo    !== 'N/A' ? f.serialNo    || '' : '') +
+    inputField('Name (Issued To)',   'f_name',        f.name        || '') +
+    inputField('Subunit',            'f_subunit',     f.subunit     || '') +
+    inputField('Station',            'f_station',     f.station     || '') +
+    inputField('Issuing Unit',       'f_issuingUnit', f.issuingUnit || 'PNP FG') +
+    inputField('FA ID / Serial No.', 'f_faid',        f.faid        || '') +  
+    inputField('PAR No.',            'f_parNumber',   f.parNumber   || '') +  
     inputField('Item Description', 'f_makeModel',   f.makeModel   !== 'N/A' ? f.makeModel   || '' : '') +
     selectField('Status',    'f_status',    ['Serviceable', 'Unserviceable'], f.status    || 'SERVICEABLE') +
     selectField('Remarks', 'f_validated', ['Validated', 'Expired/For Renewal'],                 f.validated || 'VALIDATED')
@@ -255,15 +296,14 @@ function closeModal() {
 async function saveRecord() {
   const get  = id => document.getElementById(id)?.value?.trim() || '';
   const data = {
-    name:        get('f_name'),
-    subunit:     get('f_subunit'),
-    station:     get('f_station'),
-    issuingUnit: get('f_issuingUnit'),
-    faid:        get('f_faid'),
-    serialNo:    get('f_serialNo'),
-    makeModel:   get('f_makeModel'),
-    status:      get('f_status'),
-    validated:   get('f_validated'),
+      name:        get('f_name'),
+      subunit:     get('f_subunit'),
+      station:     get('f_station'),
+      issuingUnit: get('f_issuingUnit'),
+      faid:        get('f_faid'),        
+      makeModel:   get('f_makeModel'),
+      status:      get('f_status'),
+      validated:   get('f_validated').toUpperCase(),  
   };
 
   if (!data.name) { alert('Name is required.'); return; }
@@ -324,5 +364,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === document.getElementById('modalOverlay')) closeModal();
   });
   loadFirearms();
-  loadPARStats();   // NEW: Load PAR stats on page ready
+  loadPARStats();   
 });
+
+window.openAddModal    = openAddModal;
+window.openActionModal = openActionModal;
+window.closeModal      = closeModal;
+window.saveRecord      = saveRecord;
+window.deleteRecord    = deleteRecord;
+window.moveToBER       = moveToBER;
+window.filterTable     = filterTable;
+window.sortTable       = sortTable;
+window.exportCSV       = exportCSV;

@@ -30,7 +30,7 @@ class Firearm(Asset):
 
 
 class FirearmPARRecord(models.Model):
-    firearm      = models.ForeignKey(Firearm, on_delete=models.SET_NULL, null=True, blank=True, related_name='firearms_par_records')
+    firearm      = models.ForeignKey(Firearm, on_delete=models.SET_NULL, null=True, blank=True, related_name='par_records')
     par_number   = models.CharField(max_length=50)
     fund_cluster = models.CharField(max_length=100, blank=True, null=True)
     reference_no = models.CharField(max_length=50, blank=True, null=True)
