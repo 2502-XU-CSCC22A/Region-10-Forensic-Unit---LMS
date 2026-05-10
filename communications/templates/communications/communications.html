@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Regional Forensic Unit 10 LMS – Communications</title>
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <link
         href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
         rel="stylesheet" />
@@ -14,148 +16,11 @@
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/communications.css' %}" />
 
-    <style>
-        *,
-        *::before,
-        *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        :root {
-            --navy: #0d2155;
-            --navy-mid: #1a3478;
-            --navy-light: #1e3d8f;
-            --accent: #2563eb;
-            --accent-2: #3b82f6;
-            --sidebar-w: 290px;
-            --header-h: 72px;
-            --red: #ef4444;
-            --text: #1e293b;
-            --muted: #64748b;
-            --border: #e2e8f0;
-            --bg: #f1f5f9;
-            --white: #ffffff;
-            --card-bg: #ffffff;
-            --row-alt: #f8fafc;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            height: var(--header-h);
-            background: var(--white);
-            border-bottom: 3px solid var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px 0 0;
-            box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
-        }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 0 20px;
-            margin: 8px 20px 8px 12px;
-            border-radius: 6px;
-            height: 54px;
-        }
-
-        .header-logo {
-            font-size: 11px;
-            font-weight: 800;
-            line-height: 1.1;
-            color: #1a2b6d;
-            text-transform: uppercase;
-        }
-
-        .header-divider {
-            height: 40px;
-            width: 2px;
-            background-color: #1a2b6d;
-            margin: 0 15px;
-        }
-
-        .header-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #1a2b6d;
-            margin: 0;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            background: var(--bg);
-            border-radius: 50%;
-            border: 2px solid var(--border);
-        }
-
-        .layout {
-            display: flex;
-            padding-top: var(--header-h);
-            min-height: 100vh;
-        }
-
-        main {
-            margin-left: var(--sidebar-w);
-            flex: 1;
-            padding: 28px 28px 40px;
-        }
-    </style>
 </head>
 
 <body>
 
-    <header class="navbar-header d-flex align-items-center justify-content-between px-4">
-        <div class="header-brand d-flex align-items-center">
-            <div class="header-logo">
-                PNP<br />FORENSIC<br />GROUP
-            </div>
-
-            <div class="header-divider"></div>
-
-            <h1 class="header-title">
-                Regional Forensic Unit 10 LMS
-            </h1>
-        </div>
-
-        <div class="header-user d-flex align-items-center">
-            <div class="profile-group d-flex align-items-center">
-
-                <div class="user-avatar d-flex align-items-center justify-content-center">
-                    <i class="fas fa-user text-muted"></i>
-                </div>
-
-                <div class="user-text ml-2">
-                    <div class="user-name font-weight-bold">
-                        {{ user.get_full_name|default:user.username }}
-                    </div>
-
-                    <div class="user-role text-muted">
-                        Logistics Officer
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </header>
+   {% include 'header.html' %}
 
     <div class="layout">
 
@@ -166,7 +31,7 @@
             <div class="stat-cards">
                 <div class="stat-card">
                     <div class="stat-top">
-                        <div class="stat-icon purple">
+                        <div class="stat-icon blue">
                             <i class="fas fa-broadcast-tower"></i>
                         </div>
 
@@ -179,7 +44,7 @@
                     </div>
 
                     <div class="stat-bar-wrap">
-                        <div class="stat-bar purple" id="totalBar" style="width:0%;">
+                        <div class="stat-bar blue" id="totalBar" style="width:0%;">
                         </div>
                     </div>
                 </div>
@@ -281,7 +146,7 @@
 
     <div class="modal-overlay" id="modalOverlay">
 
-        <div class="modal">
+        <div class="comm-modal">
 
             <button class="close-modal" id="closeModalBtn">
                 ✕

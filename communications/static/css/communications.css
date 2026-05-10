@@ -29,13 +29,6 @@ body {
     overflow-x: hidden;
 }
 
-/* MAIN */
-
-main {
-    margin-left: var(--sidebar-w);
-    padding: 34px 28px;
-    min-height: calc(100vh - var(--header-h));
-}
 
 /* STAT CARDS */
 
@@ -70,9 +63,9 @@ main {
     font-size: 20px;
 }
 
-.stat-icon.purple {
-    background: #ede9fe;
-    color: #7c3aed;
+.stat-icon.blue {
+    background: #dbeafe;
+    color: #2563eb;
 }
 
 .stat-icon.orange {
@@ -113,8 +106,8 @@ main {
     border-radius: 999px;
 }
 
-.stat-bar.purple {
-    background: linear-gradient(90deg, #7c3aed, #a78bfa);
+.stat-bar.blue {
+    background: linear-gradient(90deg, #2563eb, #60a5fa);
 }
 
 .stat-bar.orange {
@@ -280,7 +273,7 @@ tbody tr:hover {
 
 /* BADGES */
 
-.badge {
+.table-section .badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -381,7 +374,7 @@ tbody tr:hover {
     display: flex;
 }
 
-.modal {
+.comm-modal {
     width: 500px;
     max-width: 95vw;
     background: white;
@@ -391,11 +384,11 @@ tbody tr:hover {
 }
 
 .modal h3 {
-  font-family: 'Inter', sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  color: #0d2155;
-  margin-bottom: 18px;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #0d2155;
+    margin-bottom: 18px;
 }
 
 .modal-actions {
