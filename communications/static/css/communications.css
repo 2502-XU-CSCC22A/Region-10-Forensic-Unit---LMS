@@ -364,7 +364,7 @@ tbody tr:hover {
     display: flex;
 }
 
-.modal {
+.comm-modal {
     width: 500px;
     max-width: 95vw;
     background: white;
@@ -373,7 +373,7 @@ tbody tr:hover {
     box-shadow: 0 20px 60px rgba(0,0,0,.25);
 }
 
-.modal h3 {
+.comm-modal h3 {
     font-size: 20px;
     font-weight: 800;
     color: #0d2155;
