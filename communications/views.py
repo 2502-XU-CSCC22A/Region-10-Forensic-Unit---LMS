@@ -33,7 +33,7 @@ def communications_list(request):
         print("ROLE ERROR:", e)
         current_user_role = None
         
-    return render(request, 'communications.html', {
+    return render(request, 'communications/communications.html', {
         'items': items,
         'total_comms': all_c.count() ,
         'total_ber': all_d,
@@ -104,7 +104,7 @@ def print_par(request, pk):
         pk=pk
     )
 
-    return render(request, "print_par.html", {"par": par})
+    return render(request, "communications/print_par.html", {"par": par})
 
 
 # EDIT PAR
@@ -122,7 +122,7 @@ def edit_par(request, pk):
 
     return render(
         request,
-        "edit_par.html",
+        "communications/edit_par.html",
         {
             "form": form,
             "record": record,
@@ -157,7 +157,7 @@ def ics_monitoring(request):
 
     return render(
         request,
-        "ics_records.html",
+        "communications/ics_records.html",
         {
             "i_form": i_form,
             "icss": icss,
@@ -169,7 +169,7 @@ def print_ics(request, pk):
         CommunicationICSRecord.objects.select_related("communication"),
         pk=pk
     )
-    return render(request, "print_ics.html", {"ics": ics})
+    return render(request, "communications/print_ics.html", {"ics": ics})
 
 
 def edit_ics(request, pk):
@@ -186,13 +186,12 @@ def edit_ics(request, pk):
 
     return render(
         request,
-        "edit_ics.html",
+        "communications/edit_ics.html",
         {
             "form": form,
             "record": record,
         },
     )
-
 
 def delete_ics(request, pk):
     record = get_object_or_404(CommunicationICSRecord, pk=pk)

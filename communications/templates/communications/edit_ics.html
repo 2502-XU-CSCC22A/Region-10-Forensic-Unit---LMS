@@ -174,7 +174,7 @@
       <main class="main-content">
         <div class="container-fluid" style="max-width: 1400px;">
           <div class="mb-4">
-            <a href="{% url 'ics_monitoring' %}" class="btn-back">
+            <a href="{% url 'communications:ics_monitoring' %}" class="btn-back">
               <i class="fas fa-arrow-left mr-2"></i>
               Back to PAR Registry
             </a>
@@ -246,13 +246,13 @@
                 <hr class="my-4" style="border-top: 1px solid var(--border);" />
 
                 <div class="d-flex justify-content-between align-items-center">
-                  <a href="{% url 'delete_ics' record.pk %}" class="text-danger small font-weight-bold" style="text-decoration: none;" onclick="return confirm('Are you sure you want to archive this record?');">
+                  <a href="{% url 'communications:delete_ics' record.pk %}" class="text-danger small font-weight-bold" style="text-decoration: none;" onclick="return confirm('Are you sure you want to archive this record?');">
                     <i class="fas fa-trash-alt mr-1"></i>
                     ARCHIVE RECORD
                   </a>
 
                   <div>
-                    <a href="{% url 'ics_monitoring' %}" class="btn btn-sm text-muted mr-2" style="font-weight: 600;">Cancel</a>
+                    <a href="{% url 'communications:ics_monitoring' %}" class="btn btn-sm text-muted mr-2" style="font-weight: 600;">Cancel</a>
 
                     <button type="submit" class="btn-update shadow-sm">
                       <i class="fas fa-save mr-2"></i>

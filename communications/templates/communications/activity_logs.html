@@ -4,17 +4,7 @@
 
 <head>
   <meta charset="UTF-8">
-<<<<<<< HEAD:communications/templates/communications/activity_logs.html
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/regular.min.css" integrity="sha512-x3gns+l9p4mIK7vYLOCUoFS2P1gavFvnO9Its8sr0AkUk46bgf9R51D8xeRUwCSk+W93YbXWi19BYzXDNBH5SA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-=======
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
->>>>>>> e563b3a7dc83136a22a3934df5c8e2be40988f9b:communications/templates/activity_logs.html
   <title>Activity Logs</title>
 
   <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
@@ -35,82 +25,6 @@
       color: #1e293b;
     }
 
-<<<<<<< HEAD:communications/templates/communications/activity_logs.html
-    .activity-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 55px;
-      margin-bottom: 36px;
-    }
-
-    .activity-title h1 {
-      font-family: 'Inter', sans-serif;
-      color: #0d2155;
-      font-size: 34px;
-      margin-bottom: 4px;
-    }
-
-    .activity-title p {
-      color: #64748b;
-      font-size: 14px;
-    }
-
-    .filter-buttons {
-      display: flex;
-      border: 1px solid #2563eb;
-      border-radius: 999px;
-      overflow: hidden;
-      background: white;
-    }
-
-    .filter-buttons button {
-      border: none;
-      padding: 8px 18px;
-      font-weight: 600;
-      cursor: pointer;
-      background: white;
-      color: #2563eb;
-    }
-
-    .filter-buttons button.active {
-      background: #2563eb;
-      color: white;
-    }
-
-    .activity-list {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .log-card {
-      background: white;
-      border-left: 4px solid #22c55e;
-      padding: 20px 24px;
-      margin-bottom: 18px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .log-card.updated {
-      border-left-color: #2563eb;
-    }
-
-    .log-card.moved {
-      border-left-color: #f97316;
-    }
-
-    .log-card.deleted {
-      border-left-color: #ef4444;
-    }
-
-    .log-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-=======
     .navbar-header {
       height: 70px;
       background-color: #ffffff;
@@ -123,7 +37,6 @@
     }
 
     .header-logo {
->>>>>>> e563b3a7dc83136a22a3934df5c8e2be40988f9b:communications/templates/activity_logs.html
       font-size: 11px;
       font-weight: 800;
       line-height: 1.1;
@@ -244,55 +157,20 @@
       text-decoration: none;
     }
 
-<<<<<<< HEAD:communications/templates/communications/activity_logs.html
-    .layout {
-      display: flex;
-      padding-top: var(--header-h);
-      min-height: 100vh;
-    }
-
-    main {
-      margin-left: var(--sidebar-w);
-      flex: 1;
-      padding: 28px 28px 40px;
-    }
-
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: var(--bg);
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 3px;
-=======
     #sidebar {
       top: 70px !important;
       height: calc(100vh - 70px) !important;
       z-index: 999 !important;
->>>>>>> e563b3a7dc83136a22a3934df5c8e2be40988f9b:communications/templates/activity_logs.html
     }
   </style>
 </head>
 
 <body>
-<<<<<<< HEAD:communications/templates/communications/activity_logs.html
-  
-  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
-    <div class="header-brand d-flex align-items-center">
-      <div class="header-logo">
-        PNP<br />FORENSIC<br />GROUP
-=======
 
   <header class="navbar-header d-flex align-items-center justify-content-between px-4">
     <div class="header-brand d-flex align-items-center">
       <div class="header-logo">
         PNP<br>FORENSIC<br>GROUP
->>>>>>> e563b3a7dc83136a22a3934df5c8e2be40988f9b:communications/templates/activity_logs.html
       </div>
       <div class="header-divider"></div>
       <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
@@ -300,17 +178,7 @@
 
     <div class="header-user d-flex align-items-center">
       <div class="notification-wrapper mr-4">
-<<<<<<< HEAD:communications/templates/communications/activity_logs.html
-        <i class="fas fa-bell {% if upcoming_pms > 0 or upcoming_repairs > 0 %}
-            text-danger
-          {% else %}
-            text-muted
-          {% endif %}">
-
-        </i>
-=======
         <i class="fas fa-bell text-muted"></i>
->>>>>>> e563b3a7dc83136a22a3934df5c8e2be40988f9b:communications/templates/activity_logs.html
       </div>
 
       <div class="profile-group d-flex align-items-center">
@@ -318,77 +186,17 @@
           <i class="fas fa-user text-muted"></i>
         </div>
         <div class="user-text ml-2">
-<<<<<<< HEAD:communications/templates/communications/activity_logs.html
-          <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-          <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
-=======
           <div class="user-name font-weight-bold text-dark">
             {{ user.get_full_name|default:user.username }}
           </div>
           <div class="user-role text-muted">Logistics Officer</div>
->>>>>>> e563b3a7dc83136a22a3934df5c8e2be40988f9b:communications/templates/activity_logs.html
         </div>
       </div>
     </div>
   </header>
-<<<<<<< HEAD:communications/templates/communications/activity_logs.html
-=======
 
   {% include 'sidebar.html' %}
->>>>>>> e563b3a7dc83136a22a3934df5c8e2be40988f9b:communications/templates/activity_logs.html
 
-  <nav id="sidebar">
-    <ul class="list-unstyled components">
-      <p>Dashboard</p>
-      <li>
-        <a href="{% url 'dashboard:dashboard_view'%}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
-      </li>
-  
-      <li>
-        <a href="{% url 'mobility:vehicle_management' %}">
-          <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
-          <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span>
-        </a>
-      </li>
-  
-      <li>
-        <a href="{% url 'firearms:index' %}"><span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span></a>
-      </li>
-  
-      <li>
-        <a href="{% url 'communications:communications_list' %}"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
-          <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_comms|default:'0' }}</span></a>
-      </li>
-  
-      <li>
-        <a href="{% url 'InvestigativeEquipment:investigative_view' %}"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
-          <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</a>
-      </li>
-  
-      <li>
-        <a href="{% url 'disposal:disposal_list' %}"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span>
-          <span class="badge badge-light badge-pill">{{ total_ber|default:'0' }}</span></a>
-      </li>
-  
-      <p class="mt-4">Monitoring</p>
-      <li>
-        <a href="{% url 'communications:par_monitoring' %}">
-          <i class="fas fa-clipboard-list"></i>
-          <span class="sidebar-item-label">PAR Monitoring</span>
-        </a>
-      </li>
-      
-      <li class="active">
-        <a href="{% url 'communications:activity_logs' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
-      </li>
-  
-    <li class = "UM">
-      <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
-    </li>
-  </ul>
-  </nav>
-  
   <main>
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
@@ -416,13 +224,8 @@
       </div>
     </div>
 
-<<<<<<< HEAD:communications/templates/communications/activity_logs.html
     <a href="{% url 'communications:communications_list' %}" class="return-link">
-      ← Return to Dashboard
-=======
-    <a href="{% url 'communications_list' %}" class="return-link">
       <i class="fas fa-arrow-left mr-1"></i> Return to Communications
->>>>>>> e563b3a7dc83136a22a3934df5c8e2be40988f9b:communications/templates/activity_logs.html
     </a>
   </main>
 
