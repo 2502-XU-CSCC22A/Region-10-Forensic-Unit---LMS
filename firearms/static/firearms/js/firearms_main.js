@@ -3,6 +3,7 @@ const API = {
   create: '/firearms/api/create/',
   update: (id) => `/firearms/api/update/${id}/`,
   delete: (id) => `/firearms/api/delete/${id}/`,
+  ber:    (id) => `/firearms/api/ber/${id}/`, 
 };
 
 
@@ -37,6 +38,27 @@ async function apiPost(url, data) {
   return res.json();
 }
 
+async function moveToBER(id) {
+  const confirmed = confirm("Move this firearm to BER & Disposal?");
+  if (!confirmed) return;
+
+  const f = allFirearms.find(item => item.id == id);
+  if (!f) { alert("Firearm record not found."); return; }
+
+  try {
+    const result = await apiPost(API.ber(id), {});
+    if (result.success) {
+      await loadFirearms();
+    } else {
+      alert('Error: ' + result.error);
+    }
+  } catch (err) {
+    alert('Network error.');
+    console.error(err);
+  }
+}
+
+
 async function loadFirearms() {
   try {
 
@@ -70,7 +92,7 @@ async function loadFirearms() {
   }
 }
 
-/* ─── NEW: Load PAR Stats for Dashboard Card ─── */
+
 function updatePARStatsFromFallback() {
   const el = document.getElementById('par-initial-data');
   if (!el) return false;
@@ -152,8 +174,8 @@ function renderTable() {
           <td>${validatedBadge(f.validated)}</td>
           <td>
             <button class="action-btn" onclick="openActionModal(${f.id})">Edit ▸</button>
-            <button class="action-btn" style="background:#ef4444;margin-left:4px"
-                    onclick="deleteRecord(${f.id})">Del</button>
+            <button class="action-btn" style="background:#f97316;margin-left:4px"
+                    onclick="moveToBER(${f.id})">BER</button>
           </td>
         </tr>`).join('')
     : `<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted)">No records found.</td></tr>`;
@@ -343,3 +365,13 @@ document.addEventListener('DOMContentLoaded', () => {
   loadFirearms();
   loadPARStats();   
 });
+
+window.openAddModal    = openAddModal;
+window.openActionModal = openActionModal;
+window.closeModal      = closeModal;
+window.saveRecord      = saveRecord;
+window.deleteRecord    = deleteRecord;
+window.moveToBER       = moveToBER;
+window.filterTable     = filterTable;
+window.sortTable       = sortTable;
+window.exportCSV       = exportCSV;

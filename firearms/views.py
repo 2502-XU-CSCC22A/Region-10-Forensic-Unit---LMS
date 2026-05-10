@@ -10,6 +10,9 @@ from .models import Firearm
 from config.models import AssetStatus, Category
 from django.contrib.auth.decorators import login_required
 
+SUPABASE_URL = "https://vamjajitzyspdyfxisac.supabase.co"
+SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhbWphaml0enlzcGR5Znhpc2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNTkwMDUsImV4cCI6MjA5MTgzNTAwNX0.J8xu0H57Cch1lDpvPtWZqOBkKyzBb8tfUpHaZa2Hjfk"  
+
 
 def log_firearm_activity(firearm_id, action, details, user=None):
     try:
@@ -24,10 +27,10 @@ def log_firearm_activity(firearm_id, action, details, user=None):
             data=payload,
             headers={
                 "Content-Type": "application/json",
-                "apikey": SUPABASE_KEY,
-                "Authorization": f"Bearer {SUPABASE_KEY}",
+                "apikey": SUPABASE_ANON_KEY,
+                "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
                 "Prefer": "return=minimal",
-            },
+            },         
             method="POST"
         )
         _urllib.urlopen(req)
@@ -252,8 +255,8 @@ def firearms_activitylog(request):
 
 def firearms_activitylog_api(request):
     days = int(request.GET.get('days', 7))
-    from datetime import timedelta
-    since = (timezone.now() - timedelta(days=days)).isoformat()
+    from datetime import timedelta, timezone as dt_timezone
+    since = (timezone.now() - timedelta(days=days)).astimezone(dt_timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.000Z')
 
     try:
         url = (
@@ -262,11 +265,38 @@ def firearms_activitylog_api(request):
             f"&order=created_at.desc"
         )
         req = _urllib.Request(url, headers={
-            "apikey": SUPABASE_KEY,
-            "Authorization": f"Bearer {SUPABASE_KEY}",
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
         })
         with _urllib.urlopen(req) as resp:
             data = json.loads(resp.read())
         return JsonResponse(data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+@csrf_exempt
+def firearm_move_to_ber(request, pk):
+    if request.method == 'POST':
+        try:
+            firearm = Firearm.objects.get(pk=pk)
+            name   = firearm.assigned_to
+            serial = firearm.faid_serial
+
+            unserviceable = AssetStatus.objects.get(status_name__iexact='Unserviceable')
+            firearm.status = unserviceable
+            firearm.save()
+
+            log_firearm_activity(
+                firearm_id=pk,
+                action="Moved to BER",
+                details=f"Firearm '{name}' (serial: {serial}) was moved to BER & Disposal",
+                user=request.user
+            )
+
+            return JsonResponse({'success': True})
+        except Firearm.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Firearm not found'})
+        except AssetStatus.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Unserviceable status not found in database'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)

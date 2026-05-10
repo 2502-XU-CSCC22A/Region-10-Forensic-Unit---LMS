@@ -15,7 +15,158 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f1f5f9;
+      margin: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      color: #1e293b;
+    }
 
+    .navbar-header {
+      height: 70px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .header-logo {
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.1;
+      color: #1a2b6d;
+      text-transform: uppercase;
+    }
+
+    .header-divider {
+      height: 40px;
+      width: 2px;
+      background-color: #1a2b6d;
+      margin: 0 15px;
+    }
+
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1a2b6d;
+      margin: 0;
+    }
+
+    main {
+      margin-left: 315px !important;
+      padding: 95px 24px 40px !important;
+      min-height: 100vh;
+      background: #f1f5f9;
+      overflow-y: auto;
+    }
+
+    .page-title {
+      font-weight: 700;
+      color: #1a2b6d;
+      margin: 20px 0 4px 0;
+      font-size: 28px;
+    }
+
+    .filter-btn {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 5px 15px;
+      border-radius: 20px;
+    }
+
+    .activity-timeline {
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      margin: 0;
+    }
+
+    .log-card-delete,
+    .log-card-update,
+    .log-card-create,
+    .log-card-moved {
+      border-left: 4px solid #ef4444 !important;
+      border-radius: 3px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
+      margin-bottom: 16px !important;
+      background: #ffffff;
+    }
+
+    .log-card-delete .card-body,
+    .log-card-update .card-body,
+    .log-card-create .card-body,
+    .log-card-moved .card-body {
+      padding: 22px 34px !important;
+    }
+
+    .asset-id-badge {
+      background-color: #f1f5f9;
+      color: #475569;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    .badge-secondary {
+      background-color: #6b7280 !important;
+      color: white;
+      font-size: 11px;
+    }
+
+    .action-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+      margin-left: 10px;
+    }
+
+    .log-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: #000;
+      margin-bottom: 6px;
+    }
+
+    .log-stock {
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 8px;
+    }
+
+    .log-time {
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .return-link {
+      display: block;
+      text-align: center;
+      margin-top: 30px;
+      color: #64748b;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .return-link:hover {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    #sidebar {
+      top: 70px !important;
+      height: calc(100vh - 70px) !important;
+      z-index: 999 !important;
+    }
+
+    html, body {
+      height: auto !important;
+      overflow-y: auto !important;
+    }
   </style>
 </head>
 
@@ -70,8 +221,6 @@
       <i class="fas fa-arrow-left mr-1"></i> Return to Firearms
     </a>
   </main>
-
-
 
   <script>
     function formatDate(dateString) {
