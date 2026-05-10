@@ -415,3 +415,32 @@ tbody tr:hover {
 .delete-btn:hover {
     background: #dc2626;
 }
+
+/* CONFIRMATION MODAL */
+#confirmationModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    align-items: center;
+    justify-content: center;
+}
+
+#confirmationModal.active,
+#confirmationModal.open {
+    display: flex;
+}
+
+#confirmationModal .filter-modal-content {
+    background: #ffffff;
+    width: 600px;
+    max-width: 95vw;
+    max-height: 90vh;
+    border-radius: 28px;
+    padding: 32px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    overflow-y: auto;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}

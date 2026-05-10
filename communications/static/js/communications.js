@@ -1,9 +1,11 @@
 console.log("COMM JS LOADED");
 
-window.supabaseClient = window.supabaseClient || window.supabase.createClient(
-  "https://vamjajitzyspdyfxisac.supabase.co",
-  "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54"
-);
+window.supabaseClient =
+  window.supabaseClient ||
+  window.supabase.createClient(
+    "https://vamjajitzyspdyfxisac.supabase.co",
+    "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54",
+  );
 
 const sb = window.supabaseClient;
 
@@ -12,6 +14,7 @@ let filtered = [];
 let currentPage = 1;
 const pageSize = 5;
 let editingId = null;
+let pendingBerId = null;
 
 function getValue(id) {
   return document.getElementById(id)?.value?.trim() || "";
@@ -45,16 +48,60 @@ function remarksBadge(remarks) {
   return `<span class="badge badge-red">${remarks || "N/A"}</span>`;
 }
 
+function toggleConfirmationModal() {
+  const modal = document.getElementById("confirmationModal");
+
+  if (modal) {
+    modal.classList.toggle("active");
+  }
+}
+
+function closeConfirmationModal() {
+  const modal = document.getElementById("confirmationModal");
+
+  if (modal) {
+    modal.classList.remove("active");
+  }
+
+  pendingBerId = null;
+}
+
+function prepareRemoval(id) {
+  pendingBerId = id;
+
+  const modal = document.getElementById("confirmationModal");
+
+  if (modal) {
+    modal.classList.add("active");
+  }
+}
+
+async function confirmBerRemoval() {
+  if (!pendingBerId) return;
+
+  const id = pendingBerId;
+
+  const modal = document.getElementById("confirmationModal");
+
+  if (modal) {
+    modal.classList.remove("active");
+  }
+
+  pendingBerId = null;
+
+  await moveToBER(id);
+}
+
 async function addActivityLog({ communicationId, action, details }) {
-  const { error } = await sb
-    .from("communications_activitylog")
-    .insert([{
+  const { error } = await sb.from("communications_activitylog").insert([
+    {
       communication_id: communicationId,
       action: action,
       details: details,
       old_stock: null,
-      new_stock: null
-    }]);
+      new_stock: null,
+    },
+  ]);
 
   if (error) {
     console.error("ACTIVITY LOG ERROR:", error);
@@ -73,7 +120,7 @@ async function fetchData() {
     return;
   }
 
-  const communicationIds = commData.map(item => item.asset_ptr_id);
+  const communicationIds = commData.map((item) => item.asset_ptr_id);
 
   let parMap = {};
 
@@ -89,7 +136,7 @@ async function fetchData() {
     }
 
     if (parData) {
-      parData.forEach(par => {
+      parData.forEach((par) => {
         const commId = Number(par.communication_id);
 
         if (!parMap[commId]) {
@@ -100,7 +147,7 @@ async function fetchData() {
   }
 
   communications = commData
-    .filter(item => item.is_deleted !== true)
+    .filter((item) => item.is_deleted !== true)
     .map((item) => ({
       id: item.asset_ptr_id,
       type: item.type || "",
@@ -138,7 +185,9 @@ function renderTable() {
     return;
   }
 
-  tbody.innerHTML = pageItems.map(c => `
+  tbody.innerHTML = pageItems
+    .map(
+      (c) => `
     <tr>
       <td>${c.type}</td>
       <td>${c.serial}</td>
@@ -157,14 +206,16 @@ function renderTable() {
 
           <button
             class="delete-btn"
-            onclick="moveToBER('${c.id}')"
+            onclick="prepareRemoval('${c.id}')"
           >
             BER
           </button>
         </div>
       </td>
     </tr>
-  `).join("");
+  `,
+    )
+    .join("");
 
   document.getElementById("rowInfo").textContent =
     `Showing ${start + 1}-${Math.min(start + pageSize, filtered.length)} of ${filtered.length}`;
@@ -198,18 +249,17 @@ function updateStats() {
   const total = communications.length;
 
   const serviceable = communications.filter(
-    c => c.status === "SERVICEABLE"
+    (c) => c.status === "SERVICEABLE",
   ).length;
 
   const validated = communications.filter(
-    c => c.remarks === "VALIDATED"
+    (c) => c.remarks === "VALIDATED",
   ).length;
 
   document.getElementById("totalCount").textContent = total;
   document.getElementById("issuedCount").textContent = serviceable;
   document.getElementById("parCount").textContent = validated;
-  document.getElementById("totalBar").style.width =
-    total > 0 ? "100%" : "0%";
+  document.getElementById("totalBar").style.width = total > 0 ? "100%" : "0%";
 
   document.getElementById("issuedBar").style.width =
     total > 0
@@ -217,18 +267,13 @@ function updateStats() {
       : "0%";
 
   document.getElementById("parBar").style.width =
-    total > 0
-      ? Math.max(5, Math.round((validated / total) * 100)) + "%"
-      : "0%";
+    total > 0 ? Math.max(5, Math.round((validated / total) * 100)) + "%" : "0%";
 }
 
 function filterTable() {
-  const q = document.getElementById("searchInput")
-    .value
-    .toLowerCase();
+  const q = document.getElementById("searchInput").value.toLowerCase();
 
-  const statusFilter =
-    document.getElementById("statusFilter").value;
+  const statusFilter = document.getElementById("statusFilter").value;
 
   filtered = communications.filter((c) => {
     const searchMatch =
@@ -239,9 +284,7 @@ function filterTable() {
       c.status.toLowerCase().includes(q) ||
       c.remarks.toLowerCase().includes(q);
 
-    const statusMatch =
-      !statusFilter ||
-      c.status === statusFilter;
+    const statusMatch = !statusFilter || c.status === statusFilter;
 
     return searchMatch && statusMatch;
   });
@@ -288,14 +331,18 @@ function selectField(label, id, options, selected = "") {
           margin-top:3px
         "
       >
-        ${options.map(option => `
+        ${options
+          .map(
+            (option) => `
           <option
             value="${option}"
             ${option === selected ? "selected" : ""}
           >
             ${option}
           </option>
-        `).join("")}
+        `,
+          )
+          .join("")}
       </select>
     </div>
   `;
@@ -310,13 +357,13 @@ function buildForm(c = {}) {
       "Status",
       "c_status",
       ["SERVICEABLE", "UNSERVICEABLE"],
-      c.status || "SERVICEABLE"
+      c.status || "SERVICEABLE",
     ) +
     selectField(
       "Remarks",
       "c_remarks",
       ["VALIDATED", "EXPIRED/FOR RENEWAL"],
-      c.remarks || "VALIDATED"
+      c.remarks || "VALIDATED",
     )
   );
 }
@@ -324,43 +371,31 @@ function buildForm(c = {}) {
 function openActionModal(id) {
   editingId = id;
 
-  const c = communications.find(x => x.id == id);
+  const c = communications.find((x) => x.id == id);
 
-  document.getElementById("modalTitle").textContent =
-    "Edit Record";
+  document.getElementById("modalTitle").textContent = "Edit Record";
 
-  document.getElementById("modalBody").innerHTML =
-    buildForm(c);
+  document.getElementById("modalBody").innerHTML = buildForm(c);
 
-  document.getElementById("modalSaveBtn").textContent =
-    "Save";
+  document.getElementById("modalSaveBtn").textContent = "Save";
 
-  document
-    .getElementById("modalOverlay")
-    .classList.add("open");
+  document.getElementById("modalOverlay").classList.add("open");
 }
 
 function openAddModal() {
   editingId = null;
 
-  document.getElementById("modalTitle").textContent =
-    "Add Record";
+  document.getElementById("modalTitle").textContent = "Add Record";
 
-  document.getElementById("modalBody").innerHTML =
-    buildForm();
+  document.getElementById("modalBody").innerHTML = buildForm();
 
-  document.getElementById("modalSaveBtn").textContent =
-    "Add";
+  document.getElementById("modalSaveBtn").textContent = "Add";
 
-  document
-    .getElementById("modalOverlay")
-    .classList.add("open");
+  document.getElementById("modalOverlay").classList.add("open");
 }
 
 function closeModal() {
-  document
-    .getElementById("modalOverlay")
-    .classList.remove("open");
+  document.getElementById("modalOverlay").classList.remove("open");
 }
 
 async function saveRecord() {
@@ -376,7 +411,7 @@ async function saveRecord() {
   }
 
   if (editingId) {
-    const oldRecord = communications.find(c => c.id == editingId);
+    const oldRecord = communications.find((c) => c.id == editingId);
 
     const changes = [];
 
@@ -389,7 +424,9 @@ async function saveRecord() {
     }
 
     if (oldRecord.radioId !== radioId) {
-      changes.push(`Radio ID changed from "${oldRecord.radioId}" to "${radioId}"`);
+      changes.push(
+        `Radio ID changed from "${oldRecord.radioId}" to "${radioId}"`,
+      );
     }
 
     if (oldRecord.status !== status) {
@@ -397,7 +434,9 @@ async function saveRecord() {
     }
 
     if (oldRecord.remarks !== remarks) {
-      changes.push(`Remarks changed from "${oldRecord.remarks}" to "${remarks}"`);
+      changes.push(
+        `Remarks changed from "${oldRecord.remarks}" to "${remarks}"`,
+      );
     }
 
     const { error } = await sb
@@ -421,22 +460,22 @@ async function saveRecord() {
       await addActivityLog({
         communicationId: editingId,
         action: "Communication Updated",
-        details: changes.join("; ")
+        details: changes.join("; "),
       });
     }
-
   } else {
-
     const { data: parentData, error: parentError } = await sb
       .from("config_asset")
-      .insert([{
-        date_acquired: todayDate(),
-        property_no: generatePropertyNo(),
-        serial_no: serial,
-        model: type,
-        category_id: 2,
-        "StatusID": 1
-      }])
+      .insert([
+        {
+          date_acquired: todayDate(),
+          property_no: generatePropertyNo(),
+          serial_no: serial,
+          model: type,
+          category_id: 4,
+          StatusID: 1,
+        },
+      ])
       .select("id")
       .single();
 
@@ -448,15 +487,17 @@ async function saveRecord() {
 
     const { error: childError } = await sb
       .from("communications_communication")
-      .insert([{
-        asset_ptr_id: parentData.id,
-        type: type,
-        imei_serial: serial,
-        radio_id: radioId,
-        status: status,
-        remarks: remarks,
-        is_deleted: false,
-      }]);
+      .insert([
+        {
+          asset_ptr_id: parentData.id,
+          type: type,
+          imei_serial: serial,
+          radio_id: radioId,
+          status: status,
+          remarks: remarks,
+          is_deleted: false,
+        },
+      ]);
 
     if (childError) {
       console.error("CHILD SAVE ERROR:", childError);
@@ -467,7 +508,7 @@ async function saveRecord() {
     await addActivityLog({
       communicationId: parentData.id,
       action: "Communication Created",
-      details: `Added ${type} with Serial ${serial}`
+      details: `Added ${type} with Serial ${serial}`,
     });
   }
 
@@ -477,13 +518,7 @@ async function saveRecord() {
 }
 
 async function moveToBER(id) {
-  const confirmed = confirm(
-    "Move this communication asset to BER & Disposal?"
-  );
-
-  if (!confirmed) return;
-
-  const c = communications.find(item => item.id == id);
+  const c = communications.find((item) => item.id == id);
 
   if (!c) {
     alert("Communication record not found.");
@@ -492,16 +527,18 @@ async function moveToBER(id) {
 
   const { error: disposalError } = await sb
     .from("disposal_disposalitems")
-    .insert([{
-      asset_ptr_id: id,
-      days_overdue: 0,
-      expiry_date: todayDate(),
-      disposal_reason: "Marked as BER from Communications",
-      disposal_date: new Date().toISOString(),
-      processed_by: null,
-      personnel_assigned: null,
-      last_sync: new Date().toISOString()
-    }]);
+    .insert([
+      {
+        asset_ptr_id: id,
+        days_overdue: 0,
+        expiry_date: todayDate(),
+        disposal_reason: "Marked as BER from Communications",
+        disposal_date: new Date().toISOString(),
+        processed_by: null,
+        personnel_assigned: null,
+        last_sync: new Date().toISOString(),
+      },
+    ]);
 
   if (disposalError) {
     console.error("DISPOSAL INSERT ERROR:", disposalError);
@@ -509,12 +546,11 @@ async function moveToBER(id) {
     return;
   }
 
-  // UPDATE COMMUNICATION TABLE
   const { error: commError } = await sb
     .from("communications_communication")
     .update({
       is_deleted: true,
-      status: "UNSERVICEABLE"
+      status: "UNSERVICEABLE",
     })
     .eq("asset_ptr_id", id);
 
@@ -524,11 +560,10 @@ async function moveToBER(id) {
     return;
   }
 
-  // UPDATE ASSET STATUSID TO BER (4)
   const { error: assetError } = await sb
     .from("config_asset")
     .update({
-      StatusID: 4
+      StatusID: 4,
     })
     .eq("id", id);
 
@@ -541,7 +576,7 @@ async function moveToBER(id) {
   await addActivityLog({
     communicationId: id,
     action: "Moved to BER",
-    details: `${c.type} with Serial ${c.serial} was moved to BER & Disposal`
+    details: `${c.type} with Serial ${c.serial} was moved to BER & Disposal`,
   });
 
   await fetchData();
@@ -554,78 +589,62 @@ function exportCSV() {
     "PAR NO.",
     "RADIO ID",
     "STATUS",
-    "REMARKS"
+    "REMARKS",
   ];
 
   const rows = filtered.map((c) =>
-    [
-      c.type,
-      c.serial,
-      c.parNo,
-      c.radioId,
-      c.status,
-      c.remarks
-    ]
+    [c.type, c.serial, c.parNo, c.radioId, c.status, c.remarks]
       .map((v) => `"${v || ""}"`)
-      .join(",")
+      .join(","),
   );
 
-  const csv =
-    [headers.join(","), ...rows].join("\n");
+  const csv = [headers.join(","), ...rows].join("\n");
 
-  const a =
-    document.createElement("a");
+  const a = document.createElement("a");
 
-  a.href =
-    "data:text/csv," +
-    encodeURIComponent(csv);
+  a.href = "data:text/csv," + encodeURIComponent(csv);
 
-  a.download =
-    "communications_export.csv";
+  a.download = "communications_export.csv";
 
   a.click();
 }
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
+document.addEventListener("DOMContentLoaded", () => {
+  fetchData();
 
-    fetchData();
+  document
+    .getElementById("addRecordBtn")
+    ?.addEventListener("click", openAddModal);
 
-    document
-      .getElementById("addRecordBtn")
-      ?.addEventListener(
-        "click",
-        openAddModal
-      );
+  document
+    .getElementById("modalSaveBtn")
+    ?.addEventListener("click", saveRecord);
 
-    document
-      .getElementById("modalSaveBtn")
-      ?.addEventListener(
-        "click",
-        saveRecord
-      );
+  document
+    .getElementById("closeModalBtn")
+    ?.addEventListener("click", closeModal);
 
-    document
-      .getElementById("closeModalBtn")
-      ?.addEventListener(
-        "click",
-        closeModal
-      );
+  document
+    .getElementById("closeModalBtn2")
+    ?.addEventListener("click", closeModal);
+});
 
-    document
-      .getElementById("closeModalBtn2")
-      ?.addEventListener(
-        "click",
-        closeModal
-      );
+window.onclick = function (event) {
+  const confirmationModal = document.getElementById("confirmationModal");
+
+  if (event.target === confirmationModal) {
+    closeConfirmationModal();
   }
-);
+};
 
 window.openAddModal = openAddModal;
 window.openActionModal = openActionModal;
 window.closeModal = closeModal;
 window.saveRecord = saveRecord;
 window.moveToBER = moveToBER;
+window.prepareRemoval = prepareRemoval;
+window.confirmBerRemoval = confirmBerRemoval;
+window.toggleConfirmationModal = toggleConfirmationModal;
+window.closeConfirmationModal = closeConfirmationModal;
 window.filterTable = filterTable;
 window.exportCSV = exportCSV;
