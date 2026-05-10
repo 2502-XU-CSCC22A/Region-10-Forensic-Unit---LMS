@@ -214,7 +214,7 @@
                 <th><i class="ph ph-identification-badge"></i> Asset ID</th>
                 <th><i class="ph ph-archive"></i> Asset Model</th>
                 <th><i class="ph ph-calendar-minus"></i> Days Overdue</th>
-                <th><i class="ph ph-user-circle-check"></i> Personnel Assigned</th>
+                <th><i class="ph ph-user-circle-check"></i> Type</th>
                 <th><i class="ph ph-link"></i> Disposal Reason</th>
                 <th><i class="ph ph-calendar-x"></i> Disposal Date</th>
                 
@@ -237,10 +237,10 @@
                     {% endif %}
                   </td>
                   <td>
-                    {% if item.personnel_assigned %}
-                      <strong>{{ item.personnel_assigned.name }}</strong>
+                    {% if item.asset_ptr.category %}
+                      <strong>{{ item.asset_ptr.category.category_name }}</strong>
                     {% else %}
-                      <span class="text-muted">Unassigned</span>
+                      <span class="text-muted">No Type</span>
                     {% endif %}
                   </td>
                   <td>{{ item.disposal_reason|truncatewords:10 }}</td>

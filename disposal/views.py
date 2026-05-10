@@ -70,32 +70,29 @@ def disposal_list(request):
     ).count()
     
     comms_ber = DisposalItem.objects.filter(
-        asset_ptr__status_id=4, 
         asset_ptr__category__category_name='communications'
     ).count()
     
     mobility_ber = DisposalItem.objects.filter(
-        asset_ptr__status_id=4, 
         asset_ptr__category__category_name='mobility'
     ).count()
     
     firearms_ber = DisposalItem.objects.filter(
-        asset_ptr__status_id=4, 
+        asset_ptr__status__status_id= '4',
         asset_ptr__category__category_name='firearms'
     ).count()
     
     inves_ber = DisposalItem.objects.filter(
-        asset_ptr__status_id=4, 
         asset_ptr__category__category_name='investigative_equipment'
     ).count()
     
     total_ber = DisposalItem.objects.filter(
-        asset_ptr__status_id=4, 
     ).count()
     
     if request.method == "POST":
         asset_id = request.POST.get('asset_id')
         reason = request.POST.get('reason')
+        category = request.POST.get('')
         personnel_id = request.POST.get('personnel_id') 
         
         asset = Asset.objects.get(id=asset_id)
@@ -109,6 +106,7 @@ def disposal_list(request):
         return redirect('disposal_list')
 
     return render(request, 'disposal/disposal.html', {
+        'items': all_items,
         'logs': logs,
         'last_sync_time': sync_time,
         'ber_today_count': ber_today_count,
