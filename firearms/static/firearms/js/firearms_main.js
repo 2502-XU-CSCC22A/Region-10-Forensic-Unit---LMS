@@ -144,8 +144,9 @@ function updateStats() {
 }
 
 function statusBadge(s) {
-  if (s === 'Serviceable')   return `<span class="badge badge-green">${s.toUpperCase()}</span>`;
-  if (s === 'Unserviceable') return `<span class="badge badge-red">${s.toUpperCase()}</span>`;
+  if (s === 'Serviceable')   return `<span class="badge badge-green">SERVICEABLE</span>`;
+  if (s === 'Unserviceable') return `<span class="badge badge-red">UNSERVICEABLE</span>`;
+  if (s === 'BER')           return `<span class="badge badge-red">UNSERVICEABLE</span>`;
   return `<span class="badge badge-orange">${s.toUpperCase()}</span>`;
 }
 
@@ -174,7 +175,7 @@ function renderTable() {
           <td>${validatedBadge(f.validated)}</td>
           <td>
             <button class="action-btn" onclick="openActionModal(${f.id})">Edit ▸</button>
-            <button class="action-btn" style="background:#f97316;margin-left:4px"
+            <button class="action-btn" style="background:#ef4444;margin-left:4px"
                     onclick="moveToBER(${f.id})">BER</button>
           </td>
         </tr>`).join('')

@@ -282,9 +282,23 @@ def firearm_move_to_ber(request, pk):
             name   = firearm.assigned_to
             serial = firearm.faid_serial
 
-            unserviceable = AssetStatus.objects.get(status_name__iexact='Unserviceable')
-            firearm.status = unserviceable
+            ber_status = AssetStatus.objects.get(status_name__iexact='Unserviceable')  
+            firearm.status = ber_status
             firearm.save()
+
+            patch_payload = json.dumps({"StatusID": 4}).encode()
+            patch_req = _urllib.Request(
+                f"{SUPABASE_URL}/rest/v1/config_asset?id=eq.{pk}",
+                data=patch_payload,
+                headers={
+                    "Content-Type": "application/json",
+                    "apikey": SUPABASE_ANON_KEY,
+                    "Authorization": f"Bearer {SUPABASE_ANON_KEY}",
+                    "Prefer": "return=minimal",
+                },
+                method="PATCH"
+            )
+            _urllib.urlopen(patch_req)
 
             log_firearm_activity(
                 firearm_id=pk,
@@ -297,6 +311,6 @@ def firearm_move_to_ber(request, pk):
         except Firearm.DoesNotExist:
             return JsonResponse({'success': False, 'error': 'Firearm not found'})
         except AssetStatus.DoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Unserviceable status not found in database'})
+            return JsonResponse({'success': False, 'error': 'BER status not found in database'})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
