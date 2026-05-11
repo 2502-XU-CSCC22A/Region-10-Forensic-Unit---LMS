@@ -15,10 +15,6 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
 
-# =========================================================
-# ROLE CHECK
-# =========================================================
-
 def can_edit(user):
     try:
         role = user.userprofile.role
@@ -26,10 +22,6 @@ def can_edit(user):
     except Exception:
         return False
 
-
-# =========================================================
-# MAIN DASHBOARD & VEHICLE MANAGEMENT
-# =========================================================
 
 @login_required
 def vehicle_management(request):
@@ -47,7 +39,7 @@ def vehicle_management(request):
             Q(alternative_driver__icontains=search)
         )
 
-    all_d = DisposalItem.objects.all()
+    all_d = DisposalItem.objects.filter(category_id__in=[3, 10])
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
 
@@ -84,34 +76,29 @@ def vehicle_management(request):
 
             messages.success(request, "Vehicle and PAR details added successfully.")
             return redirect('mobility:vehicle_management')
+        else:
+            messages.error(request, "Please correct the errors in the vehicle form.")
     else:
         form = VehicleForm()
 
     all_v = Vehicle.objects.all()
 
-    total_vehicles = all_v.count()
-    s_count = all_v.filter(status='Serviceable').count()
-    u_count = all_v.filter(status='Unserviceable').count()
-    ber_count = all_v.filter(status='BER').count()
-
     today = timezone.now().date()
     upcoming_limit = today + timedelta(days=30)
-
-    expiring_count = PARRecord.objects.filter(
-        expiry_date__gte=today,
-        expiry_date__lte=upcoming_limit
-    ).count()
 
     context = {
         'form': form,
         'vehicles': all_v.filter(query).order_by('-id'),
         'can_edit': can_edit(request.user),
 
-        'total_vehicles': total_vehicles,
-        's_count': s_count,
-        'u_count': u_count,
-        'ber_count': ber_count,
-        'expiring_count': expiring_count,
+        'total_vehicles': all_v.count(),
+        's_count': all_v.filter(status='Serviceable').count(),
+        'u_count': all_v.filter(status='Unserviceable').count(),
+        'ber_count': all_v.filter(status='BER').count(),
+        'expiring_count': PARRecord.objects.filter(
+            expiry_date__gte=today,
+            expiry_date__lte=upcoming_limit
+        ).count(),
 
         'total_disposal': all_d.count(),
         'total_firearms': all_f.count(),
@@ -120,10 +107,6 @@ def vehicle_management(request):
 
     return render(request, 'mobility/vehicle_management.html', context)
 
-
-# =========================================================
-# EDIT VEHICLE
-# =========================================================
 
 @login_required
 def edit_vehicle(request, pk):
@@ -150,13 +133,11 @@ def edit_vehicle(request, pk):
 
             messages.success(request, "Vehicle updated successfully.")
             return redirect('mobility:vehicle_management')
+        else:
+            messages.error(request, "Please correct the errors before saving.")
 
     return redirect('mobility:vehicle_management')
 
-
-# =========================================================
-# DELETE VEHICLE
-# =========================================================
 
 @login_required
 def delete_vehicle(request, pk):
@@ -180,10 +161,6 @@ def delete_vehicle(request, pk):
     return redirect('mobility:vehicle_management')
 
 
-# =========================================================
-# MARK VEHICLE AS BER
-# =========================================================
-
 @login_required
 def mark_vehicle_ber(request, pk):
     vehicle = get_object_or_404(Vehicle, pk=pk)
@@ -205,10 +182,6 @@ def mark_vehicle_ber(request, pk):
 
     return redirect('mobility:vehicle_management')
 
-
-# =========================================================
-# SEND BER VEHICLE TO DISPOSAL
-# =========================================================
 
 @login_required
 def send_vehicle_to_disposal(request, pk):
@@ -232,10 +205,6 @@ def send_vehicle_to_disposal(request, pk):
     return redirect('mobility:vehicle_management')
 
 
-# =========================================================
-# PAR MONITORING
-# =========================================================
-
 @login_required
 def par_management(request):
     today = timezone.now().date()
@@ -257,29 +226,20 @@ def par_management(request):
         )
 
     if status == 'expiring':
-        pars = pars.filter(
-            expiry_date__gte=today,
-            expiry_date__lte=upcoming_limit
-        )
+        pars = pars.filter(expiry_date__gte=today, expiry_date__lte=upcoming_limit)
     elif status == 'expired':
         pars = pars.filter(expiry_date__lt=today)
     elif status == 'active':
         pars = pars.filter(expiry_date__gt=upcoming_limit)
 
-    context = {
+    return render(request, 'mobility/par_management.html', {
         'pars': pars.order_by('-date_acquired'),
         'today': today,
         'upcoming_limit': upcoming_limit,
         'search': search,
         'status': status,
-    }
+    })
 
-    return render(request, 'mobility/par_management.html', context)
-
-
-# =========================================================
-# DELETE PAR
-# =========================================================
 
 @login_required
 def delete_par(request, pk):
@@ -299,10 +259,6 @@ def delete_par(request, pk):
     return redirect('mobility:par_management')
 
 
-# =========================================================
-# PRINT PAR
-# =========================================================
-
 @login_required
 def print_par(request, pk):
     par = get_object_or_404(
@@ -312,10 +268,6 @@ def print_par(request, pk):
 
     return render(request, 'mobility/print_par.html', {'par': par})
 
-
-# =========================================================
-# ACTIVITY LOG
-# =========================================================
 
 @login_required
 def activity_log(request):
@@ -332,10 +284,6 @@ def activity_log(request):
         'period': period
     })
 
-
-# =========================================================
-# EMAIL ALERT SYSTEM
-# =========================================================
 
 @login_required
 def manual_email_alert(request):
