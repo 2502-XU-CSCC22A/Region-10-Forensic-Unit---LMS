@@ -332,8 +332,8 @@ function selectField(label, id, options, selected = "") {
         "
       >
         ${options
-          .map(
-            (option) => `
+      .map(
+        (option) => `
           <option
             value="${option}"
             ${option === selected ? "selected" : ""}
@@ -341,8 +341,8 @@ function selectField(label, id, options, selected = "") {
             ${option}
           </option>
         `,
-          )
-          .join("")}
+      )
+      .join("")}
       </select>
     </div>
   `;
@@ -517,6 +517,28 @@ async function saveRecord() {
   closeModal();
 }
 
+let selectedBERId = null;
+
+function prepareRemoval(id) {
+  selectedBERId = id;
+
+  const modal = document.getElementById("confirmationModal");
+
+  if (modal) {
+    modal.classList.add("active");
+  }
+}
+
+function closeConfirmationModal() {
+  selectedBERId = null;
+
+  const modal = document.getElementById("confirmationModal");
+
+  if (modal) {
+    modal.classList.remove("active");
+  }
+}
+
 async function moveToBER(id) {
   const c = communications.find((item) => item.id == id);
 
@@ -525,31 +547,38 @@ async function moveToBER(id) {
     return;
   }
 
-  const { error: disposalError } = await sb
+  const { data: existingDisposal } = await sb
     .from("disposal_disposalitems")
-    .insert([
-      {
-        asset_ptr_id: id,
-        days_overdue: 0,
-        expiry_date: todayDate(),
-        disposal_reason: "Marked as BER from Communications",
-        disposal_date: new Date().toISOString(),
-        processed_by: null,
-        personnel_assigned: null,
-        last_sync: new Date().toISOString(),
-      },
-    ]);
+    .select("asset_ptr_id")
+    .eq("asset_ptr_id", id)
+    .maybeSingle();
 
-  if (disposalError) {
-    console.error("DISPOSAL INSERT ERROR:", disposalError);
-    alert(disposalError.message);
-    return;
+  if (!existingDisposal) {
+    const { error: disposalError } = await sb
+      .from("disposal_disposalitems")
+      .insert([
+        {
+          asset_ptr_id: id,
+          days_overdue: 0,
+          expiry_date: todayDate(),
+          disposal_reason: "Marked as BER from Communications",
+          disposal_date: new Date().toISOString(),
+          processed_by: null,
+          personnel_assigned: null,
+          last_sync: new Date().toISOString(),
+        },
+      ]);
+
+    if (disposalError) {
+      console.error("DISPOSAL INSERT ERROR:", disposalError);
+      alert(disposalError.message);
+      return;
+    }
   }
 
   const { error: commError } = await sb
     .from("communications_communication")
     .update({
-      is_deleted: true,
       status: "UNSERVICEABLE",
     })
     .eq("asset_ptr_id", id);
@@ -576,11 +605,30 @@ async function moveToBER(id) {
   await addActivityLog({
     communicationId: id,
     action: "Moved to BER",
-    details: `${c.type} with Serial ${c.serial} was moved to BER & Disposal`,
+    details: `${c.type} with Serial ${c.serial} was marked as Unserviceable`,
   });
 
+  closeConfirmationModal();
   await fetchData();
+
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  const confirmForm = document.getElementById("confirmRemovalForm");
+
+  if (confirmForm) {
+    confirmForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      if (!selectedBERId) {
+        alert("No asset selected.");
+        return;
+      }
+
+      await moveToBER(selectedBERId);
+    });
+  }
+});
 
 function exportCSV() {
   const headers = [
