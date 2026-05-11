@@ -100,8 +100,14 @@ class Vehicle(models.Model):
 
             if asset_property_no:
                 asset, created = Asset.objects.get_or_create(
-                    property_no=asset_property_no
+                    property_no=asset_property_no,
+                    defaults={
+                        'StatusID_id': 1,
+                        'category_id': 10,
+                        'quantity': 1,
+                    }
                 )
+
                 self.asset = asset
 
         super().save(*args, **kwargs)

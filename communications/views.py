@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import connection
+from django.contrib import messages
 from .models import Communication, CommunicationPARRecord
 from .forms import CommunicationPARForm
 from django.contrib.auth.models import User
@@ -51,9 +52,6 @@ def communications_list(request):
         'current_user_role':  current_user_role
         })
 
-def par_monitoring(request):
-    return render(request, 'communications/par_monitoring.html')
-
 # ACTIVITY LOGS
 def activity_logs(request):
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
@@ -100,7 +98,7 @@ def par_monitoring(request):
                 f"PAR {par.par_number} was created for {par.communication.type} issued to {par.issued_to}."
             )
 
-            return redirect("par_monitoring")
+            return redirect("communications:par_monitoring")
     else:
         p_form = CommunicationPARForm()
 
@@ -148,7 +146,7 @@ def edit_par(request, pk):
                 f"PAR {par.par_number} was updated for {par.communication.type}."
             )
 
-            return redirect("par_monitoring")
+            return redirect("communications:par_monitoring")
     else:
         form = CommunicationPARForm(instance=record)
 
@@ -174,7 +172,12 @@ def delete_par(request, pk):
     issued_to = record.issued_to
     asset_type = record.communication.type
 
-    record.delete()
+    try:
+        record = CommunicationPARRecord.objects.get(pk=pk)
+        record.delete()
+        messages.success(request, "PAR Record deleted successfully.")
+    except CommunicationPARRecord.DoesNotExist:
+        messages.error(request, "This record was already deleted or does not exist.")
 
     create_activity_log(
         communication_id,
@@ -182,7 +185,7 @@ def delete_par(request, pk):
         f"PAR {par_number} for {asset_type}, issued to {issued_to}, was deleted from the PAR registry."
     )
 
-    return redirect("par_monitoring")
+    return redirect("communications:par_monitoring")
 
 
 # ICS MONITORING
@@ -198,7 +201,7 @@ def ics_monitoring(request):
 
         if i_form.is_valid():
             i_form.save()
-            return redirect("ics_monitoring")
+            return redirect("communications:ics_monitoring")
     else:
         i_form = CommunicationICSForm()
 
@@ -227,7 +230,7 @@ def edit_ics(request, pk):
 
         if form.is_valid():
             form.save()
-            return redirect("ics_monitoring")
+            return redirect("communications:ics_monitoring")
     else:
         form = CommunicationICSForm(instance=record)
 
@@ -243,4 +246,4 @@ def edit_ics(request, pk):
 def delete_ics(request, pk):
     record = get_object_or_404(CommunicationICSRecord, pk=pk)
     record.delete()
-    return redirect("ics_monitoring")
+    return redirect("communications:ics_monitoring")

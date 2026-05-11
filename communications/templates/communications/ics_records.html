@@ -131,10 +131,10 @@
 </head>
 
 <body>
-  {% include 'header.html' %}
+  {% include 'communications/header.html' %}
 
   <div class="layout">
-    {% include 'sidebar.html' %}
+    {% include 'communications/sidebar.html' %}
 
     <main>
       <div class="registry-container">
@@ -275,7 +275,7 @@
                     </a>
 
                     <a href="#" class="btn-icon btn-delete" title="Delete"
-                      onclick="prepareICSRemoval('{% url 'delete_ics' ics.id %}'); return false;"><i
+                      onclick="prepareICSRemoval('{% url 'communications:delete_ics' ics.id %}'); return false;"><i
                         class="fas fa-trash-alt"></i></a>
                   </td>
                 </tr>
@@ -291,7 +291,7 @@
       </div>
     </main>
   </div>
-  {% include 'confirmation_ics.html' %}
+  {% include 'communications/confirmation_ics.html' %}
 
   <script>
     let selectedICSDeleteUrl = null

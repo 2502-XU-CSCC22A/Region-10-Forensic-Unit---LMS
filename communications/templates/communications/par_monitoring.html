@@ -138,10 +138,10 @@
 </head>
 
 <body>
-  {% include 'header.html' %}
+  {% include 'communications/header.html' %}
 
   <div class="layout">
-    {% include 'sidebar.html' %}
+    {% include 'communications/sidebar.html' %}
 
     <main>
       <div class="registry-container">
@@ -280,7 +280,7 @@
                         class="fas fa-edit"></i></a>
 
                     <a href="#" class="btn-icon btn-delete" title="Delete"
-                      onclick="preparePARRemoval('{% url 'delete_par' par.id %}'); return false;"><i
+                      onclick="preparePARRemoval('{% url 'communications:delete_par' par.id %}'); return false;"><i
                         class="fas fa-trash-alt"></i></a>
                   </td>
                 </tr>
@@ -296,7 +296,7 @@
       </div>
     </main>
   </div>
-  {% include 'confirmation_par.html' %}
+  {% include 'communications/confirmation_par.html' %}
 
   <script>
     let selectedPARDeleteUrl = null
