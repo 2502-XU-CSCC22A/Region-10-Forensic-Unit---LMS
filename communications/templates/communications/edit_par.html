@@ -15,6 +15,13 @@
   <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
 
   <style>
+    :root {
+      --navy: #1a2b6d;
+      --muted: #64748b;
+      --border: #dbe3ef;
+      --bg-light: #f8fafc;
+    }
+
     .btn-back {
       font-size: 0.85rem;
       font-weight: 600;
@@ -58,12 +65,18 @@
     }
 
     .btn-update {
-      background-color: var(--navy);
-      color: white;
-      border: none;
+      background: #1a2b6d !important;
+      color: #ffffff !important;
+      border: none !important;
       font-weight: 600;
       padding: 0.6rem 2rem;
       border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(26, 43, 109, 0.2);
+    }
+
+    .btn-update:hover {
+      background: #142158 !important;
+      color: #ffffff !important;
     }
 
     .card {
@@ -72,7 +85,6 @@
       border: none;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
     }
-
   </style>
 </head>
 
