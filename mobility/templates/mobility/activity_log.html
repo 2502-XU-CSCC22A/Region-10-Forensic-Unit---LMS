@@ -2,82 +2,226 @@
 
 {% block content %}
 <style>
-    .section-title { font-weight: 700; color: #1a2b6d; margin: 20px 0 15px 0; }
-    .filter-btn { font-size: 0.8rem; font-weight: 600; padding: 5px 15px; border-radius: 20px; }
-    .log-time { font-size: 0.75rem; color: #94a3b8; font-weight: 600; }
-    
-    /* Dynamic border colors based on action */
-    .log-card-create { border-left: 4px solid #48bb78; }
-    .log-card-update { border-left: 4px solid #4e73df; }
-    .log-card-delete { border-left: 4px solid #e53e3e; }
-    
-    .activity-timeline { max-width: 900px; margin: 0 auto; }
+    .section-title {
+        font-weight: 800;
+        color: #1a2b6d;
+        margin: 0;
+        font-size: 22px;
+    }
+
+    .activity-subtitle {
+        color: #64748b;
+        font-size: 14px;
+        margin-top: 4px;
+    }
+
+    .activity-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 22px;
+    }
+
+    .filter-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .filter-btn {
+        font-size: 13px;
+        font-weight: 700;
+        padding: 8px 18px;
+        border-radius: 999px;
+        text-decoration: none;
+        border: 1px solid #2563eb;
+    }
+
+    .filter-active {
+        background: #2563eb;
+        color: white;
+    }
+
+    .filter-inactive {
+        background: white;
+        color: #2563eb;
+    }
+
+    .activity-timeline {
+        max-width: 1050px;
+        margin: 0 auto;
+    }
+
+    .activity-card {
+        background: white;
+        border-radius: 14px;
+        padding: 22px 26px;
+        margin-bottom: 18px;
+        box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .log-card-create { border-left: 5px solid #48bb78; }
+    .log-card-update { border-left: 5px solid #4e73df; }
+    .log-card-delete { border-left: 5px solid #e53e3e; }
+
+    .activity-badge {
+        display: inline-flex;
+        padding: 6px 15px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        margin-bottom: 12px;
+    }
+
+    .badge-create {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-update {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .badge-delete {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .badge-default {
+        background: #e2e8f0;
+        color: #475569;
+    }
+
+    .activity-description {
+        font-size: 15px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .activity-user {
+        font-size: 13px;
+        color: #64748b;
+    }
+
+    .activity-user strong {
+        color: #0f172a;
+    }
+
+    .activity-time {
+        text-align: right;
+        min-width: 170px;
+    }
+
+    .log-time {
+        font-size: 12px;
+        color: #94a3b8;
+        font-weight: 700;
+    }
+
+    .log-date {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #94a3b8;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        color: #cbd5e1;
+        margin-bottom: 15px;
+    }
+
+    .return-wrap {
+        margin-top: 25px;
+        text-align: center;
+    }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="activity-header">
     <div>
-        <h3 class="section-title mb-0">Activity History</h3>
-        <p class="text-muted small">Tracking system modifications, additions, and deletions</p>
+        <h3 class="section-title">Activity History</h3>
+        <p class="activity-subtitle">Tracking system modifications, additions, and deletions</p>
     </div>
-    <div class="btn-group">
-        <a href="?period=week" class="btn filter-btn {% if period == 'week' %}btn-primary{% else %}btn-outline-primary{% endif %}">Last 7 Days</a>
-        <a href="?period=month" class="btn filter-btn {% if period == 'month' %}btn-primary{% else %}btn-outline-primary{% endif %}">Last 30 Days</a>
+
+    <div class="filter-group">
+        <a href="?period=week"
+           class="filter-btn {% if period == 'week' %}filter-active{% else %}filter-inactive{% endif %}">
+            Last 7 Days
+        </a>
+
+        <a href="?period=month"
+           class="filter-btn {% if period == 'month' %}filter-active{% else %}filter-inactive{% endif %}">
+            Last 30 Days
+        </a>
     </div>
 </div>
 
 <div class="activity-timeline">
     {% for log in logs %}
-    <div class="card shadow-sm mb-3 
+    <div class="activity-card
         {% if log.action_type == 'CREATE' %}log-card-create
         {% elif log.action_type == 'UPDATE' %}log-card-update
         {% elif log.action_type == 'DELETE' %}log-card-delete
         {% else %}log-card-update{% endif %}">
-        
-        <div class="card-body p-3">
-            <div class="d-flex justify-content-between align-items-start">
-                <div>
-                    <span class="badge badge-pill mb-2 
-                        {% if log.action_type == 'CREATE' %}badge-success
-                        {% elif log.action_type == 'UPDATE' %}badge-primary
-                        {% elif log.action_type == 'DELETE' %}badge-danger
-                        {% else %}badge-light{% endif %}">
-                        {{ log.get_action_type_display|default:log.action_type }}
-                    </span>
-                    
-                    <h6 class="mb-1"><strong>{{ log.description }}</strong></h6>
-                    <p class="mb-0 text-secondary small">
-                        Action performed by: 
-                        <span class="font-weight-bold text-dark">
-                            {% if log.user %}
-                                {{ log.user.get_full_name|default:log.user.username }}
-                                {% if log.user.userprofile.role %}
-                                    <span class="text-muted">({{ log.user.userprofile.role }})</span>
-                                {% endif %}
-                            {% else %}
-                                System Process
-                            {% endif %}
-                        </span>
-                    </p>
-                </div>
-                <div class="text-right">
-                    <span class="log-time"><i class="far fa-clock"></i> {{ log.timestamp|timesince }} ago</span>
-                    <br>
-                    <small class="text-muted">{{ log.timestamp|date:"M d, Y H:i" }}</small>
-                </div>
+
+        <div>
+            <span class="activity-badge
+                {% if log.action_type == 'CREATE' %}badge-create
+                {% elif log.action_type == 'UPDATE' %}badge-update
+                {% elif log.action_type == 'DELETE' %}badge-delete
+                {% else %}badge-default{% endif %}">
+                {{ log.get_action_type_display|default:log.action_type }}
+            </span>
+
+            <div class="activity-description">
+                {{ log.description|default:"No description provided." }}
             </div>
+
+            <div class="activity-user">
+                Action performed by:
+                <strong>
+                    {% if log.user %}
+                        {{ log.user.get_full_name|default:log.user.username }}
+                        {% if log.user.userprofile.role %}
+                            <span class="text-muted">({{ log.user.userprofile.role }})</span>
+                        {% endif %}
+                    {% else %}
+                        System Process
+                    {% endif %}
+                </strong>
+            </div>
+        </div>
+
+        <div class="activity-time">
+            <span class="log-time">
+                <i class="far fa-clock"></i> {{ log.timestamp|timesince }} ago
+            </span>
+            <span class="log-date">
+                {{ log.timestamp|date:"M d, Y H:i" }}
+            </span>
         </div>
     </div>
     {% empty %}
-    <div class="text-center py-5">
-        <i class="fas fa-history fa-3x text-light mb-3"></i>
-        <p class="text-muted">No recent activity recorded for this period.</p>
+    <div class="empty-state">
+        <i class="fas fa-history"></i>
+        <p>No recent activity recorded for this period.</p>
     </div>
     {% endfor %}
 </div>
 
-<div class="mt-4 text-center">
-    <a href="{% url 'mobility:vehicle_management' %}" class="btn btn-link text-secondary">
-        <i class="fas fa-arrow-left mr-1"></i> Return to Dashboard
+<div class="return-wrap">
+    <a href="{% url 'mobility:vehicle_management' %}" class="btn btn-outline">
+        <i class="fas fa-arrow-left"></i> Return to Dashboard
     </a>
 </div>
 {% endblock %}
