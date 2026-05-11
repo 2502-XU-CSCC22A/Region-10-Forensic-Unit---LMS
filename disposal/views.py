@@ -70,10 +70,12 @@ def disposal_list(request):
     ).count()
     
     comms_ber = DisposalItem.objects.filter(
+        asset_ptr__status__status_id= '4',
         asset_ptr__category__category_name='communications'
     ).count()
     
     mobility_ber = DisposalItem.objects.filter(
+        asset_ptr__status__status_id= '4',
         asset_ptr__category__category_name='mobility'
     ).count()
     
@@ -83,10 +85,12 @@ def disposal_list(request):
     ).count()
     
     inves_ber = DisposalItem.objects.filter(
+        asset_ptr__status__status_id= '4',
         asset_ptr__category__category_name='investigative_equipment'
     ).count()
     
     total_ber = DisposalItem.objects.filter(
+        asset_ptr__status__status_id= '4',
     ).count()
     
     if request.method == "POST":

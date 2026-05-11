@@ -12,6 +12,7 @@ class InvestigativeDetails(models.Model):
     )
     item_description = models.TextField(db_column='Item_Description', blank=True, null=True)
     par_id = models.CharField(max_length=100, db_column='ParID', blank=True, null=True)
+    office = models.CharField(max_length=255, db_column='Office', blank=True, null=True)
 
     class Meta:
         db_table = 'Investigative_Details'
@@ -39,3 +40,27 @@ class InspectionLog(models.Model):
 
     def __str__(self):
         return f"Log {self.inspection_id} for Asset {self.asset.asset_id}"
+
+
+class ICSRecord(models.Model):
+    ics_id = models.AutoField(primary_key=True)
+    ics_number = models.CharField(max_length=100, blank=True, null=True)
+    reference_no = models.CharField(max_length=100, blank=True, null=True)
+    issued_to = models.CharField(max_length=255, blank=True, null=True)
+    date_issued = models.DateField(blank=True, null=True)
+    expiry_date = models.DateField(blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
+
+    asset = models.ForeignKey(
+        Asset,
+        on_delete=models.CASCADE,
+        related_name='inves_ics_records',
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        db_table = 'Investigative_ICS_Record'
+
+    def __str__(self):
+        return f"ICS {self.ics_number}"

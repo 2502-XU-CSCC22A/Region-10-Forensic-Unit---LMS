@@ -2,12 +2,52 @@
 {% load static %}
 
 {% block content %}
+
+<style>
+    .search-area {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex: 1;
+    }
+    
+    .search-input-wrap {
+        font-family: 'Inter', sans-serif;
+        position: relative;
+        flex: 1;
+        min-width: 420px;
+    }
+    
+    .search-input-wrap input {
+        width: 100% !important;
+        height: 42px !important;
+        padding: 0 14px 0 42px !important;
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        background: #f8fafc;
+        font-size: 14px;
+        outline: none;
+    }
+    
+    .search-input-wrap input:focus {
+        border-color: #2563eb;
+    }
+    
+    .search-input-wrap .search-icon {
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        font-size: 14px;
+    }
+</style>
 <main>
     <div class="table-section">
         <div class="table-header">PAR Records Monitoring</div>
 
         <div class="table-controls">
-            <form method="get" class="search-wrap">
+            <form method="get" class="search-input-wrap">
                 <span class="search-icon">🔍</span>
                 <input type="text" name="search" placeholder="Search PAR no., issued to, plate no., or vehicle..." value="{{ search|default:'' }}">
             </form>

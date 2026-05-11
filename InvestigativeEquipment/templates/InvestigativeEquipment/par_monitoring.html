@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAR Monitoring - RFU 10 LMS</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'InvestigativeEquipment/inves.css' %}">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        :root {
+            --navy: #0d2155;
+            --border: #e2e8f0;
+            --bg: #f1f5f9;
+            --bg-light: #f8fafc;
+            --muted: #64748b;
+        }
+
+        .registry-container { padding: 1.5rem; }
+
+        .btn-back {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none !important;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            transition: color 0.2s;
+        }
+        .btn-back:hover { color: var(--navy); }
+
+        .section-title {
+            font-weight: 800;
+            color: var(--navy);
+            letter-spacing: -0.02em;
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control, input, select, textarea {
+            border-radius: 8px !important;
+            border: 1px solid var(--border) !important;
+            padding: 0.6rem 0.8rem !important;
+            font-size: 0.9rem !important;
+            font-family: 'Inter', sans-serif !important;
+            width: 100%;
+        }
+
+        .btn-save {
+            background-color: var(--navy);
+            color: white;
+            border: none;
+            font-weight: 600;
+            padding: 0.6rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .btn-save:hover { color: white; opacity: 0.92; }
+
+        .table thead th {
+            background-color: var(--bg-light);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--navy);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            font-size: 0.9rem;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            margin-left: 4px;
+            text-decoration: none;
+        }
+        .btn-icon:hover { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.08); text-decoration: none; }
+        .btn-print  { color: #475569; background: #f1f5f9; }
+        .btn-edit   { color: #3b82f6; background: #eff6ff; }
+        .btn-delete { color: #ef4444; background: #fef2f2; }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER (same as investigative.html) -->
+    <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+        <div class="header-brand d-flex align-items-center">
+            <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
+            <div class="header-divider"></div>
+            <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
+        </div>
+
+        <div class="header-user d-flex align-items-center">
+            <div class="mr-4">
+                <i class="fas fa-bell text-muted" style="font-size: 1.2rem;"></i>
+            </div>
+            <div class="profile-group d-flex align-items-center">
+                <div class="user-avatar d-flex align-items-center justify-content-center">
+                    <i class="fas fa-user text-muted"></i>
+                </div>
+                <div class="user-text ml-2">
+                    <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="user-role text-muted">Logistics Officer</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="layout">
+        {% include 'sidebar.html' %}
+
+        <main class="main-content">
+            <div class="registry-container">
+
+                <!-- Page Header -->
+                <div class="mb-4">
+                    <a href="{% url 'InvestigativeEquipment:investigative_view' %}" class="btn-back">
+                        <i class="fas fa-arrow-left mr-2"></i> Back to Investigative Equipment
+                    </a>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="section-title mb-0">PAR Management</h2>
+                        <span class="badge badge-light border text-muted px-3 py-2" style="border-radius: 20px; font-weight: 600;">
+                            {{ par_list.count }} Total Records
+                        </span>
+                    </div>
+                </div>
+
+                <!-- PAR Form -->
+                <div class="card border-0 shadow-sm mb-5" style="border-radius: 12px;">
+                    <div class="card-body p-4">
+                        <form method="POST" action="{% url 'InvestigativeEquipment:par_monitoring' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="action_type" value="add_par">
+
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">PAR Number</label>
+                                    <input type="text" name="par_number" class="form-control" placeholder="e.g. PAR-2026-001">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Fund Cluster</label>
+                                    <input type="text" name="fund_cluster" class="form-control" placeholder="Fund Cluster">
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Investigative Asset</label>
+                                    <select name="asset_pk" class="form-control">
+                                        <option value="">----------</option>
+                                        {% for item in par_list %}
+                                        <option value="{{ item.pk }}">{{ item.asset_id.model }} — {{ item.asset_id.property_no }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label">Reference No.</label>
+                                    <input type="text" name="reference_no" class="form-control" placeholder="Reference No.">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Issued To</label>
+                                    <input type="text" name="issued_to" class="form-control" placeholder="Accountable Person">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Date Issued</label>
+                                    <input type="date" name="date_issued" class="form-control">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Expiry Date</label>
+                                    <input type="date" name="expiry_date" class="form-control">
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Remarks</label>
+                                    <textarea name="remarks" class="form-control" rows="3" placeholder="Enter remarks..."></textarea>
+                                </div>
+                                <div class="col-12 mt-2 text-right">
+                                    <button type="submit" class="btn-save shadow-sm">
+                                        <i class="fas fa-check-circle mr-2"></i> Save to Registry
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- PAR History Table -->
+                <h3 class="section-title mb-3" style="font-size: 1.5rem;">PAR History Registry</h3>
+
+                <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>PAR No.</th>
+                                    <th>Personnel</th>
+                                    <th>Asset Description</th>
+                                    <th>Issue Date</th>
+                                    <th class="text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in par_list %}
+                                <tr>
+                                    <td><strong style="color: var(--navy);">{{ item.par_id|default:"—" }}</strong></td>
+                                    <td><div class="font-weight-bold">{{ item.office|default:"Unassigned" }}</div></td>
+                                    <td>
+                                        <div class="font-weight-bold">{{ item.asset_id.model }}</div>
+                                        <small class="text-muted">{{ item.asset_id.property_no }}</small>
+                                    </td>
+                                    <td>{{ item.asset_id.date_acquired|date:"M d, Y" }}</td>
+                                    <td class="text-right">
+                                        <a href="{% url 'InvestigativeEquipment:print_par' item.pk %}" class="btn-icon btn-print" title="Print">
+                                            <i class="fas fa-print"></i>
+                                        </a>
+                                        <a href="{% url 'InvestigativeEquipment:edit_par' item.pk %}" class="btn-icon btn-edit" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'InvestigativeEquipment:delete_par' item.pk %}" class="btn-icon btn-delete" title="Delete" onclick="return confirm('Delete this PAR record?')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">No PAR records yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

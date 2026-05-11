@@ -54,7 +54,7 @@ body {
 }
 
 .header-logo {
-    font-family: 'Rajdhani', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-weight: 700;
     font-size: 18px;
     line-height: 0.95;
@@ -426,11 +426,11 @@ tbody tr:hover {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    color: white;
     padding: 5px 11px;
     border-radius: 999px;
     font-size: 11px;
-    font-weight: 800;
-    min-width: 90px;
+    font-weight: 800;   
 }
 
 .badge-green {

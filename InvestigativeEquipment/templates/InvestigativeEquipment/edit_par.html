@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit PAR Record</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'InvestigativeEquipment/inves.css' %}">
+</head>
+<body>
+<div class="layout">
+    {% include 'sidebar.html' %}
+
+    <main class="main-content">
+        <div class="container p-4">
+            <div class="bg-white p-4 rounded shadow">
+                <a href="{% url 'InvestigativeEquipment:par_monitoring' %}" class="text-muted small">← Back to Monitoring</a>
+                <h2 class="mt-2" style="color: #0d2155; font-weight: 800;">Update PAR Record</h2>
+                <hr>
+                
+                <form method="POST" action="{% url 'InvestigativeEquipment:edit_par' record.pk %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="small font-weight-bold">ACCOUNTABLE PERSON</label>
+                            <input type="text" name="office" class="form-control" value="{{ record.office }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="small font-weight-bold">PROPERTY NO.</label>
+                            <input type="text" class="form-control" value="{{ record.asset_id.property_no }}" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 d-flex justify-content-between">
+                        <a href="{% url 'InvestigativeEquipment:delete_par' record.pk %}" class="text-danger" onclick="return confirm('Delete this record?')">🗑 Delete Record</a>
+                        <div>
+                            <a href="{% url 'InvestigativeEquipment:par_monitoring' %}" class="btn btn-light mr-2">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>

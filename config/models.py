@@ -63,7 +63,7 @@ class PARRecord(models.Model):
 
 class ICSRecord(models.Model):
 
-    ics_id = models.AutoField(primary_key=True, db_column='IcsID')
+    ics_id = models.AutoField(primary_key=True, db_column='ICS_ID')
     ics_number = models.CharField(max_length=100, db_column='ICS_Number', unique=True)
     date_issued = models.DateField(db_column='Date_Issued', default=date.today)
     return_date = models.DateField(db_column='Return_Date', null=True, blank=True)

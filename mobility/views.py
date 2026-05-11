@@ -11,6 +11,7 @@ from django.conf import settings
 from disposal.models import DisposalItem
 from firearms.models import Firearm
 from communications.models import Communication
+from InvestigativeEquipment.models import InvestigativeDetails
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
@@ -47,9 +48,11 @@ def vehicle_management(request):
             Q(alternative_driver__icontains=search)
         )
 
-    all_d = DisposalItem.objects.all()
-    all_c = Communication.objects.exclude(status_id__in=[4, 5])
-    all_f = Firearm.objects.all()
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    firearms_all = Firearm.objects.count()
+    inves_all = InvestigativeDetails.objects.count()
+    total_ber = DisposalItem.objects.filter(asset_ptr__status_id = 4,).count()
+    current_user_role = request.user.userprofile.role
 
     if request.method == 'POST':
         if not can_edit(request.user):
@@ -113,9 +116,11 @@ def vehicle_management(request):
         'ber_count': ber_count,
         'expiring_count': expiring_count,
 
-        'total_disposal': all_d.count(),
-        'total_firearms': all_f.count(),
-        'total_comms': all_c.count(),
+        'total_disposal': total_ber,
+        'total_inves': inves_all,
+        'total_firearms': firearms_all,
+        'total_comms': comms_all,
+        'current_user_role': current_user_role,
     }
 
     return render(request, 'mobility/vehicle_management.html', context)
@@ -243,9 +248,15 @@ def par_management(request):
 
     search = request.GET.get('search')
     status = request.GET.get('status')
+    
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    firearms_all = Firearm.objects.count()
+    inves_all = InvestigativeDetails.objects.count()
+    total_ber = DisposalItem.objects.filter(asset_ptr__status_id = 4,).count()
 
     pars = PARRecord.objects.select_related('vehicle').all()
-
+    current_user_role = request.user.userprofile.role
+    
     if search:
         pars = pars.filter(
             Q(par_number__icontains=search) |
@@ -272,6 +283,11 @@ def par_management(request):
         'upcoming_limit': upcoming_limit,
         'search': search,
         'status': status,
+        'total_disposal': total_ber,
+        'total_inves': inves_all,
+        'total_firearms': firearms_all,
+        'total_comms': comms_all,
+        'current_user_role': current_user_role,
     }
 
     return render(request, 'mobility/par_management.html', context)
@@ -322,14 +338,25 @@ def activity_log(request):
     period = request.GET.get('period', 'week')
     days = 7 if period == 'week' else 30
     cutoff = timezone.now() - timedelta(days=days)
-
+    
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    firearms_all = Firearm.objects.count()
+    inves_all = InvestigativeDetails.objects.count()
+    total_ber = DisposalItem.objects.filter(asset_ptr__status_id = 4,).count()
+    current_user_role = request.user.userprofile.role
+    
     logs = ActivityLog.objects.filter(
         timestamp__gte=cutoff
     ).select_related('user').order_by('-timestamp')
 
     return render(request, 'mobility/activity_log.html', {
         'logs': logs,
-        'period': period
+        'period': period,
+        'total_disposal': total_ber,
+        'total_inves': inves_all,
+        'total_firearms': firearms_all,
+        'total_comms': comms_all,
+        'current_user_role': current_user_role,
     })
 
 

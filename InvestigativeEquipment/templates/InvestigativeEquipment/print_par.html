@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PAR Voucher - {{ par.par_number }}</title>
+    <style>
+        @page { size: portrait; margin: 10mm; }
+        body { font-family: "Times New Roman", Times, serif; color: #000; margin: 0; padding: 0; background-color: #f1f5f9; line-height: 1.2; }
+
+        .no-print-toolbar { 
+            background: #ffffff; color: #1e293b; padding: 12px 24px; display: flex;
+            align-items: center; justify-content: center; font-family: 'Inter', sans-serif; 
+            position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .toolbar-text { font-size: 0.95rem; font-weight: 500; color: #64748b; margin-right: 20px; }
+        .btn-print { background: #3b82f6; color: white; border: none; padding: 8px 24px; cursor: pointer; border-radius: 6px; font-weight: 600; font-size: 0.9rem; }
+        .btn-print:hover { background: #2563eb; }
+        .btn-cancel { color: #ef4444; margin-left: 20px; text-decoration: none; font-size: 0.9rem; font-weight: 500; }
+
+        .document-wrapper { 
+            background-color: #fff; width: 100%; max-width: 190mm; margin: 20px auto; 
+            border: 1px solid #000; padding: 10mm; box-sizing: border-box; position: relative; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .par-header { text-align: center; position: relative; min-height: 100px; margin-bottom: 5px; }
+        .logo { position: absolute; top: 0; width: 80px; height: 80px; object-fit: contain; }
+        .logo-left { left: 0; }
+        .logo-right { right: 0; }
+
+        .header-text { font-weight: bold; font-size: 14pt; margin-top: 10px; text-transform: uppercase; }
+        .par-title { font-size: 16pt; font-weight: bold; margin-bottom: 10px; }
+
+        .u-line { border-bottom: 1px solid #000; display: inline-block; min-width: 150px; }
+        .info-block { font-size: 11pt; margin-bottom: 5px; }
+
+        .info-table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 10pt; }
+        .info-table th, .info-table td { border: 1px solid #000; padding: 6px; text-align: center; }
+        .item-row { height: 150px; vertical-align: top; }
+
+        .section-box { border: 1px solid #000; border-top: none; padding: 8px; font-size: 10pt; }
+        .stencil-placeholder { border: 1px dashed #cbd5e1; height: 50px; width: 60%; margin-top: 5px; background: #f8fafc; }
+
+        .signature-section { display: flex; border: 1px solid #000; border-top: none; min-height: 130px; }
+        .sig-col { flex: 1; border-right: 1px solid #000; padding: 10px; text-align: center; font-size: 10pt; }
+        .sig-col:last-child { border-right: none; }
+
+        .sig-entry { margin-top: 25px; text-align: center; }
+        .sig-line { border-bottom: 1px solid #000; display: inline-block; width: 85%; min-height: 18px; font-weight: bold; text-transform: uppercase; }
+        .sig-subline { border-bottom: 1px solid #000; display: inline-block; width: 60%; margin-top: 5px; min-height: 15px;}
+        .sig-label { font-size: 9pt; margin-top: 3px; display: block;}
+
+        [contenteditable="true"]:hover { background: #eff6ff; outline: 1px dashed #3b82f6; cursor: pointer; }
+
+        @media print { 
+            body { background: none; } 
+            .no-print-toolbar { display: none; } 
+            .document-wrapper { margin: 0; border: 1px solid #000; width: 100%; max-width: none; box-shadow: none; } 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print-toolbar">
+        <span class="toolbar-text">Document Review: You can click any text below to edit before printing.</span>
+        <button class="btn-print" onclick="window.print()">Print Receipt</button>
+        <a href="{% url 'InvestigativeEquipment:par_monitoring' %}" class="btn-cancel">Exit Preview</a>    
+    </div>
+
+    <div class="document-wrapper">
+        <div class="par-header">
+            <img src="{% static 'img/pnp_logo.png' %}" class="logo logo-left" alt="PNP Logo">
+            <img src="{% static 'img/forensic_logo.png' %}" class="logo logo-right" alt="Forensic Logo">
+
+            <div class="header-text">PROPERTY ACKNOWLEDGEMENT RECEIPT</div>
+            <div class="par-title">( P A R )</div>
+        </div>
+
+        <div class="info-block">
+            <table style="width: 100%;">
+                <tr>
+                    <td style="width: 70%;">Entity Name: <u>PHILIPPINE NATIONAL POLICE</u> &nbsp; <b>FORENSIC GROUP</b></td>
+                    <td style="text-align: right;">PAR NO: <b contenteditable="true" class="u-line">{{ par.par_number }}</b></td>
+                </tr>
+                <tr>
+                    <td>Fund Cluster: <span contenteditable="true" class="u-line">{{ par.fund_cluster|default:"&nbsp;" }}</span></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th style="width: 8%;">Qty</th>
+                    <th style="width: 10%;">Unit</th>
+                    <th>Description</th>
+                    <th style="width: 18%;">Property No.</th>
+                    <th style="width: 18%;">Date Acquired</th>
+                    <th style="width: 15%;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="item-row">
+                    <td contenteditable="true">1</td>
+                    <td contenteditable="true">Unit</td>
+                    <td style="text-align: left;" contenteditable="true">
+                        <strong>{{ par.communication.type }}</strong><br>
+                        IMEI / Serial: {{ par.communication.imei_serial|default:"-" }}<br>
+                        Frequency Range: {{ par.communication.frequency_range|default:"-" }}<br>
+                        Stock Level: {{ par.communication.stock_level|default:"0" }}
+                    </td>
+                    <td contenteditable="true">{{ par.communication.property_no|default:"-" }}</td>
+                    <td contenteditable="true">{{ par.communication.date_acquired|date:"M d, Y"|default:"-" }}</td>
+                    <td contenteditable="true">0.00</td>
+                </tr>
+                <tr>
+                    <td colspan="6" style="font-style: italic; font-size: 9pt;">****** Nothing Follows ******</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-box">
+            <b>STENCIL / SERIAL OF COMMUNICATION ASSET</b><br>
+            <span contenteditable="true">
+                {{ par.communication.type }} - {{ par.communication.imei_serial|default:"No serial" }}
+            </span>
+            <div class="stencil-placeholder"></div>
+        </div>
+
+        <div class="section-box">
+            Purpose: <u contenteditable="true">{{ par.purpose|default:"For official use of RFU 10" }}</u><br>
+            Ref: (Supply Directive NR: <span contenteditable="true">{{ par.reference_no|default:"N/A" }}</span>)<br>
+
+            <div style="font-size: 9pt; display: block; margin-top: 4px;">
+                REMARKS: <span contenteditable="true" style="font-weight: bold;">
+                    {% if par.remarks %}
+                        {{ par.remarks|upper }}
+                    {% else %}
+                        EXPIRES ON {{ par.expiry_date|date:"F d, Y"|upper }}. RENEW AT SAO, FG OFFICE.
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="signature-section">
+            <div class="sig-col">
+                <div style="text-align: left; font-weight: bold; margin-bottom: 10px;">Received by:</div>
+                <div class="sig-entry">
+                    <span class="sig-line" contenteditable="true">{{ par.issued_to|upper }}</span>
+                    <span class="sig-label">Signature over Printed Name of End-User</span>
+                </div>
+                <div class="sig-entry" style="margin-top: 15px;">
+                    <span class="sig-subline" contenteditable="true">{{ par.designation|default:"____________________" }}</span>
+                    <span class="sig-label">Position / Designation</span>
+                </div>
+                <div class="sig-entry" style="margin-top: 15px;">
+                    <span class="sig-subline" contenteditable="true">{{ par.date_issued|date:"M d, Y" }}</span>
+                    <span class="sig-label">Date Received</span>
+                </div>
+            </div>
+
+            <div class="sig-col">
+                <div style="text-align: left; font-weight: bold; margin-bottom: 10px;">Issued by:</div>
+                <div class="sig-entry">
+                    <span class="sig-line" contenteditable="true"></span>
+                    <span class="sig-label">Signature over Printed Name of Supply Officer</span>
+                </div>
+                <div class="sig-entry" style="margin-top: 15px;">
+                    <span class="sig-subline" contenteditable="true">Logistics / Supply Office</span>
+                    <span class="sig-label">Office / Unit</span>
+                </div>
+                <div class="sig-entry" style="margin-top: 15px;">
+                    <span class="sig-subline" contenteditable="true">{{ par.date_issued|date:"M d, Y" }}</span>
+                    <span class="sig-label">Date Issued</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="border: 1px solid #000; border-top: none; padding: 5px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 8pt;">
+            <div>
+                <strong>Prepared by:</strong> <span contenteditable="true" style="border-bottom: 1px solid #000; min-width: 150px; display: inline-block; text-align: center;"></span>
+            </div>
+            <div>
+                <strong>System Print Date:</strong> {{ par.date_issued|date:"M d, Y" }}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
