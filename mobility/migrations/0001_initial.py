@@ -11,7 +11,6 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('config', '0002_personnel_alter_assetstatus_options_asset_office_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 

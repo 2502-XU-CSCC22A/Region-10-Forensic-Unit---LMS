@@ -434,7 +434,7 @@ async function saveRecord() {
         property_no: generatePropertyNo(),
         serial_no: serial,
         model: type,
-        category_id: 2,
+        category_id: 4,
         "StatusID": 1
       }])
       .select("id")

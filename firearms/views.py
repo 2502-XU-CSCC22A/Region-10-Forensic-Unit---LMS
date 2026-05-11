@@ -1,26 +1,18 @@
 import json
 import uuid
-import json
 import urllib.request as _urllib
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
 from django.utils import timezone
-from django.db import connection
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from .forms import FirearmsPARForm
 from .models import Firearm
 from config.models import AssetStatus, Category
-from mobility.models import Vehicle
-from communications.models import Communication
-from config.models import Asset, AssetStatus, Personnel
-from InvestigativeEquipment.models import InvestigativeDetails
-from disposal.models import DisposalItem
 from django.contrib.auth.decorators import login_required
 
 SUPABASE_URL = "https://vamjajitzyspdyfxisac.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhbWphaml0enlzcGR5Znhpc2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNTkwMDUsImV4cCI6MjA5MTgzNTAwNX0.J8xu0H57Cch1lDpvPtWZqOBkKyzBb8tfUpHaZa2Hjfk"  
+
 
 def log_firearm_activity(firearm_id, action, details, user=None):
     try:
@@ -45,32 +37,15 @@ def log_firearm_activity(firearm_id, action, details, user=None):
     except Exception as e:
         print(f"Activity log error: {e}")
 
+
 def index(request):
     total_firearms = Firearm.objects.count()
     validated_count = Firearm.objects.filter(validated='VALIDATED').count()
-    current_user_role = request.user.userprofile.role
-    
-    
-    vehicle_all = Vehicle.objects.count()
-    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
-    inves_all = InvestigativeDetails.objects.count()
-    total_ber = DisposalItem.objects.filter(
-        asset_ptr__status_id=4, 
-    ).count()
-    
     return render(request, 'firearms/firearms_main.html', {
-        'validated_par_count': validated_count, 
+        'validated_par_count': validated_count,
         'total_par': total_firearms,
-        'vehicle_all': vehicle_all,
-        'comms_all': comms_all,
-        'inves_all': inves_all,
-        'total_ber': total_ber,
-        'total_firearms': total_firearms,
-        'current_user_role': current_user_role,
     })
- 
- 
-@require_http_methods(['GET'])
+
 
 def print_par(request, pk):
     dummy_par = {
@@ -82,11 +57,12 @@ def print_par(request, pk):
     }
     return render(request, 'firearms/print_par.html', {'par': dummy_par})
 
+
 def firearm_list(request):
     firearms_query = Firearm.objects.all()
     firearms_data = []
     for f in firearms_query:
-        latest_par = f.par_records.order_by('-created_at').first()
+        latest_par = f.firearms_par_records.order_by('-created_at').first()
         firearms_data.append({
             'id':          f.id,
             'name':        f.assigned_to,
