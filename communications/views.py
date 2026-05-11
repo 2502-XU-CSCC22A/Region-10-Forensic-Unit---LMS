@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db import connection
 from django.utils import timezone
 import uuid
 
@@ -6,6 +7,14 @@ from .models import Communication, CommunicationPARRecord, CommunicationICSRecor
 from .forms import CommunicationPARForm, CommunicationICSForm
 
 from config.models import Category, Asset
+
+def create_activity_log(communication_id, action, details):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            INSERT INTO communications_activitylog
+            (communication_id, action, details, created_at)
+            VALUES (%s, %s, %s, NOW())
+        """, [communication_id, action, details])
 
 
 # COMMUNICATIONS LIST
@@ -31,7 +40,14 @@ def par_monitoring(request):
         p_form = CommunicationPARForm(request.POST)
 
         if p_form.is_valid():
-            p_form.save()
+            par = p_form.save()
+
+            create_activity_log(
+                par.communication.asset_ptr_id,
+                "Created PAR Record",
+                f"PAR {par.par_number} was created for {par.communication.type} issued to {par.issued_to}."
+            )
+
             return redirect("par_monitoring")
     else:
         p_form = CommunicationPARForm()
@@ -53,18 +69,34 @@ def print_par(request, pk):
         pk=pk
     )
 
+    create_activity_log(
+        par.communication.asset_ptr_id,
+        "Printed PAR Record",
+        f"PAR {par.par_number} for {par.communication.type} was opened for printing."
+    )
+
     return render(request, "print_par.html", {"par": par})
 
 
 # EDIT PAR
 def edit_par(request, pk):
-    record = get_object_or_404(CommunicationPARRecord, pk=pk)
+    record = get_object_or_404(
+        CommunicationPARRecord.objects.select_related("communication"),
+        pk=pk
+    )
 
     if request.method == "POST":
         form = CommunicationPARForm(request.POST, instance=record)
 
         if form.is_valid():
-            form.save()
+            par = form.save()
+
+            create_activity_log(
+                par.communication.asset_ptr_id,
+                "Updated PAR Record",
+                f"PAR {par.par_number} was updated for {par.communication.type}."
+            )
+
             return redirect("par_monitoring")
     else:
         form = CommunicationPARForm(instance=record)
@@ -81,8 +113,23 @@ def edit_par(request, pk):
 
 # DELETE PAR
 def delete_par(request, pk):
-    record = get_object_or_404(CommunicationPARRecord, pk=pk)
+    record = get_object_or_404(
+        CommunicationPARRecord.objects.select_related("communication"),
+        pk=pk
+    )
+
+    communication_id = record.communication.asset_ptr_id
+    par_number = record.par_number
+    issued_to = record.issued_to
+    asset_type = record.communication.type
+
     record.delete()
+
+    create_activity_log(
+        communication_id,
+        "Deleted PAR Record",
+        f"PAR {par_number} for {asset_type}, issued to {issued_to}, was deleted from the PAR registry."
+    )
 
     return redirect("par_monitoring")
 
