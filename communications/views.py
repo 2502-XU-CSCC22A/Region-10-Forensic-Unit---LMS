@@ -1,33 +1,29 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import connection
-from django.contrib import messages
-from .models import Communication, CommunicationPARRecord
-from .forms import CommunicationPARForm
+
+from .models import Communication, CommunicationPARRecord, CommunicationICSRecord
+from .forms import CommunicationPARForm, CommunicationICSForm
 from django.contrib.auth.models import User
 from mobility.views import Vehicle
 from firearms.models import Firearm
 from disposal.models import DisposalItem
-from django.utils import timezone
-import uuid
-from .models import Communication, CommunicationPARRecord, CommunicationICSRecord
-from .forms import CommunicationPARForm, CommunicationICSForm
-
 from config.models import Category, Asset, AssetStatus
-from .models import Communication
 
 def create_activity_log(communication_id, action, details):
     with connection.cursor() as cursor:
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO communications_activitylog
             (communication_id, action, details, created_at)
             VALUES (%s, %s, %s, NOW())
-        """, [communication_id, action, details])
+            """,
+            [communication_id, action, details],
+        )
+
 
 # COMMUNICATIONS LIST
 def communications_list(request):
-    # Fetch all records from Supabase to show in the table
-    items = Communication.objects.all() 
-    
+    items = Communication.objects.all()
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
@@ -35,15 +31,20 @@ def communications_list(request):
         asset_ptr__status_id=4 
     )
     current_user_role = request.user.userprofile.role
-        
-    return render(request, 'communications/communications.html', {
-        'items': items,
+    
+    return render(request, "communications.html", {
+        "items": items,
         'total_comms': all_c.count() ,
+        'total_ber': all_d.count(),
+        'total_vehicles': all_v.count(),
+        'total_firearms': all_f.count(),
+        'current_user_role':  current_user_role'total_comms': all_c.count() ,
         'total_ber': all_d.count(),
         'total_vehicles': all_v.count(),
         'total_firearms': all_f.count(),
         'current_user_role':  current_user_role
         })
+
 
 # ACTIVITY LOGS
 def activity_logs(request):
@@ -53,8 +54,8 @@ def activity_logs(request):
     all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4)
     
     current_user_role = request.user.userprofile.role
-        
-    return render(request, 'communications/activity_logs.html',  {
+    
+    return render(request, "activity_logs.html", {
         'total_comms': all_c.count() ,
         'total_ber': all_d.count(),
         'total_vehicles': all_v.count(),
@@ -62,17 +63,22 @@ def activity_logs(request):
         'current_user_role':  current_user_role
     })
 
+
 # PAR MONITORING
 def par_monitoring(request):
-    pars = CommunicationPARRecord.objects.select_related("communication").all().order_by("-created_at")
-
+    pars = (
+        CommunicationPARRecord.objects.select_related("communication")
+        .all()
+        .order_by("-created_at")
+    )
+    
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
     all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4)
     
     current_user_role = request.user.userprofile.role
-    
+
     if request.method == "POST":
         p_form = CommunicationPARForm(request.POST)
 
@@ -82,23 +88,33 @@ def par_monitoring(request):
             create_activity_log(
                 par.communication.asset_ptr_id,
                 "Created PAR Record",
-                f"PAR {par.par_number} was created for {par.communication.type} issued to {par.issued_to}."
+                f"PAR {par.par_number} was created for {par.communication.type} issued to {par.issued_to}.",
             )
 
-            return redirect("communications:par_monitoring")
+            return redirect("par_monitoring")
+
+        else:
+            print("PAR FORM ERRORS:", p_form.errors)
+
     else:
         p_form = CommunicationPARForm()
 
-    return render(request, "communications/par_monitoring.html", {
-        "p_form": p_form,
-        "pars": pars,
-        'total_comms': all_c.count() ,
-        'total_ber': all_d.count(),
-        'total_vehicles': all_v.count(),
-        'total_firearms': all_f.count(),
-        'current_user_role': current_user_role,
-    })
-    
+    return render(
+        request,
+        "par_monitoring.html",
+        {
+            "p_form": p_form,
+            "pars": pars,
+            'total_comms': all_c.count() ,
+            'total_ber': all_d.count(),
+            'total_vehicles': all_v.count(),
+            'total_firearms': all_f.count(),
+            'current_user_role': current_user_role,
+        },
+    )
+
+
+# PRINT PAR
 def print_par(request, pk):
     par = get_object_or_404(
         CommunicationPARRecord.objects.select_related("communication"),
@@ -108,10 +124,10 @@ def print_par(request, pk):
     create_activity_log(
         par.communication.asset_ptr_id,
         "Printed PAR Record",
-        f"PAR {par.par_number} for {par.communication.type} was opened for printing."
+        f"PAR {par.par_number} for {par.communication.type} was opened for printing.",
     )
 
-    return render(request, "communications/print_par.html", {"par": par})
+    return render(request, "print_par.html", {"par": par})
 
 
 # EDIT PAR
@@ -130,16 +146,20 @@ def edit_par(request, pk):
             create_activity_log(
                 par.communication.asset_ptr_id,
                 "Updated PAR Record",
-                f"PAR {par.par_number} was updated for {par.communication.type}."
+                f"PAR {par.par_number} was updated for {par.communication.type}.",
             )
 
-            return redirect("communications:par_monitoring")
+            return redirect("par_monitoring")
+
+        else:
+            print("EDIT PAR FORM ERRORS:", form.errors)
+
     else:
         form = CommunicationPARForm(instance=record)
 
     return render(
         request,
-        "communications/edit_par.html",
+        "edit_par.html",
         {
             "form": form,
             "record": record,
@@ -159,20 +179,15 @@ def delete_par(request, pk):
     issued_to = record.issued_to
     asset_type = record.communication.type
 
-    try:
-        record = CommunicationPARRecord.objects.get(pk=pk)
-        record.delete()
-        messages.success(request, "PAR Record deleted successfully.")
-    except CommunicationPARRecord.DoesNotExist:
-        messages.error(request, "This record was already deleted or does not exist.")
+    record.delete()
 
     create_activity_log(
         communication_id,
         "Deleted PAR Record",
-        f"PAR {par_number} for {asset_type}, issued to {issued_to}, was deleted from the PAR registry."
+        f"PAR {par_number} for {asset_type}, issued to {issued_to}, was deleted from the PAR registry.",
     )
 
-    return redirect("communications:par_monitoring")
+    return redirect("par_monitoring")
 
 
 # ICS MONITORING
@@ -194,14 +209,25 @@ def ics_monitoring(request):
         i_form = CommunicationICSForm(request.POST)
 
         if i_form.is_valid():
-            i_form.save()
-            return redirect("communications:ics_monitoring")
+            ics = i_form.save()
+
+            create_activity_log(
+                ics.communication.asset_ptr_id,
+                "Created ICS Record",
+                f"ICS {ics.ics_number} was created for {ics.communication.type} issued to {ics.issued_to}.",
+            )
+
+            return redirect("ics_monitoring")
+
+        else:
+            print("ICS FORM ERRORS:", i_form.errors)
+
     else:
         i_form = CommunicationICSForm()
 
     return render(
         request,
-        "communications/ics_records.html",
+        "ics_records.html",
         {
             "i_form": i_form,
             "icss": icss,
@@ -212,37 +238,79 @@ def ics_monitoring(request):
             'current_user_role': current_user_role,
         },
     )
-    
+
+
+# PRINT ICS
 def print_ics(request, pk):
     ics = get_object_or_404(
         CommunicationICSRecord.objects.select_related("communication"),
         pk=pk
     )
-    return render(request, "communications/print_ics.html", {"ics": ics})
+
+    create_activity_log(
+        ics.communication.asset_ptr_id,
+        "Printed ICS Record",
+        f"ICS {ics.ics_number} for {ics.communication.type} was opened for printing.",
+    )
+
+    return render(request, "print_ics.html", {"ics": ics})
 
 
+# EDIT ICS
 def edit_ics(request, pk):
-    record = get_object_or_404(CommunicationICSRecord, pk=pk)
+    record = get_object_or_404(
+        CommunicationICSRecord.objects.select_related("communication"),
+        pk=pk
+    )
 
     if request.method == "POST":
         form = CommunicationICSForm(request.POST, instance=record)
 
         if form.is_valid():
-            form.save()
-            return redirect("communications:ics_monitoring")
+            ics = form.save()
+
+            create_activity_log(
+                ics.communication.asset_ptr_id,
+                "Updated ICS Record",
+                f"ICS {ics.ics_number} was updated for {ics.communication.type}.",
+            )
+
+            return redirect("ics_monitoring")
+
+        else:
+            print("EDIT ICS FORM ERRORS:", form.errors)
+
     else:
         form = CommunicationICSForm(instance=record)
 
     return render(
         request,
-        "communications/edit_ics.html",
+        "edit_ics.html",
         {
             "form": form,
             "record": record,
         },
     )
 
+
+# DELETE ICS
 def delete_ics(request, pk):
-    record = get_object_or_404(CommunicationICSRecord, pk=pk)
+    record = get_object_or_404(
+        CommunicationICSRecord.objects.select_related("communication"),
+        pk=pk
+    )
+
+    communication_id = record.communication.asset_ptr_id
+    ics_number = record.ics_number
+    issued_to = record.issued_to
+    asset_type = record.communication.type
+
     record.delete()
-    return redirect("communications:ics_monitoring")
+
+    create_activity_log(
+        communication_id,
+        "Deleted ICS Record",
+        f"ICS {ics_number} for {asset_type}, issued to {issued_to}, was deleted from the ICS registry.",
+    )
+
+    return redirect("ics_monitoring")
