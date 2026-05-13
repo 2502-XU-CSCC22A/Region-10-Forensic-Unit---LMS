@@ -33,17 +33,18 @@ def communications_list(request):
     current_user_role = request.user.userprofile.role
     
     return render(request, "communications.html", {
-        "items": items,
+        'items': items,
         'total_comms': all_c.count() ,
         'total_ber': all_d.count(),
         'total_vehicles': all_v.count(),
         'total_firearms': all_f.count(),
-        'current_user_role':  current_user_role'total_comms': all_c.count() ,
+        'current_user_role':  current_user_role,
+        'total_comms': all_c.count() ,
         'total_ber': all_d.count(),
         'total_vehicles': all_v.count(),
         'total_firearms': all_f.count(),
-        'current_user_role':  current_user_role
         })
+    
 
 
 # ACTIVITY LOGS
