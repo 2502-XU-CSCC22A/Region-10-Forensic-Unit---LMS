@@ -102,7 +102,7 @@ class Vehicle(models.Model):
                 asset, created = Asset.objects.get_or_create(
                     property_no=asset_property_no,
                     defaults={
-                        'StatusID_id': 1,
+                        'status_id': 1,
                         'category_id': 10,
                         'quantity': 1,
                     }

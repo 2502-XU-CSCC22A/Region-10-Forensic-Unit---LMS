@@ -17,8 +17,9 @@
       <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span></a>
     </li>
 
-    <li class="active">
-      <a href="{% url 'communications:communications_list' %}"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
+    {% url 'communications:communications_list' as comms_url %}
+    <li class="{% if request.path == comms_url %}active{% endif %}">
+      <a href="{{ comms_url }}"><span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
         <span class="badge badge-light badge-pill" >{{ total_comms|default:'0' }}</span></a>
     </li>
 
@@ -33,22 +34,25 @@
     </li>
 
     <p class="mt-4">Monitoring</p>
-    <li>
-      <a href="{% url 'communications:par_monitoring' %}">
+    {% url 'communications:par_monitoring' as comms_par_url %}
+    <li class="{% if request.path == comms_par_url %}active{% endif %}">
+      <a href="{{ comms_par_url }}">
         <i class="fas fa-clipboard-list"></i>
         <span class="sidebar-item-label">PAR Monitoring</span>
       </a>
     </li>
     
-    <li>
-      <a href="{% url 'communications:ics_monitoring' %}">
+    {% url 'communications:ics_monitoring' as comms_ics_url %}
+    <li class="{% if request.path == comms_ics_url %}active{% endif %}">
+      <a href="{{ comms_ics_url }}">
         <i class="fas fa-clipboard-list"></i>
         <span class="sidebar-item-label">ICS Monitoring</span>
       </a>
     </li>
 
-    <li>
-      <a href="{% url 'communications:activity_logs' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
+    {% url 'communications:activity_logs' as comms_activity_url %}
+    <li class="{% if request.path == comms_activity_url %}active{% endif %}">
+      <a href="{{ comms_activity_url }}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
     </li>
 
     <li>

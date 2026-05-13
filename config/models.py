@@ -116,6 +116,7 @@ class Asset(models.Model):
     property_no = models.CharField(max_length=100, unique=True)
     serial_no = models.CharField(max_length=100, unique=True)
     model = models.CharField(max_length=100)
+    quantity = models.CharField(max_length=100)
     
     status = models.ForeignKey(
         'AssetStatus', 

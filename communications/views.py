@@ -32,21 +32,14 @@ def communications_list(request):
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
     all_d = DisposalItem.objects.filter(
-        asset_ptr__status_id=4, 
-    ).count()
-        
-    try:
-        current_user_role = request.user.userprofile.role
-        print("USER DEBUG:", repr(request.user.username))
-        print("ROLE DEBUG:", repr(current_user_role))
-    except Exception as e:
-        print("ROLE ERROR:", e)
-        current_user_role = None
+        asset_ptr__status_id=4 
+    )
+    current_user_role = request.user.userprofile.role
         
     return render(request, 'communications/communications.html', {
         'items': items,
         'total_comms': all_c.count() ,
-        'total_ber': all_d,
+        'total_ber': all_d.count(),
         'total_vehicles': all_v.count(),
         'total_firearms': all_f.count(),
         'current_user_role':  current_user_role
@@ -57,15 +50,9 @@ def activity_logs(request):
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
-    all_d = DisposalItem.objects.all()
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4)
     
-    try:
-        current_user_role = request.user.userprofile.role
-        print("USER DEBUG:", repr(request.user.username))
-        print("ROLE DEBUG:", repr(current_user_role))
-    except Exception as e:
-        print("ROLE ERROR:", e)
-        current_user_role = None
+    current_user_role = request.user.userprofile.role
         
     return render(request, 'communications/activity_logs.html',  {
         'total_comms': all_c.count() ,
@@ -82,7 +69,7 @@ def par_monitoring(request):
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
-    all_d = DisposalItem.objects.all()
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4)
     
     current_user_role = request.user.userprofile.role
     
@@ -190,6 +177,13 @@ def delete_par(request, pk):
 
 # ICS MONITORING
 def ics_monitoring(request):
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4,)
+    
+    current_user_role = request.user.userprofile.role
+    
     icss = (
         CommunicationICSRecord.objects.select_related("communication")
         .all()
@@ -211,6 +205,11 @@ def ics_monitoring(request):
         {
             "i_form": i_form,
             "icss": icss,
+            'total_comms': all_c.count() ,
+            'total_ber': all_d.count(),
+            'total_vehicles': all_v.count(),
+            'total_firearms': all_f.count(),
+            'current_user_role': current_user_role,
         },
     )
     

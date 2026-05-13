@@ -22,10 +22,7 @@
                 <div class="user-name font-weight-bold">
                     {{ user.get_full_name|default:user.username }}
                 </div>
-
-                <div class="user-role text-muted">
-                    Logistics Officer
-                </div>
+                <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
             </div>
 
         </div>
