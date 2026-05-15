@@ -5,25 +5,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Investigative Equipment - RFU 10 LMS</title>
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="{% static 'InvestigativeEquipment/inves.css' %}"
-    />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="{% static 'InvestigativeEquipment/inves.css' %}"/>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  </head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="{% static 'InvestigativeEquipment/investigative.js' %}"></script>
 
+  </head>
   <body>
     <header
       class="navbar-header d-flex align-items-center justify-content-between px-4"
@@ -84,82 +74,61 @@
         <div class="messages">
           {% for message in messages %}
           <div
-            class="alert alert-{{ message.tags }} alert-dismissible fade show"
+            class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}"
           >
             {{ message }}
-            <button type="button" class="close" data-dismiss="alert">
-              &times;
-            </button>
           </div>
           {% endfor %}
         </div>
         {% endif %}
 
         <div class="stat-cards">
-          <a
-            href="{% url 'InvestigativeEquipment:investigative_view' %}"
-            class="stat-card-link"
-            style="text-decoration: none; color: inherit; flex: 1"
-          >
-            <div class="stat-card">
-              <div class="stat-top">
-                <div class="stat-icon blue"><i class="fas fa-boxes"></i></div>
-                <div>
-                  <div class="stat-value">{{ total_count }}</div>
-                  <div class="stat-label">Total Inventory</div>
-                </div>
-              </div>
-              <div class="stat-bar-wrap">
-                <div class="stat-bar blue" style="width: 100%"></div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon blue"><i class="fas fa-boxes"></i></div>
+              <div>
+                <div class="stat-value">{{ total_count }}</div>
+                <div class="stat-label">Total Inventory</div>
               </div>
             </div>
-          </a>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar blue" style="width: 100%"></div>
+            </div>
+          </div>
 
-          <a
-            href="{% url 'InvestigativeEquipment:investigative_view' %}?status=Issued"
-            class="stat-card-link"
-            style="text-decoration: none; color: inherit; flex: 1"
-          >
-            <div class="stat-card">
-              <div class="stat-top">
-                <div class="stat-icon orange">
-                  <i class="fas fa-crosshairs"></i>
-                </div>
-                <div>
-                  <div class="stat-value">{{ in_use }}</div>
-                  <div class="stat-label">Active / Issued</div>
-                </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon orange">
+                <i class="fas fa-crosshairs"></i>
               </div>
-              <div class="stat-bar-wrap">
-                <div
-                  class="stat-bar orange"
-                  style="width:{% if total_count %}{% widthratio in_use total_count 100 %}{% else %}0{% endif %}%"
-                ></div>
+              <div>
+                <div class="stat-value">{{ in_use }}</div>
+                <div class="stat-label">Active / Issued</div>
               </div>
             </div>
-          </a>
+            <div class="stat-bar-wrap">
+              <div
+                class="stat-bar orange"
+                style="width:{% if total_count %}{% widthratio in_use total_count 100 %}{% else %}0{% endif %}%"
+              ></div>
+            </div>
+          </div>
 
-          <a
-            href="{% url 'InvestigativeEquipment:investigative_view' %}?status=Maintenance"
-            class="stat-card-link"
-            style="text-decoration: none; color: inherit; flex: 1"
-          >
-            <div class="stat-card">
-              <div class="stat-top">
-                <div class="stat-icon green"><i class="fas fa-tools"></i></div>
-                <div>
-                  <div class="stat-value">{{ under_repair }}</div>
-                  <div class="stat-label">Under Maintenance</div>
-                </div>
-              </div>
-              <div class="stat-bar-wrap">
-                <div
-                  class="stat-bar green"
-                  style="width:{% if total_count %}{% widthratio under_repair total_count 100 %}{% else %}0{% endif %}%"
-                ></div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon green"><i class="fas fa-tools"></i></div>
+              <div>
+                <div class="stat-value">{{ under_repair }}</div>
+                <div class="stat-label">Under Maintenance</div>
               </div>
             </div>
-          </a>
+            <div class="stat-bar-wrap">
+              <div
+                class="stat-bar green"
+                style="width:{% if total_count %}{% widthratio under_repair total_count 100 %}{% else %}0{% endif %}%"
+              ></div>
+            </div>
+          </div>
         </div>
 
         <div class="table-section">
@@ -176,12 +145,17 @@
             </div>
             <div class="action-bar">
               <button
+                type="button"
                 class="btn-secondary"
                 onclick="toggleModal('filterModal')"
               >
                 <i class="ph ph-funnel"></i> Filter
               </button>
-              <button class="btn-primary" onclick="toggleModal('addModal')">
+              <button
+                type="button"
+                class="btn-primary"
+                onclick="toggleModal('addModal')"
+              >
                 + New Asset
               </button>
             </div>
@@ -193,141 +167,227 @@
                 <th>Item Name</th>
                 <th>Property ID</th>
                 <th>Category</th>
+                <th>Subcategory</th>
                 <th>Status</th>
                 <th>Quantity</th>
                 <th class="text-center">Action</th>
               </tr>
             </thead>
             <tbody>
-              {% for item in equipment %}
-              <tr>
-                <td><strong>{{ item.asset_id.model }}</strong></td>
-                <td>
-                  <code class="property-code"
-                    >{{ item.asset_id.property_no }}</code
-                  >
-                </td>
-                <td>{{ item.asset_id.category.category_name }}</td>
-                <td>
-                  <span
-                    class="status-tag {{ item.asset_id.status.status_name|lower }}"
-                  >
-                    {{ item.asset_id.status.status_name }}
-                  </span>
-                </td>
-
-                <td>{{ item.asset_id.quantity|default:"0" }}</td>
-
-                <td class="text-center">
-                  <button
-                    class="action-btn"
-                    onclick="openUpdateModal('{{ item.asset_id.pk }}', '{{ item.asset_id.model }}', '{{ item.asset_id.property_no }}', '{{ item.asset_id.category.category_name }}')"
-                    title="Edit"
-                  >
-                    <i class="ph ph-pencil-simple" style="color: #2e4a9e"></i>
-                  </button>
-                  <button
-                    class="action-btn"
-                    onclick="openDeleteModal('{{ item.asset_id.pk }}')"
-                    title="Delete"
-                  >
-                    <i class="ph ph-trash" style="color: #dc3545"></i>
-                  </button>
-                </td>
-              </tr>
-              {% empty %}
-              <tr>
-                <td colspan="6" class="text-center">No equipment found.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
+  {% for item in equipment %} 
+    {% if item.asset_id.status.status_name != "BER" %}
+      <tr>
+        <td><strong>{{ item.asset_id.model }}</strong></td>
+        <td>{{ item.asset_id.property_no }}</td>
+        <td>{{ item.asset_id.category.category_name }}</td>
+        <td>{{ item.office }}</td>
+        <td>
+          <span class="badge status-badge 
+            {% if item.asset_id.status.status_name == 'Available' %}badge-success{% endif %}
+            {% if item.asset_id.status.status_name == 'Issued' %}badge-primary{% endif %}
+            {% if item.asset_id.status.status_name == 'Maintenance' %}badge-warning{% endif %}
+            {% if item.asset_id.status.status_name == 'UNSERVICEABLE' %}badge-danger{% endif %}
+            {% if item.asset_id.status.status_name == 'BER' %}badge-secondary{% endif %}">
+            {{ item.asset_id.status.status_name }}
+        </span>
+      </td>
+        <td>{{ item.asset_id.quantity }}</td>
+        <td>
+          <div style="display: flex; gap: 8px; justify-content: center;">
+            <button type="button" 
+                    onclick="openUpdateModal('{{ item.asset_id.pk }}', '{{ item.asset_id.model }}', '{{ item.asset_id.property_no }}', '{{ item.asset_id.category.category_name }}', '{{ item.asset_id.quantity }}')"
+                    style="background-color: #2563eb !important; color: white !important; border: none !important; padding: 6px 14px !important; border-radius: 8px !important; font-weight: 600 !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 5px !important; transition: 0.2s;">
+              <i class="ph ph-pencil-simple" style="font-size: 16px;"></i> Edit
+            </button>
+            
+            <button type="button" 
+                    onclick="moveToBER('{{ item.asset_id.id }}', '{% url 'InvestigativeEquipment:move_to_ber_investigative' item_id=0 %}')"
+                    style="background-color: #ef4444 !important; color: white !important; border: none !important; padding: 6px 14px !important; border-radius: 8px !important; font-weight: 600 !important; cursor: pointer !important; display: flex !important; align-items: center !important; gap: 5px !important; transition: 0.2s;">
+              <i class="ph ph-trash" style="font-size: 16px;"></i> BER
+            </button>
+          </div>
+        </td>
+      </tr>
+    {% endif %}
+  {% empty %}
+    <tr><td colspan="7" class="text-center">No investigative equipment found.</td></tr>
+  {% endfor %}
+</tbody>
           </table>
         </div>
       </main>
     </div>
 
-
     <div class="modal-overlay" id="addModal">
       <div
         class="modal-content"
-        style="
-          max-width: 600px;
-          width: 95%;
-          padding: 30px;
-          border-radius: 15px;
-          background: #fff;
-        "
+        style="width: 700px !important; max-width: 95vw"
       >
         <h2
           style="
             text-align: center;
             color: #1a2b6d;
             margin-bottom: 25px;
-            font-weight: 800;
+            font-weight: 7;
           "
         >
           CREATE NEW ITEM
         </h2>
-        
-        <form method="POST" action="{% url 'InvestigativeEquipment:investigative_view' %}">
+        <form
+          method="POST"
+          action="{% url 'InvestigativeEquipment:investigative_view' %}"
+        >
           {% csrf_token %}
           <input type="hidden" name="action_type" value="add" />
-          
-          <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-            <div style="flex: 2; min-width: 150px">
-              <label style="display: block; font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 5px;">Category</label>
-              <select name="category" id="categorySelect" onchange="updateSubcategories()" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;" required>
-                <option value="">Select...</option>
-                <option value="Technical Sections">Technical Sections</option>
-                <option value="Admin">Admin</option>
-                <option value="Operation">Operation</option>
+
+          <div
+            class="modal-row-1"
+            style="display: flex; gap: 20px; margin-bottom: 20px"
+          >
+            <div style="flex: 2">
+              <label
+                style="
+                  display: block;
+                  font-size: 13px;
+                  font-weight: 700;
+                  color: #64748b;
+                  margin-bottom: 5px;
+                "
+                >Category</label
+              >
+              <input
+                type="text"
+                name="category"
+                value="Technical Sections"
+                class="form-control"
+                readonly
+                style="
+                  background-color: #f1f5f9;
+                  font-weight: 600;
+                  color: #475569;
+                  border: 1px solid #cbd5e1;
+                  height: 50px;
+                "
+              />
+            </div>
+            <div style="flex: 2">
+              <label
+                style="
+                  display: block;
+                  font-size: 13px;
+                  font-weight: 700;
+                  color: #64748b;
+                  margin-bottom: 5px;
+                "
+                >Subcategory</label
+              >
+              <select
+                name="subcategory"
+                id="subcategorySelect"
+                class="form-control"
+                style="height: 50px"
+                required
+              >
+                <option value="">Select Subcategory...</option>
               </select>
             </div>
-
-            <div style="flex: 2; min-width: 150px">
-              <label style="display: block; font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 5px;">Subcategory</label>
-              <select name="subcategory" id="subcategorySelect" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;">
-                <option value="">Select Category first...</option>
-              </select>
-            </div>
-
-            <div style="flex: 1; min-width: 80px">
-              <label style="display: block; font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 5px;">Qty</label>
-              <input type="number" name="quantity" min="1" value="1" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;" required />
+            <div style="flex: 1">
+              <label
+                style="
+                  display: block;
+                  font-size: 13px;
+                  font-weight: 700;
+                  color: #64748b;
+                  margin-bottom: 5px;
+                "
+                >Qty</label
+              >
+              <input
+                type="number"
+                name="quantity"
+                min="1"
+                value="1"
+                class="form-control"
+                style="height: 50px"
+                required
+              />
             </div>
           </div>
 
-          <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px">
-              <label style="display: block; font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 5px;">Item Name</label>
-              <input type="text" name="item_name" placeholder="Model/Name" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;" required />
+          <div
+            class="modal-row-2"
+            style="display: flex; gap: 20px; margin-bottom: 20px"
+          >
+            <div style="flex: 1">
+              <label
+                style="
+                  display: block;
+                  font-size: 13px;
+                  font-weight: 700;
+                  color: #64748b;
+                  margin-bottom: 5px;
+                "
+                >Item Name</label
+              >
+              <input
+                type="text"
+                name="item_name"
+                class="form-control"
+                style="height: 50px"
+                required
+              />
             </div>
-            <div style="flex: 1; min-width: 200px">
-              <label style="display: block; font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 5px;">Property ID</label>
-              <input type="text" name="par_id" placeholder="Property No." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;" />
+            <div style="flex: 1">
+              <label
+                style="
+                  display: block;
+                  font-size: 13px;
+                  font-weight: 700;
+                  color: #64748b;
+                  margin-bottom: 5px;
+                "
+                >Property ID</label
+              >
+              <input
+                type="text"
+                name="par_id"
+                class="form-control"
+                style="height: 50px"
+              />
             </div>
           </div>
 
-          <div style="margin-bottom: 30px">
-            <label style="display: block; font-size: 13px; font-weight: 700; color: #64748b; margin-bottom: 5px;">Status</label>
-            <select name="status" style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px;">
+          <div class="form-group">
+            <label
+              style="
+                display: block;
+                font-size: 13px;
+                font-weight: 700;
+                color: #64748b;
+                margin-bottom: 5px;
+              "
+              >Status</label
+            >
+            <select name="status" class="form-control" style="height: 50px">
               <option value="Available">Available</option>
               <option value="Issued">Issued</option>
               <option value="Maintenance">Maintenance</option>
             </select>
           </div>
 
-          <div style="display: flex; justify-content: center; gap: 15px">
+          <div class="d-flex justify-content-center mt-4" style="gap: 15px">
             <button
               type="button"
+              class="btn btn-secondary"
+              style="padding: 10px 40px; border-radius: 8px"
               onclick="toggleModal('addModal')"
-              style="padding: 10px 30px; border-radius: 50px; border: none; background: #8c98a5; color: #fff; font-weight: 700;"
             >
               BACK
             </button>
             <button
               type="submit"
-              style="padding: 10px 30px; border-radius: 50px; border: none; background: #2e4a9e; color: #fff; font-weight: 700;"
+              class="btn btn-primary"
+              style="padding: 10px 40px; border-radius: 8px"
             >
               CREATE
             </button>
@@ -337,100 +397,26 @@
     </div>
 
     <div class="modal-overlay" id="filterModal">
-      <div
-        class="modal-content"
-        style="
-          max-width: 400px;
-          width: 90%;
-          padding: 25px;
-          border-radius: 15px;
-          background: white;
-        "
-      >
-        <h2 style="text-align: center; color: #1a2b6d; margin-bottom: 20px">
-          Filter Equipment
-        </h2>
+      <div class="modal-content" style="max-width: 400px">
+        <h2 class="text-center mb-4">Filter Equipment</h2>
         <form
           method="GET"
           action="{% url 'InvestigativeEquipment:investigative_view' %}"
         >
-          <div style="margin-bottom: 15px">
-            <label
-              style="
-                display: block;
-                margin-bottom: 5px;
-                font-weight: bold;
-                color: #64748b;
-              "
-              >Category</label
-            >
-            <select
-              name="category"
-              style="
-                width: 100%;
-                padding: 10px;
-                border-radius: 8px;
-                border: 1px solid #ddd;
-              "
-            >
-              <option value="">All Categories</option>
-              <option
-                value="Technical Sections"
-                {%
-                if
-                selected_category=""
-                ="Technical Sections"
-                %}selected{%
-                endif
-                %}
-              >
-                Technical Sections
-              </option>
-              <option
-                value="Admin"
-                {%
-                if
-                selected_category=""
-                ="Admin"
-                %}selected{%
-                endif
-                %}
-              >
-                Admin
-              </option>
-              <option
-                value="Operation"
-                {%
-                if
-                selected_category=""
-                ="Operation"
-                %}selected{%
-                endif
-                %}
-              >
-                Operation
-              </option>
-            </select>
+          <div class="form-group">
+            <label>Category</label>
+            <input
+              type="text"
+              value="Technical Sections"
+              class="form-control"
+              readonly
+              style="background-color: #f1f5f9"
+            />
+            <input type="hidden" name="category" value="Technical Sections" />
           </div>
-          <div style="margin-bottom: 25px">
-            <label
-              style="
-                display: block;
-                margin-bottom: 5px;
-                font-weight: bold;
-                color: #64748b;
-              "
-              >Status</label
-            >
-            <select
-              name="status"
-              style="
-                width: 100%;
-                padding: 10px;
-                border-radius: 8px;
-                border: 1px solid #ddd;
-              "
-            >
+          <div class="form-group">
+            <label>Status</label>
+            <select name="status" class="form-control">
               <option value="">All Statuses</option>
               <option
                 value="Available"
@@ -470,276 +456,93 @@
               </option>
             </select>
           </div>
-          <div style="display: flex; gap: 10px">
+          <div class="d-flex gap-2">
             <button
               type="button"
+              class="btn btn-light flex-fill"
               onclick="toggleModal('filterModal')"
-              style="
-                flex: 1;
-                padding: 10px;
-                border-radius: 8px;
-                border: 1px solid #ccc;
-                background: #fff;
-              "
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              style="
-                flex: 1;
-                padding: 10px;
-                border-radius: 8px;
-                border: none;
-                background: #2e4a9e;
-                color: white;
-                font-weight: bold;
-              "
-            >
+            <button type="submit" class="btn btn-primary flex-fill">
               Apply Filter
             </button>
           </div>
-          <div style="text-align: center; margin-top: 15px">
-            <a
-              href="{% url 'InvestigativeEquipment:investigative_view' %}"
-              style="color: #dc3545; font-size: 13px"
-              >Clear All Filters</a
-            >
-          </div>
         </form>
       </div>
     </div>
 
-    <div class="modal-overlay" id="updateModal">
-      <div class="modal-content">
-        <h2>Update Equipment</h2>
-        <form
-          method="POST"
-          action="{% url 'InvestigativeEquipment:investigative_view' %}"
-        >
-          <div class="form-group">
-            <label>Quantity</label>
-            <input
-              type="number"
-              name="quantity"
-              id="updateQuantity"
-              class="form-control"
-              min="0"
-            />
-          </div>
+    <!-- Update Modal -->
+<div class="modal-overlay" id="updateModal">
+  <div class="modal-content">
+    <h2>Update Equipment</h2>
+    <form method="POST" action="{% url 'InvestigativeEquipment:investigative_view' %}">
+      {% csrf_token %}
+      <input type="hidden" name="asset_id" id="updateAssetId" />
+      <input type="hidden" name="action_type" value="update" />
 
-          {% csrf_token %}
-          <input type="hidden" name="asset_id" id="updateAssetId" />
-          <input type="hidden" name="action_type" value="update" />
-          <div class="form-group">
-            <label>Property ID</label>
-            <input
-              type="text"
-              id="updatePropertyId"
-              readonly
-              class="form-control bg-light"
-            />
-          </div>
-          <div class="form-group">
-            <label>Item Name</label>
-            <input
-              type="text"
-              name="item_name"
-              id="updateItemName"
-              class="form-control"
-            />
-          </div>
-          <div class="form-group">
-            <label>Category</label>
-            <select name="category" id="updateCategory" class="form-control">
-              <option value="Technical Sections">Technical Sections</option>
-              <option value="Admin">Admin</option>
-              <option value="Operation">Operation</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Current Status</label>
-            <select name="status" class="form-control">
-              <option value="Available">Available</option>
-              <option value="Issued">Issued</option>
-              <option value="Maintenance">Maintenance</option>
-            </select>
-          </div>
-          <div class="d-flex justify-content-end mt-3">
-            <button
-              type="button"
-              class="btn btn-secondary mr-2"
-              onclick="toggleModal('updateModal')"
-            >
-              Cancel
-            </button>
-            <button type="submit" class="btn btn-primary">Update Asset</button>
-          </div>
-        </form>
+      <div class="form-group">
+        <label>Item Name</label>
+        <input type="text" name="item_name" id="updateItemName" class="form-control" required />
       </div>
+
+
+      <div class="form-group">
+        <label>Quantity</label>
+        <input type="number" name="quantity" id="updateQuantity" class="form-control" min="1" required />
+      </div>
+
+      <div class="form-group">
+        <label>Status</label>
+        <select name="status" class="form-control">
+          <option value="Available" {% if selected_status == "Available" %}selected{% endif %}>
+            Available
+          </option>
+          <option value="Issued" {% if selected_status == "Issued" %}selected{% endif %}>
+            Issued
+          </option>
+          <option value="Maintenance" {% if selected_status == "Maintenance" %}selected{% endif %}>
+            Maintenance
+          </option>
+        </select>
+      </div>
+
+      <div class="d-flex justify-content-end mt-3">
+        <button type="button" class="btn btn-secondary mr-2" onclick="toggleModal('updateModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+    <div class="modal-overlay" id="notificationModal">
+  <div class="modal-content" style="width: 400px !important;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="mb-0" style="color: #1a2b6d; font-weight: 700;">Notifications</h4>
+      <button type="button" class="close" onclick="toggleModal('notificationModal')">&times;</button>
+    </div>
+    
+    <div class="notification-list" style="max-height: 400px; overflow-y: auto;">
+      {% if low_stock_count > 0 %}
+        <div class="alert alert-warning d-flex align-items-start" style="border-radius: 10px; border: none; background-color: #fff3cd; color: #856404;">
+          <i class="ph ph-warning-circle mr-2 mt-1" style="font-size: 20px;"></i>
+          <div>
+            <strong>Low Inventory Alert!</strong><br>
+            There are {{ low_stock_count }} items that need attention.
+          </div>
+        </div>
+      {% else %}
+        <div class="text-center py-4 text-muted">
+          <i class="ph ph-bell-slash d-block mb-2" style="font-size: 32px; opacity: 0.5;"></i>
+          No new notifications
+        </div>
+      {% endif %}
     </div>
 
-    <div class="modal-overlay" id="deleteModal">
-      <div class="modal-content text-center">
-        <i class="ph ph-warning-circle text-danger" style="font-size: 3rem"></i>
-        <h3>Delete Asset?</h3>
-        <p class="text-muted">This action cannot be undone.</p>
-        <form
-          method="POST"
-          action="{% url 'InvestigativeEquipment:investigative_view' %}"
-        >
-          {% csrf_token %}
-          <input type="hidden" name="asset_id" id="deleteAssetId" />
-          <input type="hidden" name="action_type" value="delete" />
-          <div class="d-flex justify-content-center mt-4">
-            <button
-              type="button"
-              class="btn btn-secondary mr-2"
-              onclick="toggleModal('deleteModal')"
-            >
-              Cancel
-            </button>
-            <button type="submit" class="btn btn-danger">Confirm Delete</button>
-          </div>
-
-          <div class="modal-overlay" id="notificationModal">
-            <div class="modal-content" style="max-width: 450px">
-              <div
-                class="d-flex justify-content-between align-items-center mb-4"
-              >
-                <h3 class="mb-0">
-                  <i class="ph ph-bell-ringing text-danger"></i> Inventory
-                  Alerts
-                </h3>
-                <button
-                  type="button"
-                  class="close"
-                  onclick="toggleModal('notificationModal')"
-                >
-                  &times;
-                </button>
-              </div>
-
-              <div
-                class="notification-list"
-                style="max-height: 400px; overflow-y: auto"
-              >
-                {% for item in low_stock_items %}
-                <div
-                  class="alert alert-warning d-flex justify-content-between align-items-center mb-2"
-                >
-                  <div>
-                    <strong>{{ item.asset_id.model }}</strong><br />
-                    <small class="text-muted"
-                      >Current Stock: {{ item.asset_id.quantity }}</small
-                    >
-                  </div>
-                  <span class="badge badge-warning">Low Stock</span>
-                </div>
-                {% empty %}
-                <p class="text-center text-muted">
-                  All equipment quantities are sufficient.
-                </p>
-                {% endfor %}
-              </div>
-
-              <div class="mt-4 text-center">
-                <button
-                  type="button"
-                  class="btn btn-secondary w-100"
-                  onclick="toggleModal('notificationModal')"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
+    <div class="text-center mt-3">
+      <button type="button" class="btn btn-light btn-sm w-100" onclick="toggleModal('notificationModal')">Close</button>
     </div>
-
-    <script>
-      function toggleModal(id) {
-        const modal = document.getElementById(id);
-        if (modal) modal.classList.toggle("active");
-      }
-
-      function openUpdateModal(id, name, propertyId, category, quantity) {
-        document.getElementById("updateAssetId").value = id;
-        document.getElementById("updatePropertyId").value = propertyId;
-        document.getElementById("updateItemName").value = name;
-        document.getElementById("updateCategory").value = category;
-        document.getElementById("updateQuantity").value = quantity; // New line
-        toggleModal("updateModal");
-      }
-
-      function openDeleteModal(id) {
-        document.getElementById("deleteAssetId").value = id;
-        toggleModal("deleteModal");
-      }
-
-      function updateSubcategories() {
-        const category = document.getElementById("categorySelect").value;
-        const subSelect = document.getElementById("subcategorySelect");
-        subSelect.innerHTML = '<option value="">Select Subcategory...</option>';
-        const options = {
-          "Technical Sections": [
-            "SOCO",
-            "DNA",
-            "PHOTO",
-            "FINGERPRINT (FP)",
-            "FIREARMS",
-            "CHEMISTRY",
-            "MEDICO-LEGAL",
-            "Questioned Document",
-            "POLYGRAPH",
-            "Physical Identification (PI)",
-          ],
-          Admin: [
-            "LOGISTICS",
-            "FINANCE",
-            "TRAINING",
-            "MWS [MORAL AND WELFARE SECTION]",
-          ],
-          Operation: [
-            "PCR [ POLICE COMMUNITY RELATIONS]",
-            "INVES SECTION",
-            "PLANS SECTION",
-          ],
-        };
-        if (options[category]) {
-          options[category].forEach((item) => {
-            let el = document.createElement("option");
-            el.textContent = item;
-            el.value = item;
-            subSelect.appendChild(el);
-          });
-        }
-      }
-
-      window.onclick = (e) => {
-        if (e.target.classList.contains("modal-overlay")) {
-          e.target.classList.remove("active");
-        }
-      };
-
-      function filterTable() {
-        let input = document.getElementById("searchInput").value.toUpperCase();
-        let rows = document.querySelector("#disposalTable tbody").rows;
-        for (let i = 0; i < rows.length; i++) {
-          let text = rows[i].textContent.toUpperCase();
-          rows[i].style.display = text.includes(input) ? "" : "none";
-        }
-      }
-
-      setTimeout(() => {
-        const msgs = document.querySelector(".messages");
-        if (msgs) {
-          msgs.style.transition = "opacity 0.5s";
-          msgs.style.opacity = "0";
-          setTimeout(() => (msgs.style.display = "none"), 500);
-        }
-      }, 4000);
-    </script>
+  </div>
+</div>
   </body>
 </html>

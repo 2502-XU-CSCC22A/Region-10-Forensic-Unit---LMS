@@ -1,20 +1,18 @@
 from django.urls import path
-from login.views import logout_view
 from . import views
-
-app_name = "InvestigativeEquipment"
-
+ 
+app_name = 'InvestigativeEquipment'
+ 
 urlpatterns = [
-    # The main page that lists everything
+    # Main inventory page
     path('', views.investigative_view, name='investigative_view'),
-    path('logout/', logout_view, name='logout'),
-    
-    # Specific endpoints for the Modals
+ 
+    # Investigative Equipment CRUD
     path('add/', views.investigative_view, name='investigative_add'),
     path('update/', views.investigative_view, name='investigative_update'),
-    path('delete/', views.investigative_view, name='investigative_delete'),
+    path('investigative/move-to-ber/<int:item_id>/', views.move_to_ber_investigative, name='move_to_ber_investigative'),    
     
-     # PAR Monitoring
+    # PAR Monitoring
     path('par-monitoring/', views.par_monitoring_view, name='par_monitoring'),
     path('par-monitoring/<int:pk>/edit/', views.edit_par_view, name='edit_par'),
     path('par-monitoring/<int:pk>/delete/', views.delete_par_view, name='delete_par'),
@@ -26,3 +24,4 @@ urlpatterns = [
     path('ics-monitoring/<int:pk>/delete/', views.delete_ics_view, name='delete_ics'),
     path('ics-monitoring/<int:pk>/print/', views.print_ics_view, name='print_ics'),
 ]
+ 

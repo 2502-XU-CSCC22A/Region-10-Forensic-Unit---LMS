@@ -1,15 +1,35 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import InvestigativeDetails, ICSRecord
 from config.models import Asset, AssetStatus, Category
+from disposal.models import DisposalItem
 import datetime
 import uuid
+import requests
+import json
 from django.contrib import messages
 from django.db.models import Q
+
+SUPABASE_URL = "https://vamjajitzyspdyfxisac.supabase.co"
+SUPABASE_KEY = "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54"
+SUPABASE_HEADERS = {
+    "apikey": SUPABASE_KEY,
+    "Authorization": f"Bearer {SUPABASE_KEY}",
+    "Content-Type": "application/json",
+    "Prefer": "return=representation",
+}
+
+def supabase_insert(table, payload):
+    """Helper to insert a row into a Supabase table."""
+    url = f"{SUPABASE_URL}/rest/v1/{table}"
+    resp = requests.post(url, headers=SUPABASE_HEADERS, data=json.dumps(payload))
+    return resp
+ 
  
 def investigative_view(request):
     if request.method == "POST":
         action = request.POST.get("action_type")
- 
+
+        # === CREATE NEW ITEM ===
         if action == "add":
             item_name = request.POST.get("item_name", "").strip()
             cat_name = request.POST.get("category", "").strip()
@@ -17,56 +37,113 @@ def investigative_view(request):
             status_name = request.POST.get("status", "Available").strip()
             qty_to_add = int(request.POST.get('quantity', 1))
             par_id = request.POST.get("par_id", "").strip() or None
- 
-            if item_name and cat_name:
+
+            if not item_name or not cat_name:
+                messages.error(request, "Item name and category are required.")
+                return redirect("InvestigativeEquipment:investigative_view")
+
+            try:
+                if par_id and Asset.objects.filter(property_no=par_id).exclude(status__status_name="BER").exists():
+                    messages.error(request, f"❌ Property ID '{par_id}' is already in use by an active asset.")
+                    return redirect("InvestigativeEquipment:investigative_view")
+
                 category, _ = Category.objects.get_or_create(category_name=cat_name)
                 status, _ = AssetStatus.objects.get_or_create(status_name=status_name)
- 
-                existing_asset = Asset.objects.filter(model__iexact=item_name, category=category).first()
- 
-                if existing_asset:
-                    existing_asset.quantity += qty_to_add
-                    existing_asset.save()
-                    messages.success(request, f"Added {qty_to_add} more to existing {item_name} inventory.")
-                else:
-                    new_asset = Asset.objects.create(
-                        date_acquired=datetime.date.today(),
-                        property_no=par_id if par_id else f"PN-{uuid.uuid4().hex[:8]}",
-                        serial_no=f"SN-{uuid.uuid4().hex[:10]}",
-                        model=item_name,
-                        category=category,
-                        status=status,
-                        quantity=qty_to_add
-                    )
-                    InvestigativeDetails.objects.create(asset_id=new_asset, par_id=par_id, office=sub_cat)
-                    messages.success(request, f"New item {item_name} created.")
- 
-            return redirect("InvestigativeEquipment:investigative_view")
- 
+
+                new_asset = Asset.objects.create(
+                    date_acquired=datetime.date.today(),
+                    property_no=par_id if par_id else f"PN-{uuid.uuid4().hex[:8]}",
+                    serial_no=f"SN-{uuid.uuid4().hex[:10]}",
+                    model=item_name,
+                    category=category,
+                    status=status,
+                    quantity=qty_to_add
+                )
+
+                InvestigativeDetails.objects.create(
+                    asset_id=new_asset, 
+                    par_id=par_id, 
+                    office=sub_cat
+                )
+
+                messages.success(request, f"✅ Successfully created {item_name}.")
+                
+            except Exception as e:
+                messages.error(request, f"❌ Error creating item: {str(e)}")
+                return redirect("InvestigativeEquipment:investigative_view")
+
+        # === UPDATE ITEM ===
         elif action == "update":
-            asset_pk = request.POST.get("asset_id")
-            new_qty = request.POST.get("quantity")
- 
-            asset = get_object_or_404(Asset, pk=asset_pk)
-            asset.model = request.POST.get("item_name", asset.model).strip()
- 
-            if new_qty is not None:
-                asset.quantity = int(new_qty)
- 
-            asset.save()
-            messages.success(request, "Item updated successfully.")
-            return redirect("InvestigativeEquipment:investigative_view")
- 
+            asset_id = request.POST.get("asset_id")
+            new_quantity = request.POST.get("quantity")
+            new_item_name = request.POST.get("item_name", "").strip()
+            
+            print(f"DEBUG: Update request - Asset ID: {asset_id}, Name: {new_item_name}, Qty: {new_quantity}")
+
+            if not asset_id:
+                messages.error(request, "Asset ID is missing.")
+                return redirect("InvestigativeEquipment:investigative_view")
+
+            try:
+                asset = Asset.objects.get(pk=asset_id)
+                
+                old_name = asset.model
+                if new_item_name:
+                    asset.model = new_item_name
+                if new_quantity and new_quantity.isdigit():
+                    asset.quantity = int(new_quantity)
+                
+                asset.save()
+                messages.success(request, f"✅ {old_name} has been updated successfully.")
+                print(f"DEBUG: Successfully updated asset {asset_id}")
+                
+            except Asset.DoesNotExist:
+                messages.error(request, "Asset not found.")
+            except Exception as e:
+                messages.error(request, f"❌ Update failed: {str(e)}")
+                print(f"ERROR during update: {str(e)}")
+
+        # === MOVE TO BER ===
         elif action == "delete":
             asset_pk = request.POST.get("asset_id")
             asset = get_object_or_404(Asset, pk=asset_pk)
-            asset.delete()
-            messages.success(request, "Equipment deleted successfully.")
-            return redirect("InvestigativeEquipment:investigative_view")
- 
+
+            try:
+                ber_status, _ = AssetStatus.objects.get_or_create(status_name="BER")
+                asset.status = ber_status
+                asset.save()
+
+                now_iso = datetime.datetime.utcnow().isoformat()
+
+                supabase_insert("disposal_disposalitems", {
+                    "asset_ptr_id": asset.pk,
+                    "days_overdue": 0,
+                    "expiry_date": datetime.date.today().isoformat(),
+                    "disposal_reason": "Marked as BER from Investigative Equipment",
+                    "disposal_date": now_iso,
+                    "processed_by": None,
+                    "personnel_assigned": None,
+                    "last_sync": now_iso,
+                })
+
+                supabase_insert("disposal_disposalactivitylog", {
+                    "asset_id": asset.pk,
+                    "action_type": "REMOVE",
+                    "disposal_reason": "Marked as BER from Investigative Equipment",
+                    "timestamp": now_iso,
+                    "user_id": request.user.pk if request.user.is_authenticated else None,
+                })
+
+                messages.success(request, f"Asset {asset.model} successfully marked as BER.")
+            except Exception as e:
+                messages.error(request, f"System Error: {str(e)}")
+
+        return redirect("InvestigativeEquipment:investigative_view")
+
+    # ===================== GET REQUEST  =====================
     all_investigative = InvestigativeDetails.objects.select_related(
         "asset_id", "asset_id__category", "asset_id__status"
-    ).all()
+    ).exclude(asset_id__status__status_name="BER")
  
     low_stock_items = []
     low_stock_count = 0
@@ -85,6 +162,11 @@ def investigative_view(request):
     if status_filter:
         equipment_display = equipment_display.filter(asset_id__status__status_name__iexact=status_filter)
  
+    try:
+        disposal_count = DisposalItem.objects.count()
+    except Exception:
+        disposal_count = 0
+
     context = {
         "equipment": equipment_display,
         "total_count": all_investigative.count(),
@@ -94,9 +176,11 @@ def investigative_view(request):
         "selected_status": status_filter,
         "low_stock_items": low_stock_items,
         "low_stock_count": low_stock_count,
+        "disposal_count": disposal_count,
     }
     return render(request, "InvestigativeEquipment/investigative.html", context)
  
+
  
 def par_monitoring_view(request):
     par_list = InvestigativeDetails.objects.select_related("asset_id", "asset_id__category").all()
@@ -115,7 +199,7 @@ def par_monitoring_view(request):
         "current_page": "par_monitoring",
         "total_count": all_investigative.count(),
     }
-    return render(request, "InvestigativeEquipment/par_monitoring.html", context)
+    return render(request, "par_monitoring.html", context)
  
  
 def edit_par_view(request, pk):
@@ -127,7 +211,7 @@ def edit_par_view(request, pk):
         messages.success(request, "PAR record updated successfully.")
         return redirect("InvestigativeEquipment:par_monitoring")
  
-    return render(request, "InvestigativeEquipment/edit_par.html", {"record": record})
+    return render(request, "edit_par.html", {"record": record})
  
  
 def delete_par_view(request, pk):
@@ -171,7 +255,6 @@ def print_par_view(request, pk):
     return render(request, "InvestigativeEquipment/print_par.html", {"par": par})
  
  
-# ↓ ICS VIEWS ↓
  
 def ics_monitoring_view(request):
     all_investigative = InvestigativeDetails.objects.all()
@@ -209,7 +292,7 @@ def ics_monitoring_view(request):
         "total_count": all_investigative.count(),
         "current_page": "ics_monitoring",
     }
-    return render(request, "InvestigativeEquipment/ics_monitoring.html", context)
+    return render(request, "ics_monitoring.html", context)
  
  
 def edit_ics_view(request, pk):
@@ -237,7 +320,7 @@ def edit_ics_view(request, pk):
         "par_list": all_investigative,
         "total_count": InvestigativeDetails.objects.count(),
     }
-    return render(request, "InvestigativeEquipment/edit_ics.html", context)
+    return render(request, "edit_ics.html", context)
  
  
 def delete_ics_view(request, pk):
@@ -280,4 +363,14 @@ def print_ics_view(request, pk):
     ics.communication = a
  
     return render(request, "InvestigativeEquipment/print_ics.html", {"ics": ics})
- 
+
+def move_to_ber_investigative(request, item_id):
+    asset = get_object_or_404(Asset, id=item_id)
+    
+    ber_status = get_object_or_404(AssetStatus, status_name="BER")
+    
+    asset.status = ber_status
+    asset.save()
+    
+    messages.success(request, f"Asset {asset.model} has been moved to BER.")
+    return redirect('InvestigativeEquipment:investigative_view')
