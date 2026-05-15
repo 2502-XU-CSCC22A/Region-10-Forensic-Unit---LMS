@@ -240,11 +240,13 @@
               <table class="table table-hover mb-0">
                 <thead>
                   <tr>
-                    <th>ICS No.</th>
+                    <th>PAR No.</th>
                     <th>Personnel</th>
                     <th>Asset Description</th>
-                    <th>Issue Date</th>
-                    <th class="text-right">Actions</th>
+                    <th>Date Acquired</th>
+                    <th>Expiry Date</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Actions</th>
                   </tr>
                 </thead>
 
@@ -267,17 +269,60 @@
 
                       <td>{{ ics.date_issued|date:'M d, Y' }}</td>
 
-                      <td class="text-right">
-                        <a href="{% url 'print_ics' ics.id %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
+                      <td>{{ ics.expiry_date|date:'M d, Y' }}</td>
 
-                        <a href="{% url 'edit_ics' ics.id %}" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                      <td class="text-center">
+                        {% if ics.expiry_date <= today %}
+                          <span style="
+            background:#7f1d1d;
+            color:#ffffff;
+            padding:6px 14px;
+            border-radius:999px;
+            font-size:0.75rem;
+            font-weight:700;
+            display:inline-block;
+          ">Expired</span>
+                        {% elif par.days_until_expiry <= 30 %}
+                          <span style="
+            background:#fee2e2;
+            color:#dc2626;
+            padding:6px 14px;
+            border-radius:999px;
+            font-size:0.75rem;
+            font-weight:700;
+            display:inline-block;
+          ">Expiring Soon</span>
+                        {% else %}
+                          <span style="
+            background:#dcfce7;
+            color:#15803d;
+            padding:6px 14px;
+            border-radius:999px;
+            font-size:0.75rem;
+            font-weight:700;
+            display:inline-block;
+          ">Validated</span>
+                        {% endif %}
+                      </td>
 
-                        <a href="#" class="btn-icon btn-delete" title="Delete" onclick="prepareICSRemoval('{% url 'delete_ics' ics.id %}'); return false;"><i class="fas fa-trash-alt"></i></a>
+                      <td class="text-center">
+                        <div style="
+          display:flex;
+          justify-content:center;
+          align-items:center;
+          gap:8px;
+        ">
+                          <a href="{% url 'print_ics' ics.id %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
+
+                          <a href="{% url 'edit_ics' ics.id %}" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+
+                          <a href="#" class="btn-icon btn-delete" title="Delete" onclick="prepareICSRemoval('{% url 'delete_ics' ics.id %}'); return false;"><i class="fas fa-trash-alt"></i></a>
+                        </div>
                       </td>
                     </tr>
                   {% empty %}
                     <tr>
-                      <td colspan="5" class="text-center text-muted py-4">No ICS records yet.</td>
+                      <td colspan="7" class="text-center text-muted py-4">No PAR records yet.</td>
                     </tr>
                   {% endfor %}
                 </tbody>

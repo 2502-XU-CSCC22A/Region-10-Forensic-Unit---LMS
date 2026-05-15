@@ -15,6 +15,7 @@ let currentPage = 1;
 const pageSize = 5;
 let editingId = null;
 let pendingBerId = null;
+let expiringParSoonCount = 0;
 
 function getValue(id) {
   return document.getElementById(id)?.value?.trim() || "";
@@ -123,11 +124,12 @@ async function fetchData() {
   const communicationIds = commData.map((item) => item.asset_ptr_id);
 
   let parMap = {};
+  expiringParSoonCount = 0;
 
   if (communicationIds.length > 0) {
     const { data: parData, error: parError } = await sb
       .from("communications_parrecord")
-      .select("communication_id, par_number, created_at")
+      .select("communication_id, par_number, expiry_date, created_at")
       .in("communication_id", communicationIds)
       .order("created_at", { ascending: false });
 
@@ -136,11 +138,27 @@ async function fetchData() {
     }
 
     if (parData) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
       parData.forEach((par) => {
         const commId = Number(par.communication_id);
 
         if (!parMap[commId]) {
           parMap[commId] = par.par_number;
+        }
+
+        if (par.expiry_date) {
+          const expiryDate = new Date(par.expiry_date);
+          expiryDate.setHours(0, 0, 0, 0);
+
+          const daysUntilExpiry = Math.ceil(
+            (expiryDate - today) / (1000 * 60 * 60 * 24)
+          );
+
+          if (daysUntilExpiry > 0 && daysUntilExpiry <= 30) {
+            expiringParSoonCount++;
+          }
         }
       });
     }
@@ -259,7 +277,10 @@ function updateStats() {
   document.getElementById("totalCount").textContent = total;
   document.getElementById("issuedCount").textContent = serviceable;
   document.getElementById("parCount").textContent = validated;
-  document.getElementById("totalBar").style.width = total > 0 ? "100%" : "0%";
+  document.getElementById("expiringParCount").textContent = expiringParSoonCount;
+
+  document.getElementById("totalBar").style.width =
+    total > 0 ? "100%" : "0%";
 
   document.getElementById("issuedBar").style.width =
     total > 0
@@ -267,7 +288,14 @@ function updateStats() {
       : "0%";
 
   document.getElementById("parBar").style.width =
-    total > 0 ? Math.max(5, Math.round((validated / total) * 100)) + "%" : "0%";
+    total > 0
+      ? Math.max(5, Math.round((validated / total) * 100)) + "%"
+      : "0%";
+
+  document.getElementById("expiringParBar").style.width =
+    total > 0
+      ? Math.max(5, Math.round((expiringParSoonCount / total) * 100)) + "%"
+      : "0%";
 }
 
 function filterTable() {

@@ -1,170 +1,154 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Regional Forensic Unit 10 LMS – Communications</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/communications.css' %}" />
+  </head>
 
-</head>
-
-<body>
-
-   {% include 'header.html' %}
+  <body>
+    {% include 'header.html' %}
 
     <div class="layout">
+      {% include 'sidebar.html' %}
 
-        {% include 'sidebar.html' %}
+      <main>
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon blue">
+                <i class="fas fa-broadcast-tower"></i>
+              </div>
 
-        <main>
-
-            <div class="stat-cards">
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <div class="stat-icon blue">
-                            <i class="fas fa-broadcast-tower"></i>
-                        </div>
-
-                        <div>
-                            <div class="stat-value" id="totalCount">0</div>
-                            <div class="stat-label">
-                                Total Communications
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="stat-bar-wrap">
-                        <div class="stat-bar blue" id="totalBar" style="width:0%;">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-top">
-
-                        <div class="stat-icon orange">
-                            <i class="fas fa-check"></i>
-                        </div>
-
-                        <div>
-                            <div class="stat-value" id="issuedCount">0</div>
-
-                            <div class="stat-label">
-                                Serviceable Communications
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="stat-bar-wrap">
-                        <div class="stat-bar orange" id="issuedBar" style="width:0%;">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-top">
-                        <div class="stat-icon green">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <div>
-                            <div class="stat-value" id="parCount">0</div>
-                            <div class="stat-label">Validated PAR</div>
-                        </div>
-                    </div>
-                    <div class="stat-bar-wrap">
-                        <div class="stat-bar green" id="parBar" style="width:0%;">
-                        </div>
-                    </div>
-                </div>
+              <div>
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">Total Communications</div>
+              </div>
             </div>
 
-            <div class="table-section">
-
-                <div class="table-header">
-                    From Issuances Table
-                </div>
-
-                <div class="table-controls">
-
-                    <div class="search-wrap">
-                        <span class="search-icon">🔍</span>
-                        <input type="text" id="searchInput" placeholder="Search by type, serial, PAR, radio ID..."
-                            oninput="filterTable()" />
-                    </div>
-
-                    <select id="statusFilter" class="btn btn-outline" style="font-size:13px;padding:7px 12px;"
-                        onchange="filterTable()">
-                        <option value="">Serviceability</option>
-                        <option value="SERVICEABLE">Serviceable</option>
-                        <option value="UNSERVICEABLE">Unserviceable</option>
-                    </select>
-                    <button id="addRecordBtn" class="btn btn-primary">Add Record</button>
-                    <a href="{% url 'par_monitoring' %}" class="btn btn-outline">PAR Records</a>
-                    <a href="{% url 'ics_monitoring' %}" class="btn btn-outline">ICS Records</a>
-                    <a href="{% url 'activity_logs' %}" class="btn btn-outline">Activity Log</a>
-                    <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
-                </div>
-
-                <div class="table-wrap">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>TYPE</th>
-                                <th>SERIAL NO.</th>
-                                <th>PAR NO.</th>
-                                <th>RADIO ID</th>
-                                <th>STATUS</th>
-                                <th>REMARKS</th>
-                                <th>ACTION</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tableBody">
-                        </tbody>
-                    </table>
-                </div>
-                <div class="table-footer">
-                    <span id="rowInfo">
-                        Loading…
-                    </span>
-                    <div class="pagination" id="pagination">
-                    </div>
-                </div>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar blue" id="totalBar" style="width:0%;"></div>
             </div>
-        </main>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon orange">
+                <i class="fas fa-check"></i>
+              </div>
+
+              <div>
+                <div class="stat-value" id="issuedCount">0</div>
+
+                <div class="stat-label">Serviceable Communications</div>
+              </div>
+            </div>
+
+            <div class="stat-bar-wrap">
+              <div class="stat-bar orange" id="issuedBar" style="width:0%;"></div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon green">
+                <i class="fas fa-file-alt"></i>
+              </div>
+              <div>
+                <div class="stat-value" id="parCount">0</div>
+                <div class="stat-label">Validated PAR</div>
+              </div>
+            </div>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar green" id="parBar" style="width:0%;"></div>
+            </div>
+          </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon red">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+
+            <div>
+              <div class="stat-value" id="expiringParCount">0</div>
+
+              <div class="stat-label">PAR Expiring Soon</div>
+            </div>
+          </div>
+
+          <div class="stat-bar-wrap">
+            <div class="stat-bar red" id="expiringParBar" style="width:0%;"></div>
+          </div>
+        </div>
+</div>
+        <div class="table-section">
+          <div class="table-header">From Issuances Table</div>
+
+          <div class="table-controls">
+            <div class="search-wrap">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="searchInput" placeholder="Search by type, serial, PAR, radio ID..." oninput="filterTable()" />
+            </div>
+
+            <select id="statusFilter" class="btn btn-outline" style="font-size:13px;padding:7px 12px;" onchange="filterTable()">
+              <option value="">Serviceability</option>
+              <option value="SERVICEABLE">Serviceable</option>
+              <option value="UNSERVICEABLE">Unserviceable</option>
+            </select>
+            <button id="addRecordBtn" class="btn btn-primary">Add Record</button>
+            <a href="{% url 'par_monitoring' %}" class="btn btn-outline">PAR Records</a>
+            <a href="{% url 'ics_monitoring' %}" class="btn btn-outline">ICS Records</a>
+            <a href="{% url 'activity_logs' %}" class="btn btn-outline">Activity Log</a>
+            <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>TYPE</th>
+                  <th>SERIAL NO.</th>
+                  <th>PAR NO.</th>
+                  <th>RADIO ID</th>
+                  <th>STATUS</th>
+                  <th>REMARKS</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <span id="rowInfo">Loading…</span>
+            <div class="pagination" id="pagination"></div>
+          </div>
+        </div>
+      </main>
     </div>
 
     <div class="modal-overlay" id="modalOverlay">
+      <div class="comm-modal">
+        <button class="close-modal" id="closeModalBtn">✕</button>
 
-        <div class="comm-modal">
-
-            <button class="close-modal" id="closeModalBtn">
-                ✕
-            </button>
-
-            <h3 id="modalTitle">
-                Communications Details
-            </h3>
-            <div id="modalBody"></div>
-            <div class="modal-actions">
-                <button class="btn btn-outline" id="closeModalBtn2">Close</button>
-                <button class="btn btn-primary" id="modalSaveBtn">Save</button>
-            </div>
+        <h3 id="modalTitle">Communications Details</h3>
+        <div id="modalBody"></div>
+        <div class="modal-actions">
+          <button class="btn btn-outline" id="closeModalBtn2">Close</button>
+          <button class="btn btn-primary" id="modalSaveBtn">Save</button>
         </div>
+      </div>
     </div>
     {% include 'confirmation_modal.html' %}
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="{% static 'js/communications.js' %}"></script>
-</body>
-
+  </body>
 </html>

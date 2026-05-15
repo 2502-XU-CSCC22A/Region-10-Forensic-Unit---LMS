@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import connection
+from django.utils import timezone
 
 from .models import Communication, CommunicationPARRecord, CommunicationICSRecord
 from .forms import CommunicationPARForm, CommunicationICSForm
@@ -36,6 +37,16 @@ def par_monitoring(request):
         .order_by("-created_at")
     )
 
+    today = timezone.now().date()
+
+    for par in pars:
+        if par.expiry_date:
+            par.days_until_expiry = (
+                par.expiry_date - today
+            ).days
+        else:
+            par.days_until_expiry = 9999
+
     if request.method == "POST":
         p_form = CommunicationPARForm(request.POST)
 
@@ -62,6 +73,7 @@ def par_monitoring(request):
         {
             "p_form": p_form,
             "pars": pars,
+            "today": today,
         },
     )
 
@@ -150,6 +162,16 @@ def ics_monitoring(request):
         .order_by("-created_at")
     )
 
+    today = timezone.now().date()
+
+    for ics in icss:
+        if ics.expiry_date:
+            ics.days_until_expiry = (
+                ics.expiry_date - today
+            ).days
+        else:
+            ics.days_until_expiry = 9999
+
     if request.method == "POST":
         i_form = CommunicationICSForm(request.POST)
 
@@ -176,6 +198,7 @@ def ics_monitoring(request):
         {
             "i_form": i_form,
             "icss": icss,
+            "today": today,
         },
     )
 

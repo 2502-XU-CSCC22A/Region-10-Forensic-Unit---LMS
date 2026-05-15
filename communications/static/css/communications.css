@@ -33,18 +33,19 @@ body {
 /* STAT CARDS */
 
 .stat-cards {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .stat-card {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #dfe7f3;
-    padding: 18px 22px;
-    box-shadow: 0 2px 8px rgba(13, 33, 85, 0.06);
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #dfe7f3;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(13, 33, 85, 0.06);
+  min-width: 0;
 }
 
 .stat-top {
@@ -76,6 +77,11 @@ body {
 .stat-icon.green {
     background: #dcfce7;
     color: #16a34a;
+}
+
+.stat-icon.red {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 .stat-value {
@@ -115,6 +121,10 @@ body {
 
 .stat-bar.green {
     background: linear-gradient(90deg, #16a34a, #4ade80);
+}
+
+.stat-bar.red {
+  background: linear-gradient(90deg, #dc2626, #f87171);
 }
 
 /* TABLE SECTION */
