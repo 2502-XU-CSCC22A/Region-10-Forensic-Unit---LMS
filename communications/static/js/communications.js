@@ -459,7 +459,7 @@ async function saveRecord() {
     if (changes.length > 0) {
       await addActivityLog({
         communicationId: editingId,
-        action: "Communication Updated",
+        action: "Communication Asset Updated",
         details: changes.join("; "),
       });
     }
@@ -507,7 +507,7 @@ async function saveRecord() {
 
     await addActivityLog({
       communicationId: parentData.id,
-      action: "Communication Created",
+      action: "Communication Asset Created",
       details: `Added ${type} with Serial ${serial}`,
     });
   }
@@ -520,7 +520,7 @@ async function saveRecord() {
 let selectedBERId = null;
 
 function prepareRemoval(id) {
-  selectedBERId = id;
+  selectedBERId = Number(id);
 
   const modal = document.getElementById("confirmationModal");
 
@@ -540,18 +540,28 @@ function closeConfirmationModal() {
 }
 
 async function moveToBER(id) {
-  const c = communications.find((item) => item.id == id);
+  id = Number(id);
+
+  const c = communications.find((item) => Number(item.id) === id);
 
   if (!c) {
     alert("Communication record not found.");
     return;
   }
 
-  const { data: existingDisposal } = await sb
+  const now = new Date().toISOString();
+
+  const { data: existingDisposal, error: checkError } = await sb
     .from("disposal_disposalitems")
     .select("asset_ptr_id")
     .eq("asset_ptr_id", id)
     .maybeSingle();
+
+  if (checkError) {
+    console.error("DISPOSAL CHECK ERROR:", checkError);
+    alert(checkError.message);
+    return;
+  }
 
   if (!existingDisposal) {
     const { error: disposalError } = await sb
@@ -562,10 +572,10 @@ async function moveToBER(id) {
           days_overdue: 0,
           expiry_date: todayDate(),
           disposal_reason: "Marked as BER from Communications",
-          disposal_date: new Date().toISOString(),
+          disposal_date: now,
           processed_by: null,
           personnel_assigned: null,
-          last_sync: new Date().toISOString(),
+          last_sync: now,
         },
       ]);
 
@@ -574,19 +584,6 @@ async function moveToBER(id) {
       alert(disposalError.message);
       return;
     }
-  }
-
-  const { error: commError } = await sb
-    .from("communications_communication")
-    .update({
-      status: "UNSERVICEABLE",
-    })
-    .eq("asset_ptr_id", id);
-
-  if (commError) {
-    console.error("COMMUNICATION UPDATE ERROR:", commError);
-    alert(commError.message);
-    return;
   }
 
   const { error: assetError } = await sb
@@ -602,14 +599,87 @@ async function moveToBER(id) {
     return;
   }
 
+  const { data: deletedPAR, error: parDeleteError } = await sb
+    .from("communications_parrecord")
+    .delete()
+    .eq("communication_id", id)
+    .select();
+
+  console.log("PAR DELETED:", deletedPAR);
+
+  if (parDeleteError) {
+    console.error("PAR DELETE ERROR:", parDeleteError);
+    alert(parDeleteError.message);
+    return;
+  }
+
+  const { data: deletedICS, error: icsDeleteError } = await sb
+    .from("communications_icsrecord")
+    .delete()
+    .eq("communication_id", id)
+    .select();
+
+  console.log("ICS DELETED:", deletedICS);
+
+  if (icsDeleteError) {
+    console.error("ICS DELETE ERROR:", icsDeleteError);
+    alert(icsDeleteError.message);
+    return;
+  }
+
+  let logDetails = `${c.type} with Serial ${c.serial} has been moved to BER`;
+
+  const hasDeletedPAR = deletedPAR && deletedPAR.length > 0;
+  const hasDeletedICS = deletedICS && deletedICS.length > 0;
+
+  if (hasDeletedPAR && hasDeletedICS) {
+    logDetails += ", and PAR and ICS Records are deleted";
+  } else if (hasDeletedPAR) {
+    logDetails += ", and PAR Record is deleted";
+  } else if (hasDeletedICS) {
+    logDetails += ", and ICS Record is deleted";
+  }
+
   await addActivityLog({
     communicationId: id,
     action: "Moved to BER",
-    details: `${c.type} with Serial ${c.serial} was marked as Unserviceable`,
+    details: logDetails,
   });
 
+  const { data: deletedComm, error: deleteCommError } = await sb
+    .from("communications_communication")
+    .delete()
+    .eq("asset_ptr_id", id)
+    .select();
+
+  console.log("COMM DELETED:", deletedComm);
+
+  if (deleteCommError) {
+    console.error("COMMUNICATION DELETE ERROR:", deleteCommError);
+    alert(deleteCommError.message);
+    return;
+  }
+
+  if (!deletedComm || deletedComm.length === 0) {
+    alert(
+      "No communication row was deleted. Check RLS DELETE policy for communications_communication.",
+    );
+    return;
+  }
+
+  communications = communications.filter(
+    (item) => Number(item.id) !== id,
+  );
+
+  filtered = filtered.filter(
+    (item) => Number(item.id) !== id,
+  );
+
   closeConfirmationModal();
-  await fetchData();
+
+  renderTable();
+  renderPagination();
+  updateStats();
 
 }
 
@@ -629,6 +699,14 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+window.onclick = function (event) {
+  const confirmationModal = document.getElementById("confirmationModal");
+
+  if (event.target === confirmationModal) {
+    closeConfirmationModal();
+  }
+};
 
 function exportCSV() {
   const headers = [

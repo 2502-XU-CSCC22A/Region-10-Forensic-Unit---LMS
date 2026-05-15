@@ -32,7 +32,7 @@ def communications_list(request):
     )
     current_user_role = request.user.userprofile.role
     
-    return render(request, "communications.html", {
+    return render(request, "communications/communications.html", {
         'items': items,
         'total_comms': all_c.count() ,
         'total_ber': all_d.count(),
@@ -56,7 +56,7 @@ def activity_logs(request):
     
     current_user_role = request.user.userprofile.role
     
-    return render(request, "activity_logs.html", {
+    return render(request, "communications/activity_logs.html", {
         'total_comms': all_c.count() ,
         'total_ber': all_d.count(),
         'total_vehicles': all_v.count(),
@@ -92,7 +92,7 @@ def par_monitoring(request):
                 f"PAR {par.par_number} was created for {par.communication.type} issued to {par.issued_to}.",
             )
 
-            return redirect("par_monitoring")
+            return redirect("communications:par_monitoring")
 
         else:
             print("PAR FORM ERRORS:", p_form.errors)
@@ -102,7 +102,7 @@ def par_monitoring(request):
 
     return render(
         request,
-        "par_monitoring.html",
+        "communications/par_monitoring.html",
         {
             "p_form": p_form,
             "pars": pars,
@@ -128,7 +128,7 @@ def print_par(request, pk):
         f"PAR {par.par_number} for {par.communication.type} was opened for printing.",
     )
 
-    return render(request, "print_par.html", {"par": par})
+    return render(request, "communications/print_par.html", {"par": par})
 
 
 # EDIT PAR
@@ -150,7 +150,7 @@ def edit_par(request, pk):
                 f"PAR {par.par_number} was updated for {par.communication.type}.",
             )
 
-            return redirect("par_monitoring")
+            return redirect("communications:par_monitoring")
 
         else:
             print("EDIT PAR FORM ERRORS:", form.errors)
@@ -160,7 +160,7 @@ def edit_par(request, pk):
 
     return render(
         request,
-        "edit_par.html",
+        "communications/edit_par.html",
         {
             "form": form,
             "record": record,
@@ -188,7 +188,7 @@ def delete_par(request, pk):
         f"PAR {par_number} for {asset_type}, issued to {issued_to}, was deleted from the PAR registry.",
     )
 
-    return redirect("par_monitoring")
+    return redirect("communications:par_monitoring")
 
 
 # ICS MONITORING
@@ -218,7 +218,7 @@ def ics_monitoring(request):
                 f"ICS {ics.ics_number} was created for {ics.communication.type} issued to {ics.issued_to}.",
             )
 
-            return redirect("ics_monitoring")
+            return redirect("communications:ics_monitoring")
 
         else:
             print("ICS FORM ERRORS:", i_form.errors)
@@ -228,7 +228,7 @@ def ics_monitoring(request):
 
     return render(
         request,
-        "ics_records.html",
+        "communications/ics_records.html",
         {
             "i_form": i_form,
             "icss": icss,
@@ -254,7 +254,7 @@ def print_ics(request, pk):
         f"ICS {ics.ics_number} for {ics.communication.type} was opened for printing.",
     )
 
-    return render(request, "print_ics.html", {"ics": ics})
+    return render(request, "communications/print_ics.html", {"ics": ics})
 
 
 # EDIT ICS
@@ -276,7 +276,7 @@ def edit_ics(request, pk):
                 f"ICS {ics.ics_number} was updated for {ics.communication.type}.",
             )
 
-            return redirect("ics_monitoring")
+            return redirect("communications:ics_monitoring")
 
         else:
             print("EDIT ICS FORM ERRORS:", form.errors)
@@ -286,7 +286,7 @@ def edit_ics(request, pk):
 
     return render(
         request,
-        "edit_ics.html",
+        "communications/edit_ics.html",
         {
             "form": form,
             "record": record,
@@ -314,4 +314,4 @@ def delete_ics(request, pk):
         f"ICS {ics_number} for {asset_type}, issued to {issued_to}, was deleted from the ICS registry.",
     )
 
-    return redirect("ics_monitoring")
+    return redirect("communications:ics_monitoring")
