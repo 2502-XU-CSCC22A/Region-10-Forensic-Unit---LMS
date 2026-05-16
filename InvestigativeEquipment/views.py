@@ -2,6 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import InvestigativeDetails, ICSRecord
 from config.models import Asset, AssetStatus, Category
 from disposal.models import DisposalItem
+from firearms.models import Firearm
+from mobility.views import Vehicle
+from disposal.models import DisposalItem
+from communications.models import Communication
+from InvestigativeEquipment.models import InvestigativeDetails
 import datetime
 import uuid
 import requests
@@ -26,6 +31,17 @@ def supabase_insert(table, payload):
  
  
 def investigative_view(request):
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    all_d = DisposalItem.objects.filter(
+        asset_ptr__status_id=4 
+    )
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    
+    current_user_role = request.user.userprofile.role
+    
     if request.method == "POST":
         action = request.POST.get("action_type")
 
@@ -177,6 +193,12 @@ def investigative_view(request):
         "low_stock_items": low_stock_items,
         "low_stock_count": low_stock_count,
         "disposal_count": disposal_count,
+        'total_comms': all_c.count(),
+        'total_firearms': all_f.count(),
+        'total_vehicle': visible_v.count(),
+        'total_ber': all_d.count(),
+        'total_inves': all_i,
+        'current_user_role':  current_user_role,
     }
     return render(request, "InvestigativeEquipment/investigative.html", context)
  

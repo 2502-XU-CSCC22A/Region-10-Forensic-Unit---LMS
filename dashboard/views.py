@@ -28,13 +28,14 @@ def dashboard_view(request):
         return Asset.objects.filter(status__status_name__iexact=name).count()
 
     total_assets         = Asset.objects.exclude(status_id__in=[4, 5]).count()
-    total_firearms       = Firearm.objects.count()
-    total_mobility       = Vehicle.objects.count()
-    total_communications = Communication.objects.exclude(status_id__in=[4, 5]).count()
-    total_investigative  = InvestigativeDetails.objects.count()
-    total_ber = DisposalItem.objects.filter(
-        asset_ptr__status_id=4, 
-    ).count()
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4)
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    
+    current_user_role = request.user.userprofile.role
     
     users = User.objects.filter(is_active=True).order_by('-last_login')[:50]
     asset_ct = ContentType.objects.get_for_model(Asset)
@@ -118,11 +119,11 @@ def dashboard_view(request):
 
     context = {
         'total_assets':         total_assets,
-        'total_firearms':       total_firearms,
-        'total_mobility':       total_mobility,
-        'total_communications': total_communications,
-        'total_investigative':  total_investigative,
-        'total_ber':            total_ber,
+        'total_firearms':       all_f.count(),
+        'total_mobility':       visible_v.count(),
+        'total_communications': all_c.count(),
+        'total_investigative':  all_i,
+        'total_ber':            all_d.count(),
         'activities':           activities,
         'notification_count':   unread_count,
         'current_user_role': current_user_role,

@@ -8,6 +8,11 @@ from django.http import JsonResponse
 from .forms import FirearmsPARForm
 from .models import FirearmPARRecord, Firearm
 from .models import Firearm
+from mobility.views import Vehicle
+from firearms.models import Firearm
+from disposal.models import DisposalItem
+from communications.models import Communication
+from InvestigativeEquipment.models import InvestigativeDetails
 from config.models import AssetStatus, Category
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -16,10 +21,37 @@ SUPABASE_URL = "https://vamjajitzyspdyfxisac.supabase.co"
 SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhbWphaml0enlzcGR5Znhpc2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNTkwMDUsImV4cCI6MjA5MTgzNTAwNX0.J8xu0H57Cch1lDpvPtWZqOBkKyzBb8tfUpHaZa2Hjfk"  
 
 def index(request):
-    return render(request, 'firearms/firearms_main.html')
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    all_d = DisposalItem.objects.filter(
+        asset_ptr__status_id=4 
+    )
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    
+    current_user_role = request.user.userprofile.role
+    
+    return render(request, 'firearms/firearms_main.html', {
+        'total_comms': all_c.count(),
+        'total_firearms': all_f.count(),
+        'total_vehicle': visible_v.count(),
+        'total_ber': all_d.count(),
+        'total_inves': all_i,
+        'current_user_role':  current_user_role,
+    })
 
 def par_management(request):
-
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    
+    all_d = DisposalItem.objects.filter(
+        asset_ptr__status_id=4 
+    )
+    current_user_role = request.user.userprofile.role
+    
     if request.method == 'POST':
         p_form = FirearmsPARForm(request.POST)
 
@@ -69,12 +101,33 @@ def par_management(request):
     else:
         p_form = FirearmsPARForm()
 
-    pars = FirearmPARRecord.objects.select_related('firearm').all().order_by('-created_at')
+    pars = (
+    FirearmPARRecord.objects
+    .select_related('firearm')
+    .all()
+    .order_by('-created_at')
+    )
+
+    today = timezone.now().date()
+
+    for par in pars:
+        if par.expiry_date:
+            par.days_until_expiry = (
+                par.expiry_date - today
+            ).days
+        else:
+            par.days_until_expiry = 9999
 
     return render(request, 'firearms/par_management.html', {
         'p_form': p_form,
         'pars': pars,
+        'today': today,
         'active_page': 'par_management',
+        'total_comms': all_c.count(),
+        'total_firearms': all_f.count(),
+        'total_vehicle': visible_v.count(),
+        'total_ber': all_d.count(),
+        'current_user_role':  current_user_role,
     })
 
 def firearm_list(request):
@@ -341,6 +394,15 @@ def print_par(request, pk):
 def edit_par(request, pk):
     record = get_object_or_404(FirearmPARRecord, pk=pk)
 
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    all_d = DisposalItem.objects.filter(
+        asset_ptr__status_id=4 
+    )
+    current_user_role = request.user.userprofile.role
+    
     if request.method == 'POST':
         form = FirearmsPARForm(request.POST)
 
@@ -379,6 +441,11 @@ def edit_par(request, pk):
         'form': form,
         'record': record,
         'active_page': 'par_management',
+        'total_comms': all_c.count(),
+        'total_firearms': all_f.count(),
+        'total_vehicle': visible_v.count(),
+        'total_ber': all_d.count(),
+        'current_user_role':  current_user_role,
     })
 
 def delete_par(request, pk):
@@ -436,7 +503,22 @@ def api_par_stats(request):
         return JsonResponse({'pars': [], 'error': str(e)}, status=500)
 
 def firearms_activitylog(request):
-    return render(request, 'firearms/firearms_activitylog.html')
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    all_d = DisposalItem.objects.filter(
+        asset_ptr__status_id=4 
+    )
+    current_user_role = request.user.userprofile.role
+    
+    return render(request, 'firearms/firearms_activitylog.html', {
+        'total_comms': all_c.count(),
+        'total_firearms': all_f.count(),
+        'total_vehicle': visible_v.count(),
+        'total_ber': all_d.count(),
+        'current_user_role':  current_user_role,
+    })
 
 def firearms_activitylog_api(request):
     try:

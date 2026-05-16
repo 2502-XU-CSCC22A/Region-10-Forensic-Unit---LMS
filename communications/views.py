@@ -7,6 +7,7 @@ from .forms import CommunicationPARForm, CommunicationICSForm
 from mobility.views import Vehicle
 from firearms.models import Firearm
 from disposal.models import DisposalItem
+from InvestigativeEquipment.models import InvestigativeDetails
 
 def create_activity_log(communication_id, action, details):
     with connection.cursor() as cursor:
@@ -26,28 +27,44 @@ def communications_list(request):
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
     all_d = DisposalItem.objects.filter(
         asset_ptr__status_id=4 
     )
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     current_user_role = request.user.userprofile.role
     
     return render(request, "communications/communications.html", {
         'items': items,
-        'total_comms': all_c.count() ,
-        'total_ber': all_d.count(),
-        'total_vehicles': all_v.count(),
-        'total_firearms': all_f.count(),
         'current_user_role':  current_user_role,
         'total_comms': all_c.count() ,
         'total_ber': all_d.count(),
-        'total_vehicles': all_v.count(),
+        'total_inves': all_i,
+        'total_vehicles': visible_v.count(),
         'total_firearms': all_f.count(),
         })
 
 
 # ACTIVITY LOGS
 def activity_logs(request):
-    return render(request, "activity_logs.html")
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    all_d = DisposalItem.objects.filter(
+        asset_ptr__status_id=4 
+    )
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    current_user_role = request.user.userprofile.role
+    
+    return render(request, "communications/activity_logs.html", {
+        'current_user_role':  current_user_role,
+        'total_comms': all_c.count() ,
+        'total_ber': all_d.count(),
+        'total_inves': all_i,
+        'total_vehicles': visible_v.count(),
+        'total_firearms': all_f.count(),
+    })
 
 
 # PAR MONITORING
@@ -61,7 +78,9 @@ def par_monitoring(request):
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
     all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4)
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     
     current_user_role = request.user.userprofile.role
 
@@ -104,7 +123,8 @@ def par_monitoring(request):
             "today": today,
             'total_comms': all_c.count() ,
             'total_ber': all_d.count(),
-            'total_vehicles': all_v.count(),
+            'total_vehicles': visible_v.count(),
+            'total_inves': all_i,
             'total_firearms': all_f.count(),
             'current_user_role': current_user_role,
         },
@@ -192,8 +212,9 @@ def ics_monitoring(request):
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
     all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4,)
-    
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     current_user_role = request.user.userprofile.role
     
     icss = (
@@ -239,10 +260,11 @@ def ics_monitoring(request):
             "i_form": i_form,
             "icss": icss,
             "today": today,
-             'total_comms': all_c.count() ,
+            'total_comms': all_c.count() ,
             'total_ber': all_d.count(),
-            'total_vehicles': all_v.count(),
+            'total_vehicles': visible_v.count(),
             'total_firearms': all_f.count(),
+            'total_inves': all_i,
             'current_user_role': current_user_role,
         },
     )

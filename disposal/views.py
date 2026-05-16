@@ -48,10 +48,12 @@ def disposal_list(request):
     page_number = request.GET.get('page')
     disposal_items = paginator.get_page(page_number)
     
-    vehicle_all = Vehicle.objects.count()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
-
+    
+    current_user_role = request.user.userprofile.role
     inves_all = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     
     logs = DisposalActivityLog.objects.all().order_by('-timestamp')
@@ -78,9 +80,11 @@ def disposal_list(request):
         asset_ptr__category__category_name='communications'
     ).count()
     
+    vehicle_category = ['mobility', 'VEHICLE']
+    
     mobility_ber = DisposalItem.objects.filter(
         asset_ptr__status__status_id='4',
-        asset_ptr__category__category_name='mobility'
+        asset_ptr__category__category_name__in=vehicle_category
     ).count()
     
     firearms_ber = DisposalItem.objects.filter(
@@ -126,7 +130,7 @@ def disposal_list(request):
         'inves_ber': inves_ber,
         'total_ber': total_ber,
         'disposal_items': disposal_items,
-        'vehicle_all': vehicle_all,
+        'total_vehicle': visible_v.count(),
         'comms_all': comms_all,
         'total_removed': len(disposal_items),
         'firearms_all': firearms_all,
@@ -138,23 +142,25 @@ def disposal_list(request):
 def history_log(request):
     logs = DisposalActivityLog.objects.all().order_by('-timestamp')
     
-    vehicle_all = Vehicle.objects.count()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
-
-    inves_all = InvestigativeDetails.objects.exclude(asset_ptr__status_id__in=[4, 5]).count()
+    
+    current_user_role = request.user.userprofile.role
+    inves_all = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     
     total_ber = DisposalItem.objects.filter(asset_ptr__status_id=4).count()
     current_user_role = request.user.userprofile.role
     
     return render(request, 'disposal/history.html', {
         'items': logs,
-        'vehicle_all': vehicle_all,
-        'comms_all': comms_all,
-        'total_ber': total_ber,
         'firearms_all': firearms_all,
         'inves_all': inves_all,
         'current_user_role': current_user_role,
+        'total_vehicle': visible_v.count(),
+        'comms_all': comms_all,
+        'total_ber': total_ber,
     })
 
 def finalize_removal(request, pk):

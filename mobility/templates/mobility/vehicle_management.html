@@ -18,13 +18,13 @@
 
         <div class="stat-card">
             <div class="stat-top">
-                <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-icon orange"><i class="fas fa-check-circle"></i></div>
                 <div>
                     <div class="stat-value">{{ s_count|default:"0" }}</div>
                     <div class="stat-label">Serviceable Vehicles</div>
                 </div>
             </div>
-            <div class="stat-bar-wrap"><div class="stat-bar green"></div></div>
+            <div class="stat-bar-wrap"><div class="stat-bar orange"></div></div>
         </div>
 
         <div class="stat-card">
@@ -81,19 +81,16 @@
                 {% endif %}
 
                 <a href="{% url 'mobility:par_management' %}" class="btn btn-outline">
-                    <i class="fas fa-clipboard-list"></i>
                     PAR Monitoring
                 </a>
 
                 <a href="{% url 'mobility:activity_log' %}" class="btn btn-outline">
-                    <i class="fas fa-file-invoice"></i>
                     Activity Log
                 </a>
 
                 <button type="button"
                         class="btn btn-outline"
                         onclick="exportVehicleCSV()">
-                    <i class="fas fa-file-export"></i>
                     Export CSV
                 </button>
             </div>
@@ -186,7 +183,7 @@
 
                             <form method="post"
                                   action="{% url 'mobility:edit_vehicle' vehicle.id %}"
-                                  class="vehicle-edit-form">
+                                  class="vehicle-edit-form protected-submit-form">
                                 {% csrf_token %}
 
                                 <h4>Vehicle Information</h4>
@@ -284,7 +281,7 @@
                                         Cancel
                                     </button>
 
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary submit-once-btn">
                                         Save Changes
                                     </button>
                                 </div>
@@ -314,9 +311,11 @@
                             </div>
 
                             <div class="filter-modal-footer">
-                                <form method="post" action="{% url 'mobility:delete_vehicle' vehicle.id %}">
+                                <form method="post"
+                                      action="{% url 'mobility:delete_vehicle' vehicle.id %}"
+                                      class="protected-submit-form">
                                     {% csrf_token %}
-                                    <button type="submit" class="filter-btn-apply">
+                                    <button type="submit" class="filter-btn-apply submit-once-btn">
                                         Delete
                                     </button>
                                 </form>
@@ -359,7 +358,9 @@
 
             <h3>Add Vehicle</h3>
 
-            <form method="post" action="{% url 'mobility:vehicle_management' %}">
+            <form method="post"
+                  action="{% url 'mobility:vehicle_management' %}"
+                  class="protected-submit-form">
                 {% csrf_token %}
 
                 <h4>Vehicle Information</h4>
@@ -367,12 +368,12 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Vehicle ID</label>
-                        <input type="text" name="vehicle_id" class="form-control" placeholder="e.g. VEH-001">
+                        <input type="text" name="vehicle_id" class="form-control" placeholder="e.g. VEH-002">
                     </div>
 
                     <div class="form-group">
                         <label>Plate Number</label>
-                        <input type="text" name="plate_number" class="form-control" placeholder="e.g. ABC 1234">
+                        <input type="text" name="plate_number" class="form-control" placeholder="Use a unique plate number">
                     </div>
 
                     <div class="form-group">
@@ -455,7 +456,7 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label>PAR Number</label>
-                        <input type="text" name="par_number" class="form-control" placeholder="Enter PAR number">
+                        <input type="text" name="par_number" class="form-control" placeholder="Enter unique PAR number">
                     </div>
 
                     <div class="form-group">
@@ -486,7 +487,7 @@
                         Cancel
                     </button>
 
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary submit-once-btn">
                         Save Vehicle
                     </button>
                 </div>
@@ -499,6 +500,8 @@
 
 <script>
     function openModal(id) {
+        closeAllModals();
+
         const modal = document.getElementById(id);
 
         if (modal) {
@@ -517,6 +520,8 @@
     }
 
     function openDeleteVehicleModal(id) {
+        closeAllModals();
+
         const modal = document.getElementById(id);
 
         if (modal) {
@@ -533,6 +538,34 @@
             modal.classList.remove('active');
         }
     }
+
+    function closeAllModals() {
+        document.querySelectorAll(".mobility-modal-overlay").forEach(modal => {
+            modal.classList.remove("open");
+        });
+
+        document.querySelectorAll(".filter-modal-overlay").forEach(modal => {
+            modal.classList.remove("active");
+        });
+    }
+
+    document.querySelectorAll(".protected-submit-form").forEach(form => {
+        form.addEventListener("submit", function () {
+            const submitButton = form.querySelector(".submit-once-btn");
+
+            if (submitButton) {
+                submitButton.disabled = true;
+
+                if (submitButton.innerText.trim().toLowerCase().includes("delete")) {
+                    submitButton.innerText = "Deleting...";
+                } else {
+                    submitButton.innerText = "Saving...";
+                }
+            }
+
+            closeAllModals();
+        });
+    });
 
     function exportVehicleCSV() {
         let csv = [];

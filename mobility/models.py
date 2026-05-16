@@ -102,44 +102,29 @@ class Vehicle(models.Model):
         )
 
     def get_asset_status(self):
-<<<<<<< HEAD
-=======
+        status_mapping = {
+            'Serviceable': 6,
+            'Unserviceable': 7,
+            'BER': 4,
+            'Disposed': 5,
+        }
 
->>>>>>> ca993df (Updated mobility files)
-        asset_status = AssetStatus.objects.filter(
-            status_name=self.status
+        status_id = status_mapping.get(self.status, 6)
+
+        return AssetStatus.objects.filter(
+            status_id=status_id
         ).first()
 
-        if not asset_status:
-            asset_status = AssetStatus.objects.filter(
-                status_name='Serviceable'
-            ).first()
-
-        return asset_status
-
     def get_vehicle_category(self):
-<<<<<<< HEAD
-        vehicle_category, _ = Category.objects.get_or_create(
-            category_name='Vehicle'
-        )
-=======
-
-        # IMPORTANT:
-        # Your actual DB category is VEHICLE (uppercase)
-        vehicle_category = Category.objects.get(
+        return Category.objects.get(
             category_name='VEHICLE'
         )
 
->>>>>>> ca993df (Updated mobility files)
-        return vehicle_category
-
     def save(self, *args, **kwargs):
-
         old_status = None
 
         if self.pk:
             old_vehicle = Vehicle.objects.filter(pk=self.pk).first()
-
             if old_vehicle:
                 old_status = old_vehicle.status
 
@@ -150,23 +135,12 @@ class Vehicle(models.Model):
 
         if not asset_status:
             raise ValueError(
-                "Asset status could not be found. Please make sure 'Serviceable' exists in Asset_Status table."
+                "Asset status could not be found. Please check the Asset_Status table."
             )
 
-        asset_status = self.get_asset_status()
-        vehicle_category = self.get_vehicle_category()
-
-        if not asset_status:
-            raise ValueError(
-                "Asset status could not be found. "
-                "Please make sure 'Serviceable' exists in Asset_Status table."
-            )
-
-        # CREATE / LINK ASSET
         if not self.asset and asset_property_no:
             asset, created = Asset.objects.get_or_create(
                 property_no=asset_property_no,
-
                 defaults={
                     'model': self.make_model or '',
                     'serial_no': asset_serial_no,
@@ -174,35 +148,24 @@ class Vehicle(models.Model):
                     'status': asset_status,
                     'category': vehicle_category,
                     'quantity': '1',
+                    'office': 'Mobility',
                 }
             )
 
             self.asset = asset
 
-<<<<<<< HEAD
-        # SYNC ASSET DETAILS WHEN VEHICLE IS UPDATED
         if self.asset:
-=======
-        # SYNC ASSET DETAILS
-        if self.asset:
-
->>>>>>> ca993df (Updated mobility files)
             self.asset.model = self.make_model or self.asset.model
             self.asset.serial_no = asset_serial_no or self.asset.serial_no
             self.asset.status = asset_status
             self.asset.category = vehicle_category
             self.asset.quantity = self.asset.quantity or '1'
-<<<<<<< HEAD
-=======
-
->>>>>>> ca993df (Updated mobility files)
+            self.asset.office = self.asset.office or 'Mobility'
             self.asset.save()
 
         super().save(*args, **kwargs)
 
-        # BER LOGIC
         if self.status == 'BER' and old_status != 'BER' and self.asset:
-
             from disposal.models import DisposalItem, DisposalActivityLog
 
             disposal_property_no = f"DISPOSAL-{self.asset.property_no}"
@@ -217,24 +180,22 @@ class Vehicle(models.Model):
                     model=self.make_model or '',
                     serial_no=asset_serial_no,
                     date_acquired=timezone.now().date(),
-                    status_id=1,
-                    category_id=10,
+                    status_id=4,
+                    category=vehicle_category,
                     quantity='1',
+                    office='Mobility',
                     disposal_reason='Vehicle marked as BER from Mobility Branch.',
                     processed_by=None,
                 )
 
             DisposalActivityLog.objects.create(
                 asset=self.asset,
-
                 action_type='FLAGGED',
-
                 description=(
                     f"Vehicle "
                     f"{self.plate_number or self.conduction_number or self.vehicle_id} "
                     f"flagged as BER from Mobility Branch."
                 ),
-
                 disposal_reason='Vehicle marked as BER from Mobility Branch.'
             )
 
@@ -248,7 +209,6 @@ class PARRecord(models.Model):
     )
 
     par_number = models.CharField(max_length=50, unique=True)
-
     issued_to = models.CharField(max_length=100)
 
     date_acquired = models.DateField(
@@ -257,7 +217,6 @@ class PARRecord(models.Model):
     )
 
     expiry_date = models.DateField(blank=True, null=True)
-
     remarks = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -292,7 +251,6 @@ class ActivityLog(models.Model):
     )
 
     description = models.TextField(default='')
-
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def get_action_type_display(self):

@@ -294,6 +294,16 @@ tbody tr:hover {
     min-width: 90px;
 }
 
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    white-space: nowrap;
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+
 .badge-green {
     background: #dcfce7;
     color: #15803d;

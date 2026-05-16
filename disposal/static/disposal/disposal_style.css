@@ -7,6 +7,8 @@
     --alert-bg: #eff6ff;
     --alert-border: #bfdbfe;
     --accent: #2563eb;
+    --pnp-blue: #1a237e;
+    --border: #e2e8f0;
 }
 
 body,
@@ -306,85 +308,85 @@ a:has(.outline) {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     font-family: 'Inter', sans-serif;
-}
-
-table {
+  }
+  
+  table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
     font-family: 'Inter', sans-serif;
-}
-
-thead tr {
+  }
+  
+  thead tr {
     background: #e8edf6;
-}
-
-th {
+  }
+  
+  th {
     padding: 11px 14px;
     text-align: left;
-    font-weight: 700;
+    font-weight: 800;
     font-family: 'Inter', sans-serif;
     font-size: 13px;
-    color: var(--navy);
-    letter-spacing: .4px;
+    color: var(--pnp-blue);
+    letter-spacing: 0.3px;
     border-bottom: 2px solid var(--border);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-}
-
-th:hover {
+  }
+  
+  th:hover {
     background: #d9e4f7;
-}
-
-td {
+  }
+  
+  td {
     padding: 11px 14px;
     border-bottom: 1px solid var(--border);
     color: var(--text);
     vertical-align: middle;
-}
-
-tbody tr:nth-child(even) {
+  }
+  
+  tbody tr:nth-child(even) {
     background: var(--row-alt);
-}
-
-tbody tr:hover {
+  }
+  
+  tbody tr:hover {
     background: #eff6ff;
-}
-
-td,
-th {
+  }
+  
+  td,
+  th {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 140px;
-}
-
-td:nth-child(7),
-th:nth-child(7) {
+  }
+  
+  td:nth-child(7),
+  th:nth-child(7) {
     max-width: 200px;
     min-width: 160px;
-}
-
-td:nth-child(8),
-th:nth-child(8) {
+  }
+  
+  td:nth-child(8),
+  th:nth-child(8) {
     max-width: none;
     width: auto;
-}
-
-td:nth-child(9),
-th:nth-child(9) {
+  }
+  
+  td:nth-child(9),
+  th:nth-child(9) {
     max-width: none;
     width: auto;
-}
-
-/* Action column */
-td:last-child,
-th:last-child {
+  }
+  
+  
+  td:last-child,
+  th:last-child {
     max-width: none;
     width: auto;
-    white-space: nowrap;
-}
+  
+  }
 
 .modal-backdrop {
     z-index: 1040 !important;
@@ -678,12 +680,12 @@ th:last-child {
     padding: 14px 24px;
     text-align: center;
     font-family: 'Inter', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--navy);
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--pnp-blue);
     letter-spacing: .5px;
     border-bottom: 1px solid var(--border);
-}
+  }
 
 .table-controls {
     display: flex;

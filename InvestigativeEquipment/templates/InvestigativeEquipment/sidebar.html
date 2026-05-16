@@ -8,28 +8,28 @@
     <li>
       <a href="{% url 'mobility:vehicle_management' %}">
         <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ vehicle_all|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicle|default:'0' }}</span>
       </a>
     </li>
 
     <li>
       <a href="{% url 'firearms:index' %}">
         <span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ firearms_all|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span>
       </a>
     </li>
 
     <li>
       <a href="{% url 'communications:communications_list' %}">
         <span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;"> {{ comms_all|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;"> {{ total_comms|default:'0' }}</span>
       </a> 
     </li>
 
     <li class="active">
       <a href="{% url 'InvestigativeEquipment:investigative_view'%}">
         <i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_inves|default:'0' }}</span>
       </a> 
     </li>
 

@@ -70,7 +70,7 @@
         <li>
           <a href="{% url 'mobility:vehicle_management' %}">
             <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
-            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ vehicle_all|default:'0' }}</span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicle|default:'0' }}</span>
           </a>
         </li>
     
@@ -183,7 +183,7 @@
                       {% endif %}
                       
                       <small class="text-muted mt-2 d-block">
-                        Action by: {{ log.user.get_full_name|default:log.user.username }}
+                        Action by: {{ current_user_role }}
                       </small>
                     </div>
                     </div>

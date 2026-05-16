@@ -14,10 +14,11 @@
   --navy-light: #1e3d8f;
   --accent: #2563eb;
   --accent-2: #3b82f6;
+  --pnp-blue: #1a237e;
 
   /* Layout */
-  --sidebar-w: 290px;
-  --sidebar-width: 290px;          /* FIX: unified alias */
+  --sidebar-w: 320px;
+  --sidebar-width: 320px;          /* FIX: unified alias */
   --header-h: 72px;
   --header-height: 70px;           /* FIX: unified alias */
 
@@ -143,19 +144,16 @@ body {
 
 /* ── Header ───────────────────────────────────────────────────────────────── */
 .navbar-header {
-  height: var(--header-height);
+  height: 73px;
+  background-color: #ffffff;
+  border-bottom: none;
+  box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
   width: 100%;
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  z-index: 1002; /* FIX: raised above sidebar (1000) and modal (1050) sits above this */
-  background: #fff;
-  display: flex;
-  align-items: center;
-  padding: 0 20px;
-  border-bottom: 3px solid var(--accent);
 }
 
+/* Brand Styles (Left) */
 .header-logo {
   font-size: 11px;
   font-weight: 800;
@@ -178,6 +176,7 @@ body {
   margin: 0;
 }
 
+/* User Section Styles (Right) */
 .notification-wrapper i {
   font-size: 1.2rem;
   cursor: pointer;
@@ -212,7 +211,7 @@ body {
 .main-content {
   flex-grow: 1;
   margin-left: var(--sidebar-width);
-  margin-top: var(--header-height);
+  margin-top: 30px;
   padding: 30px;
 }
 
@@ -349,14 +348,13 @@ header h1 {
 
 .table-header {
   background: #d9e4f7;
-  padding: 14px 24px;
+  color: var(--pnp-blue);
   text-align: center;
   font-family: 'Inter', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--navy);
-  letter-spacing: 0.5px;
-  border-bottom: 1px solid var(--border);
+  font-size: 17px;
+  font-weight: 800;
+  padding: 15px;
+  border-bottom: 1px solid #dbe2ea;
 }
 
 .table-controls {
@@ -402,18 +400,17 @@ header h1 {
 }
 
 .table-container {
-  background: #f8f9fc;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  overflow: hidden;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  font-family: 'Inter', sans-serif;
 }
 
 table {
-  font-family: 'Inter', sans-serif;
   width: 100%;
   border-collapse: collapse;
-  text-align: center;
-  /* FIX: removed duplicate table block */
+  font-size: 13px;
+  font-family: 'Inter', sans-serif;
 }
 
 thead tr {
@@ -421,20 +418,70 @@ thead tr {
 }
 
 th {
-  font-size: 14px;
-  text-align: center;
-  vertical-align: middle;
-  text-transform: uppercase;
-  color: #4e73df;
-  letter-spacing: 0.5px;
-  padding: 15px;
-  border-bottom: 1px solid var(--border-color); /* FIX: now resolves correctly */
+  padding: 11px 14px;
+  text-align: left;
+  font-weight: 800;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--pnp-blue);
+  letter-spacing: 0.3px;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+th:hover {
+  background: #d9e4f7;
 }
 
 td {
-  padding: 15px;
-  font-size: 14px;
-  border-bottom: 1px solid var(--border-color); /* FIX: now resolves correctly */
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+
+tbody tr:nth-child(even) {
+  background: var(--row-alt);
+}
+
+tbody tr:hover {
+  background: #eff6ff;
+}
+
+td,
+th {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+td:nth-child(7),
+th:nth-child(7) {
+  max-width: 200px;
+  min-width: 160px;
+}
+
+td:nth-child(8),
+th:nth-child(8) {
+  max-width: none;
+  width: auto;
+}
+
+td:nth-child(9),
+th:nth-child(9) {
+  max-width: none;
+  width: auto;
+}
+
+
+td:last-child,
+th:last-child {
+  max-width: none;
+  width: auto;
+
 }
 
 /* ── Status Tags & Buttons ────────────────────────────────────────────────── */

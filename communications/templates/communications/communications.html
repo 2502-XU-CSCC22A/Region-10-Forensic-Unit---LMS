@@ -107,9 +107,9 @@
               <option value="UNSERVICEABLE">Unserviceable</option>
             </select>
             <button id="addRecordBtn" class="btn btn-primary">Add Record</button>
-            <a href="{% url 'par_monitoring' %}" class="btn btn-outline">PAR Records</a>
-            <a href="{% url 'ics_monitoring' %}" class="btn btn-outline">ICS Records</a>
-            <a href="{% url 'activity_logs' %}" class="btn btn-outline">Activity Log</a>
+            <a href="{% url 'communications:par_monitoring' %}" class="btn btn-outline">PAR Records</a>
+            <a href="{% url 'communications:ics_monitoring' %}" class="btn btn-outline">ICS Records</a>
+            <a href="{% url 'communications:activity_logs' %}" class="btn btn-outline">Activity Log</a>
             <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
           </div>
 
@@ -117,13 +117,13 @@
             <table>
               <thead>
                 <tr>
-                  <th>TYPE</th>
-                  <th>SERIAL NO.</th>
-                  <th>PAR NO.</th>
-                  <th>RADIO ID</th>
-                  <th>STATUS</th>
-                  <th>REMARKS</th>
-                  <th>ACTION</th>
+                  <th>TYPE &#x21C5;</th>
+                  <th>SERIAL NO. &#x21C5;</th>
+                  <th>PAR NO. &#x21C5;</th>
+                  <th>RADIO ID &#x21C5;</th>
+                  <th>STATUS &#x21C5;</th>
+                  <th>REMARKS &#x21C5;</th>
+                  <th>ACTION &#x21C5;</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>

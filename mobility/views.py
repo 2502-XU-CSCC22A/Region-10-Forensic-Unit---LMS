@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Vehicle, PARRecord, ActivityLog
 from .forms import VehicleForm
 from django.db.models import Q
+from django.db import transaction, IntegrityError
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib import messages
@@ -15,9 +16,6 @@ from InvestigativeEquipment.models import InvestigativeDetails
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
-# Added: use develop config/models.py without changing it
-from config.models import Asset, AssetStatus, Category
-
 
 def can_edit(user):
     try:
@@ -27,47 +25,41 @@ def can_edit(user):
         return False
 
 
-def create_vehicle_asset(vehicle, request):
-    """
-    Creates an Asset record required by the develop branch config/models.py.
-    Do not change config/models.py; supply the required fields here instead.
-    """
-
-    status_name = getattr(vehicle, 'status', None) or 'Serviceable'
-
+def get_current_user_role(user):
     try:
-        asset_status = AssetStatus.objects.get(status_name=status_name)
-    except AssetStatus.DoesNotExist:
-        asset_status = AssetStatus.objects.get(status_name='Serviceable')
+        return user.userprofile.role
+    except Exception:
+        return None
 
-    category, _ = Category.objects.get_or_create(category_name='Vehicle')
 
-    property_no = (
-        request.POST.get('property_no')
-        or getattr(vehicle, 'property_no', None)
-        or f"MOB-{getattr(vehicle, 'plate_number', '') or getattr(vehicle, 'conduction_number', '') or timezone.now().strftime('%Y%m%d%H%M%S')}"
-    )
+def format_vehicle_form_errors(form):
+    error_messages = []
 
-    serial_no = (
-        getattr(vehicle, 'chassis_number', None)
-        or getattr(vehicle, 'engine_number', None)
-        or getattr(vehicle, 'conduction_number', None)
-        or getattr(vehicle, 'plate_number', None)
-        or property_no
-    )
+    for field, errors in form.errors.items():
+        field_label = form.fields[field].label if field in form.fields else field
 
-    asset = Asset.objects.create(
-        date_acquired=request.POST.get('date_acquired') or timezone.now().date(),
-        property_no=property_no,
-        serial_no=serial_no,
-        model=getattr(vehicle, 'make_model', None) or 'Vehicle',
-        quantity='1',
-        status=asset_status,
-        category=category,
-        office='Mobility'
-    )
+        for error in errors:
+            error_text = str(error)
 
-    return asset
+            if field == "vehicle_id" and "already exists" in error_text:
+                error_messages.append(
+                    "Vehicle ID already exists. Please use a different Vehicle ID."
+                )
+
+            elif field == "plate_number" and "already exists" in error_text:
+                error_messages.append(
+                    "Plate Number already exists. Please use a different Plate Number."
+                )
+
+            elif field == "make_model":
+                error_messages.append(
+                    "Make / Model is required. Please enter the vehicle make and model."
+                )
+
+            else:
+                error_messages.append(f"{field_label}: {error_text}")
+
+    return " ".join(error_messages)
 
 
 @login_required
@@ -89,8 +81,10 @@ def vehicle_management(request):
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
     inves_all = InvestigativeDetails.objects.count()
-    total_ber = DisposalItem.objects.filter(category_id__in=[3, 10])
-    current_user_role = request.user.userprofile.role
+    total_ber = DisposalItem.objects.all().count()
+     
+     
+    current_user_role = get_current_user_role(request.user)
 
     if request.method == 'POST':
         if not can_edit(request.user):
@@ -99,57 +93,77 @@ def vehicle_management(request):
         form = VehicleForm(request.POST)
 
         if form.is_valid():
-            vehicle = form.save(commit=False)
-
-            asset = create_vehicle_asset(vehicle, request)
-
-            # This works only if your Vehicle model has an asset field.
-            # Example: asset = models.ForeignKey(Asset, ...)
-            if hasattr(vehicle, 'asset'):
-                vehicle.asset = asset
-
-            vehicle.save()
-
-            par_created = False
-
             par_number = request.POST.get('par_number')
             issued_to = request.POST.get('issued_to')
             date_acquired = request.POST.get('date_acquired')
             expiry_date = request.POST.get('expiry_date')
             remarks = request.POST.get('remarks')
 
-            if par_number and issued_to:
-                PARRecord.objects.create(
-                    vehicle=vehicle,
-                    par_number=par_number,
-                    issued_to=issued_to,
-                    date_acquired=date_acquired or timezone.now().date(),
-                    expiry_date=expiry_date or None,
-                    remarks=remarks
-                )
-                par_created = True
-
-            ActivityLog.objects.create(
-                user=request.user,
-                action_type='CREATE',
-                description=f"Added new vehicle: {vehicle.make_model} ({vehicle.plate_number or vehicle.conduction_number})"
-            )
-
-            if vehicle.status == 'BER':
-                messages.warning(
+            if par_number and PARRecord.objects.filter(par_number=par_number).exists():
+                messages.error(
                     request,
-                    "Vehicle marked as BER, sent to BER & Disposal, and removed from the Mobility table."
+                    "Vehicle was not saved. PAR Number already exists. Please use a different PAR Number."
                 )
-            elif par_created:
-                messages.success(request, "Vehicle and PAR details added successfully.")
-            else:
-                messages.success(request, "Vehicle added successfully.")
+                return redirect('mobility:vehicle_management')
 
-            return redirect('mobility:vehicle_management')
+            try:
+                with transaction.atomic():
+                    vehicle = form.save()
+
+                    par_created = False
+
+                    if par_number and issued_to:
+                        PARRecord.objects.create(
+                            vehicle=vehicle,
+                            par_number=par_number,
+                            issued_to=issued_to,
+                            date_acquired=date_acquired or timezone.now().date(),
+                            expiry_date=expiry_date or None,
+                            remarks=remarks
+                        )
+                        par_created = True
+
+                    ActivityLog.objects.create(
+                        user=request.user,
+                        action_type='CREATE',
+                        description=f"Added new vehicle: {vehicle.make_model} ({vehicle.plate_number or vehicle.conduction_number})"
+                    )
+
+                if vehicle.status == 'BER':
+                    messages.warning(
+                        request,
+                        "Vehicle marked as BER, sent to BER & Disposal, and removed from the Mobility table."
+                    )
+                elif par_created:
+                    messages.success(request, "Vehicle and PAR details added successfully.")
+                else:
+                    messages.success(request, "Vehicle added successfully.")
+
+                return redirect('mobility:vehicle_management')
+
+            except IntegrityError:
+                messages.error(
+                    request,
+                    "Vehicle was not saved. Duplicate data was detected. Please use a unique Vehicle ID, Plate Number, Chassis Number, Engine Number, or PAR Number."
+                )
+                return redirect('mobility:vehicle_management')
+
+            except Exception as e:
+                messages.error(
+                    request,
+                    f"Vehicle was not saved. Please check the entered details and try again. Error: {e}"
+                )
+                return redirect('mobility:vehicle_management')
 
         else:
-            messages.error(request, "Please correct the errors in the vehicle form.")
-            messages.error(request, form.errors)
+            clean_errors = format_vehicle_form_errors(form)
+
+            messages.error(
+                request,
+                f"Vehicle was not saved. {clean_errors}"
+            )
+
+            return redirect('mobility:vehicle_management')
 
     else:
         form = VehicleForm()
@@ -175,7 +189,7 @@ def vehicle_management(request):
             expiry_date__lte=upcoming_limit
         ).count(),
 
-        'total_disposal': total_ber,
+        'total_dispo': total_ber,
         'total_inves': inves_all,
         'total_firearms': firearms_all,
         'total_comms': comms_all,
@@ -200,37 +214,45 @@ def edit_vehicle(request, pk):
         form = VehicleForm(request.POST, instance=vehicle)
 
         if form.is_valid():
-            updated_vehicle = form.save()
+            try:
+                updated_vehicle = form.save()
 
-            # Optional: sync linked Asset status/model if Vehicle has asset
-            if hasattr(updated_vehicle, 'asset') and updated_vehicle.asset:
-                try:
-                    asset_status = AssetStatus.objects.get(status_name=updated_vehicle.status)
-                    updated_vehicle.asset.status = asset_status
-                    updated_vehicle.asset.model = updated_vehicle.make_model
-                    updated_vehicle.asset.save()
-                except AssetStatus.DoesNotExist:
-                    pass
-
-            ActivityLog.objects.create(
-                user=request.user,
-                action_type='UPDATE',
-                description=f"Updated vehicle: {updated_vehicle.make_model} ({updated_vehicle.plate_number or updated_vehicle.conduction_number})"
-            )
-
-            if updated_vehicle.status == 'BER':
-                messages.warning(
-                    request,
-                    "Vehicle marked as BER, sent to BER & Disposal, and removed from the Mobility table."
+                ActivityLog.objects.create(
+                    user=request.user,
+                    action_type='UPDATE',
+                    description=f"Updated vehicle: {updated_vehicle.make_model} ({updated_vehicle.plate_number or updated_vehicle.conduction_number})"
                 )
-            else:
-                messages.success(request, "Vehicle updated successfully.")
 
-            return redirect('mobility:vehicle_management')
+                if updated_vehicle.status == 'BER':
+                    messages.warning(
+                        request,
+                        "Vehicle marked as BER, sent to BER & Disposal, and removed from the Mobility table."
+                    )
+                else:
+                    messages.success(request, "Vehicle updated successfully.")
+
+                return redirect('mobility:vehicle_management')
+
+            except IntegrityError:
+                messages.error(
+                    request,
+                    "Vehicle was not updated. Duplicate data was detected. Please use unique vehicle details."
+                )
+                return redirect('mobility:vehicle_management')
+
+            except Exception as e:
+                messages.error(
+                    request,
+                    f"Vehicle was not updated. Please check the details and try again. Error: {e}"
+                )
+                return redirect('mobility:vehicle_management')
 
         else:
-            messages.error(request, "Please correct the errors before saving.")
-            messages.error(request, form.errors)
+            clean_errors = format_vehicle_form_errors(form)
+            messages.error(
+                request,
+                f"Vehicle was not updated. {clean_errors}"
+            )
 
     return redirect('mobility:vehicle_management')
 
@@ -253,7 +275,7 @@ def delete_vehicle(request, pk):
     )
 
     vehicle.delete()
-    messages.warning(request, "Vehicle record deleted.")
+    messages.warning(request, "Vehicle record deleted successfully.")
     return redirect('mobility:vehicle_management')
 
 
@@ -267,14 +289,6 @@ def mark_vehicle_ber(request, pk):
     if vehicle.status != 'Disposed':
         vehicle.status = 'BER'
         vehicle.save()
-
-        if hasattr(vehicle, 'asset') and vehicle.asset:
-            try:
-                asset_status = AssetStatus.objects.get(status_name='BER')
-                vehicle.asset.status = asset_status
-                vehicle.asset.save()
-            except AssetStatus.DoesNotExist:
-                pass
 
         ActivityLog.objects.create(
             user=request.user,
@@ -298,14 +312,6 @@ def send_vehicle_to_disposal(request, pk):
         vehicle.status = 'Disposed'
         vehicle.save()
 
-        if hasattr(vehicle, 'asset') and vehicle.asset:
-            try:
-                asset_status = AssetStatus.objects.get(status_name='Disposed')
-                vehicle.asset.status = asset_status
-                vehicle.asset.save()
-            except AssetStatus.DoesNotExist:
-                pass
-
         ActivityLog.objects.create(
             user=request.user,
             action_type='UPDATE',
@@ -324,15 +330,17 @@ def par_management(request):
 
     search = request.GET.get('search')
     status = request.GET.get('status')
-    
+
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
     inves_all = InvestigativeDetails.objects.count()
-    total_ber = DisposalItem.objects.filter(asset_ptr__status_id = 4,).count()
+    total_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4 
+    )
+    current_user_role = get_current_user_role(request.user)
 
     pars = PARRecord.objects.select_related('vehicle').all()
-    current_user_role = request.user.userprofile.role
-    
+
     if search:
         pars = pars.filter(
             Q(par_number__icontains=search) |
@@ -366,8 +374,6 @@ def par_management(request):
 
     return render(request, 'mobility/par_management.html', context)
 
-    return render(request, 'mobility/par_management.html', context)
-
 
 @login_required
 def delete_par(request, pk):
@@ -383,7 +389,7 @@ def delete_par(request, pk):
     )
 
     par.delete()
-    messages.warning(request, "PAR record removed.")
+    messages.warning(request, "PAR record removed successfully.")
     return redirect('mobility:par_management')
 
 
@@ -402,13 +408,15 @@ def activity_log(request):
     period = request.GET.get('period', 'week')
     days = 7 if period == 'week' else 30
     cutoff = timezone.now() - timedelta(days=days)
-    
+
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
     inves_all = InvestigativeDetails.objects.count()
-    total_ber = DisposalItem.objects.filter(asset_ptr__status_id = 4,).count()
-    current_user_role = request.user.userprofile.role
-    
+    total_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4 
+    )
+    current_user_role = get_current_user_role(request.user)
+
     logs = ActivityLog.objects.filter(
         timestamp__gte=cutoff
     ).select_related('user').order_by('-timestamp')
@@ -452,7 +460,7 @@ def manual_email_alert(request):
                 server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
                 server.sendmail(
                     settings.EMAIL_HOST_USER,
-                    ['dlpalayen@gmail.com'],
+                    ['adminfu10@gmail.com'],
                     message_body
                 )
 
@@ -475,21 +483,38 @@ def edit_par(request, pk):
         return HttpResponseForbidden("You do not have permission.")
 
     if request.method == 'POST':
-        par.par_number = request.POST.get('par_number')
+        new_par_number = request.POST.get('par_number')
+
+        if PARRecord.objects.exclude(pk=par.pk).filter(par_number=new_par_number).exists():
+            messages.error(
+                request,
+                "PAR record was not updated. PAR Number already exists. Please use a different PAR Number."
+            )
+            return redirect('mobility:par_management')
+
+        par.par_number = new_par_number
         par.issued_to = request.POST.get('issued_to')
         par.date_acquired = request.POST.get('date_acquired') or None
         par.expiry_date = request.POST.get('expiry_date') or None
         par.remarks = request.POST.get('remarks')
 
-        par.save()
+        try:
+            par.save()
 
-        ActivityLog.objects.create(
-            user=request.user,
-            action_type='UPDATE',
-            description=f"Updated PAR Record: {par.par_number}"
-        )
+            ActivityLog.objects.create(
+                user=request.user,
+                action_type='UPDATE',
+                description=f"Updated PAR Record: {par.par_number}"
+            )
 
-        messages.success(request, "PAR record updated successfully.")
+            messages.success(request, "PAR record updated successfully.")
+
+        except IntegrityError:
+            messages.error(
+                request,
+                "PAR record was not updated. PAR Number already exists. Please use a different PAR Number."
+            )
+
         return redirect('mobility:par_management')
 
     return redirect('mobility:par_management')

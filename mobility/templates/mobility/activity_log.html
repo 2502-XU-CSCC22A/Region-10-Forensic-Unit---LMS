@@ -1,227 +1,276 @@
 {% extends 'base_generic.html' %}
 
 {% block content %}
-<style>
+  <style>
     .section-title {
-        font-weight: 800;
-        color: #1a2b6d;
-        margin: 0;
-        font-size: 22px;
+      font-weight: 700;
+      color: #1a2b6d;
+      margin: 20px 0 4px 0;
+      font-size: 28px;
     }
-
+    
     .activity-subtitle {
-        color: #64748b;
-        font-size: 14px;
-        margin-top: 4px;
+      color: #64748b;
+      font-size: 14px;
+      margin-top: 4px;
     }
-
+    
     .activity-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
     }
-
+    
     .filter-group {
-        display: flex;
-        gap: 8px;
+      display: flex;
+      gap: 0;
     }
-
+    
     .filter-btn {
-        font-size: 13px;
-        font-weight: 700;
-        padding: 8px 18px;
-        border-radius: 999px;
-        text-decoration: none;
-        border: 1px solid #2563eb;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 5px 15px;
+      border-radius: 20px;
+      text-decoration: none;
+      border: 1px solid #2563eb;
     }
-
+    
     .filter-active {
-        background: #2563eb;
-        color: white;
+      background: #2563eb;
+      color: white;
     }
-
+    
     .filter-inactive {
-        background: white;
-        color: #2563eb;
+      background: white;
+      color: #2563eb;
     }
-
+    
+    .filter-btn:hover {
+      text-decoration: none;
+    }
+    
     .activity-timeline {
-        max-width: 1050px;
-        margin: 0 auto;
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      margin: 0;
     }
-
+    
     .activity-card {
-        background: white;
-        border-radius: 14px;
-        padding: 22px 26px;
-        margin-bottom: 18px;
-        box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
+      border-left: 4px solid #ef4444 !important;
+      border-radius: 3px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12) !important;
+      margin-bottom: 16px !important;
+      background: #ffffff;
+      padding: 22px 34px !important;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
     }
-
-    .log-card-create { border-left: 5px solid #48bb78; }
-    .log-card-update { border-left: 5px solid #4e73df; }
-    .log-card-delete { border-left: 5px solid #e53e3e; }
-
+    
+    .log-card-create,
+    .log-card-update,
+    .log-card-delete {
+      border-left: 4px solid #ef4444 !important;
+    }
+    
     .activity-badge {
-        display: inline-flex;
-        padding: 6px 15px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 800;
-        margin-bottom: 12px;
+      display: inline-flex;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 8px;
+      background-color: #6b7280;
+      color: white;
     }
-
-    .badge-create {
-        background: #dcfce7;
-        color: #166534;
-    }
-
-    .badge-update {
-        background: #dbeafe;
-        color: #1d4ed8;
-    }
-
-    .badge-delete {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
-
+    
+    .badge-create,
+    .badge-update,
+    .badge-delete,
     .badge-default {
-        background: #e2e8f0;
-        color: #475569;
+      background-color: #6b7280;
+      color: white;
     }
-
+    
+    .action-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+      margin-left: 2px;
+    }
+    
     .activity-description {
-        font-size: 15px;
-        font-weight: 800;
-        color: #0f172a;
-        margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #000;
+      margin: 6px 0 8px 0;
     }
-
+    
     .activity-user {
-        font-size: 13px;
-        color: #64748b;
+      font-size: 13px;
+      color: #64748b;
     }
-
+    
     .activity-user strong {
-        color: #0f172a;
+      color: #0f172a;
     }
-
+    
     .activity-time {
-        text-align: right;
-        min-width: 170px;
+      text-align: right;
+      min-width: 190px;
     }
-
+    
     .log-time {
-        font-size: 12px;
-        color: #94a3b8;
-        font-weight: 700;
+      font-size: 13px;
+      color: #64748b;
+      font-weight: 600;
     }
-
+    
     .log-date {
-        font-size: 12px;
-        color: #64748b;
-        margin-top: 5px;
-        display: block;
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 5px;
+      display: block;
+      font-weight: 600;
     }
-
+    
     .empty-state {
-        text-align: center;
-        padding: 80px 20px;
-        color: #94a3b8;
+      text-align: center;
+      padding: 80px 20px;
+      color: #94a3b8;
     }
-
+    
     .empty-state i {
-        font-size: 48px;
-        color: #cbd5e1;
-        margin-bottom: 15px;
+      font-size: 48px;
+      color: #cbd5e1;
+      margin-bottom: 15px;
     }
-
+    
     .return-wrap {
-        margin-top: 25px;
-        text-align: center;
+      margin-top: 30px;
+      text-align: center;
     }
-</style>
+    
+    .return-link {
+      color: #64748b;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    
+    .return-link:hover {
+      color: #2563eb;
+      text-decoration: none;
+    }
+  </style>
 
-<div class="activity-header">
+  <div class="activity-header">
     <div>
-        <h3 class="section-title">Activity History</h3>
-        <p class="activity-subtitle">Tracking system modifications, additions, and deletions</p>
+      <h3 class="section-title">Activity History</h3>
+      <p class="activity-subtitle">Tracking Mobility modifications, additions, and updates</p>
     </div>
 
     <div class="filter-group">
-        <a href="?period=week"
-           class="filter-btn {% if period == 'week' %}filter-active{% else %}filter-inactive{% endif %}">
-            Last 7 Days
-        </a>
+      <a href="?period=week"
+        class="filter-btn {% if period == 'week' %}
+          filter-active
+        {% else %}
+          filter-inactive
+        {% endif %}">
+        Last 7 Days
+      </a>
 
-        <a href="?period=month"
-           class="filter-btn {% if period == 'month' %}filter-active{% else %}filter-inactive{% endif %}">
-            Last 30 Days
-        </a>
+      <a href="?period=month"
+        class="filter-btn {% if period == 'month' %}
+          filter-active
+        {% else %}
+          filter-inactive
+        {% endif %}">
+        Last 30 Days
+      </a>
     </div>
-</div>
+  </div>
 
-<div class="activity-timeline">
+  <div class="activity-timeline">
     {% for log in logs %}
-    <div class="activity-card
-        {% if log.action_type == 'CREATE' %}log-card-create
-        {% elif log.action_type == 'UPDATE' %}log-card-update
-        {% elif log.action_type == 'DELETE' %}log-card-delete
-        {% else %}log-card-update{% endif %}">
+      <div class="activity-card
+        {% if log.action_type == 'CREATE' %}
+          log-card-create
 
+        {% elif log.action_type == 'UPDATE' %}
+          log-card-update
+
+        {% elif log.action_type == 'DELETE' %}
+          log-card-delete
+
+        {% else %}
+          log-card-update
+        {% endif %}">
         <div>
+          <div class="d-flex align-items-center mb-2">
             <span class="activity-badge
-                {% if log.action_type == 'CREATE' %}badge-create
-                {% elif log.action_type == 'UPDATE' %}badge-update
-                {% elif log.action_type == 'DELETE' %}badge-delete
-                {% else %}badge-default{% endif %}">
-                {{ log.get_action_type_display|default:log.action_type }}
+                    {% if log.action_type == 'CREATE' %}
+                badge-create
+
+              {% elif log.action_type == 'UPDATE' %}
+                badge-update
+
+              {% elif log.action_type == 'DELETE' %}
+                badge-delete
+
+              {% else %}
+                badge-default
+              {% endif %}">
+              mobility
             </span>
 
-            <div class="activity-description">
-                {{ log.description|default:"No description provided." }}
-            </div>
+            <span class="action-label">
+              {% if log.action_type == 'CREATE' %}
+                <i class="fas fa-plus-circle mr-1"></i>
+              {% elif log.action_type == 'UPDATE' %}
+                <i class="fas fa-edit mr-1"></i>
+              {% elif log.action_type == 'DELETE' %}
+                <i class="fas fa-trash-alt mr-1"></i>
+              {% else %}
+                <i class="fas fa-history mr-1"></i>
+              {% endif %}
 
-            <div class="activity-user">
-                Action performed by:
-                <strong>
-                    {% if log.user %}
-                        {{ log.user.get_full_name|default:log.user.username }}
-                        {% if log.user.userprofile.role %}
-                            <span class="text-muted">({{ log.user.userprofile.role }})</span>
-                        {% endif %}
-                    {% else %}
-                        System Process
-                    {% endif %}
-                </strong>
-            </div>
+              {{ log.get_action_type_display|default:log.action_type }}
+            </span>
+          </div>
+
+          <div class="activity-description">{{ log.description|default:'No description provided.' }}</div>
+
+          <div class="activity-user">
+            Action performed by:
+            <strong>
+              {% if log.user %}
+                {{ log.user.get_full_name|default:log.user.username }}
+                {% if log.user.userprofile.role %}
+                  <span class="text-muted">({{ log.user.userprofile.role }})</span>
+                {% endif %}
+              {% else %}
+                System Process
+              {% endif %}
+            </strong>
+          </div>
         </div>
 
         <div class="activity-time">
-            <span class="log-time">
-                <i class="far fa-clock"></i> {{ log.timestamp|timesince }} ago
-            </span>
-            <span class="log-date">
-                {{ log.timestamp|date:"M d, Y H:i" }}
-            </span>
+          <span class="log-time"><i class="far fa-clock"></i> {{ log.timestamp|timesince }} ago</span>
+          <span class="log-date">{{ log.timestamp|date:'M d, Y H:i' }}</span>
         </div>
-    </div>
+      </div>
     {% empty %}
-    <div class="empty-state">
+      <div class="empty-state">
         <i class="fas fa-history"></i>
-        <p>No recent activity recorded for this period.</p>
-    </div>
+        <p>No activity logs found for this period.</p>
+      </div>
     {% endfor %}
-</div>
+  </div>
 
-<div class="return-wrap">
-    <a href="{% url 'mobility:vehicle_management' %}" class="btn btn-outline">
-        <i class="fas fa-arrow-left"></i> Return to Dashboard
-    </a>
-</div>
+  <div class="return-wrap">
+    <a href="{% url 'mobility:vehicle_management' %}" class="return-link"><i class="fas fa-arrow-left mr-1"></i> Return to Mobility</a>
+  </div>
 {% endblock %}

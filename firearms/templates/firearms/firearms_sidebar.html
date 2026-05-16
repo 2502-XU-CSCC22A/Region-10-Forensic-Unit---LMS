@@ -15,7 +15,7 @@
           <i class="fas fa-car"></i>
           <span class="sidebar-item-label">Mobility</span>
         </span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ vehicle_all|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicle|default:'0' }}</span>
       </a>
     </li>
 
@@ -35,7 +35,7 @@
           <i class="fas fa-broadcast-tower"></i>
           <span class="sidebar-item-label">Communications</span>
         </span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ comms_all|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_comms|default:'0' }}</span>
       </a>
     </li>
 
@@ -65,7 +65,7 @@
     </li>
 
     <li class="{% if active_page == 'reports' %}active{% endif %}">
-      <a href="#">
+      <a href="{% url 'firearms:activity_logs' %}">
         <i class="fas fa-file-invoice"></i>
         <span class="sidebar-item-label">Reports</span>
       </a>

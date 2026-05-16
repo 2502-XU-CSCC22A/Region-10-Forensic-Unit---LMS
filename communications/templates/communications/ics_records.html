@@ -313,7 +313,7 @@
           align-items:center;
           gap:8px;
         ">
-                          <a href="{% url 'print_ics' ics.id %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
+                          <a href="{% url 'communications:print_ics' ics.id %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
 
                     <a href="{% url 'communications:edit_ics' ics.id %}" class="btn-icon btn-edit" title="Edit">
                       <i class="fas fa-edit"></i>
