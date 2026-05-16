@@ -81,9 +81,28 @@ class Vehicle(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.make_model} ({self.plate_number or self.conduction_number})"
+        return f"{self.make_model} ({self.plate_number or self.conduction_number or self.vehicle_id})"
+
+    def get_asset_property_no(self):
+        return (
+            self.vehicle_id
+            or self.plate_number
+            or self.conduction_number
+            or f"VEH-{self.pk or 'NEW'}"
+        )
+
+    def get_asset_serial_no(self):
+        return (
+            self.chassis_number
+            or self.engine_number
+            or self.conduction_number
+            or self.plate_number
+            or self.vehicle_id
+            or f"NO-SERIAL-{self.pk or 'NEW'}"
+        )
 
     def save(self, *args, **kwargs):
+
         old_status = None
 
         if self.pk:
@@ -91,43 +110,61 @@ class Vehicle(models.Model):
             if old_vehicle:
                 old_status = old_vehicle.status
 
-        if not self.asset:
-            asset_property_no = (
-                self.vehicle_id
-                or self.plate_number
-                or self.conduction_number
+        asset_property_no = self.get_asset_property_no()
+        asset_serial_no = self.get_asset_serial_no()
+
+        # CREATE / LINK ASSET
+        if not self.asset and asset_property_no:
+
+            asset, created = Asset.objects.get_or_create(
+                property_no=asset_property_no,
+                defaults={
+                    'model': self.make_model or '',
+                    'serial_no': asset_serial_no,
+                    'date_acquired': timezone.now().date(),
+                    'status_id': 1,
+                    'category_id': 10,
+                    'quantity': '1',
+                }
             )
 
-            if asset_property_no:
-                asset, created = Asset.objects.get_or_create(
-                    property_no=asset_property_no,
-                    defaults={
-                        'status_id': 1,
-                        'category_id': 10,
-                        'quantity': 1,
-                    }
-                )
-
-                self.asset = asset
+            self.asset = asset
 
         super().save(*args, **kwargs)
 
+        # BER LOGIC
         if self.status == 'BER' and old_status != 'BER' and self.asset:
+
             from disposal.models import DisposalItem, DisposalActivityLog
 
-            DisposalItem.objects.get_or_create(
-                property_no=self.asset.property_no,
-                defaults={
-                    'disposal_reason': 'Vehicle marked as BER from Mobility Branch.',
-                    'processed_by': None,
-                    'expiry_date': self.registration_renewal_date,
-                }
-            )
+            disposal_property_no = f"DISPOSAL-{self.asset.property_no}"
+
+            existing_disposal = DisposalItem.objects.filter(
+                property_no=disposal_property_no
+            ).first()
+
+            if not existing_disposal:
+
+                DisposalItem.objects.create(
+                    property_no=disposal_property_no,
+                    model=self.make_model or '',
+                    serial_no=asset_serial_no,
+                    date_acquired=timezone.now().date(),
+                    status_id=1,
+                    category_id=10,
+                    quantity='1',
+                    disposal_reason='Vehicle marked as BER from Mobility Branch.',
+                    processed_by=None,
+                )
 
             DisposalActivityLog.objects.create(
                 asset=self.asset,
                 action_type='FLAGGED',
-                description=f"Vehicle {self.plate_number or self.conduction_number} flagged as BER from Mobility Branch.",
+                description=(
+                    f"Vehicle "
+                    f"{self.plate_number or self.conduction_number or self.vehicle_id} "
+                    f"flagged as BER from Mobility Branch."
+                ),
                 disposal_reason='Vehicle marked as BER from Mobility Branch.'
             )
 
@@ -187,3 +224,6 @@ class ActivityLog(models.Model):
 
     def get_action_type_display(self):
         return self.action_type.capitalize()
+
+    def __str__(self):
+        return f"{self.action_type} - {self.description[:50]}"

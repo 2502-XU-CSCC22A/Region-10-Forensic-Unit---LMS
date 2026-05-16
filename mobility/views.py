@@ -55,21 +55,25 @@ def vehicle_management(request):
         if form.is_valid():
             vehicle = form.save()
 
-            par_number = form.cleaned_data.get('par_number')
-            issued_to = form.cleaned_data.get('issued_to')
-            date_acquired = form.cleaned_data.get('date_acquired')
-            expiry_date = form.cleaned_data.get('expiry_date')
-            remarks = form.cleaned_data.get('remarks')
+            par_created = False
+
+            par_number = request.POST.get('par_number')
+            issued_to = request.POST.get('issued_to')
+            date_acquired = request.POST.get('date_acquired')
+            expiry_date = request.POST.get('expiry_date')
+            remarks = request.POST.get('remarks')
 
             if par_number and issued_to:
                 PARRecord.objects.create(
                     vehicle=vehicle,
                     par_number=par_number,
                     issued_to=issued_to,
-                    date_acquired=date_acquired,
-                    expiry_date=expiry_date,
+                    date_acquired=date_acquired or timezone.now().date(),
+                    expiry_date=expiry_date or None,
                     remarks=remarks
                 )
+
+                par_created = True
 
             ActivityLog.objects.create(
                 user=request.user,
@@ -77,27 +81,43 @@ def vehicle_management(request):
                 description=f"Added new vehicle: {vehicle.make_model} ({vehicle.plate_number or vehicle.conduction_number})"
             )
 
-            messages.success(request, "Vehicle and PAR details added successfully.")
+            if vehicle.status == 'BER':
+                messages.warning(
+                    request,
+                    "Vehicle marked as BER, sent to BER & Disposal, and removed from the Mobility table."
+                )
+            elif par_created:
+                messages.success(request, "Vehicle and PAR details added successfully.")
+            else:
+                messages.success(request, "Vehicle added successfully.")
+
             return redirect('mobility:vehicle_management')
+
         else:
             messages.error(request, "Please correct the errors in the vehicle form.")
+            messages.error(request, form.errors)
+
     else:
         form = VehicleForm()
 
     all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
 
     today = timezone.now().date()
     upcoming_limit = today + timedelta(days=30)
 
     context = {
         'form': form,
-        'vehicles': all_v.filter(query).order_by('-id'),
+        'vehicles': visible_v.filter(query).order_by('-id'),
         'can_edit': can_edit(request.user),
 
-        'total_vehicles': all_v.count(),
-        's_count': all_v.filter(status='Serviceable').count(),
-        'u_count': all_v.filter(status='Unserviceable').count(),
-        'ber_count': all_v.filter(status='BER').count(),
+        # Cards follow Communications UI:
+        # Total Vehicles, Serviceable, Validated PAR, Expiring PAR Records
+        'total_vehicles': visible_v.count(),
+        's_count': visible_v.filter(status='Serviceable').count(),
+        'validated_par_count': PARRecord.objects.filter(
+            expiry_date__gt=upcoming_limit
+        ).count(),
         'expiring_count': PARRecord.objects.filter(
             expiry_date__gte=today,
             expiry_date__lte=upcoming_limit
@@ -136,10 +156,19 @@ def edit_vehicle(request, pk):
                 description=f"Updated vehicle: {updated_vehicle.make_model} ({updated_vehicle.plate_number or updated_vehicle.conduction_number})"
             )
 
-            messages.success(request, "Vehicle updated successfully.")
+            if updated_vehicle.status == 'BER':
+                messages.warning(
+                    request,
+                    "Vehicle marked as BER, sent to BER & Disposal, and removed from the Mobility table."
+                )
+            else:
+                messages.success(request, "Vehicle updated successfully.")
+
             return redirect('mobility:vehicle_management')
+
         else:
             messages.error(request, "Please correct the errors before saving.")
+            messages.error(request, form.errors)
 
     return redirect('mobility:vehicle_management')
 
@@ -240,21 +269,24 @@ def par_management(request):
         pars = pars.filter(expiry_date__gte=today, expiry_date__lte=upcoming_limit)
     elif status == 'expired':
         pars = pars.filter(expiry_date__lt=today)
-    elif status == 'active':
+    elif status == 'validated':
         pars = pars.filter(expiry_date__gt=upcoming_limit)
 
-    return render(request, 'mobility/par_management.html', {
+    context = {
         'pars': pars.order_by('-date_acquired'),
         'today': today,
         'upcoming_limit': upcoming_limit,
         'search': search,
         'status': status,
+        'can_edit': can_edit(request.user),
         'total_disposal': total_ber,
         'total_inves': inves_all,
         'total_firearms': firearms_all,
         'total_comms': comms_all,
         'current_user_role': current_user_role,
-    })
+    }
+
+    return render(request, 'mobility/par_management.html', context)
 
     return render(request, 'mobility/par_management.html', context)
 
@@ -355,3 +387,31 @@ def manual_email_alert(request):
         messages.info(request, "No urgent vehicle records found.")
 
     return redirect('mobility:vehicle_management')
+
+
+@login_required
+def edit_par(request, pk):
+    par = get_object_or_404(PARRecord, pk=pk)
+
+    if not can_edit(request.user):
+        return HttpResponseForbidden("You do not have permission.")
+
+    if request.method == 'POST':
+        par.par_number = request.POST.get('par_number')
+        par.issued_to = request.POST.get('issued_to')
+        par.date_acquired = request.POST.get('date_acquired') or None
+        par.expiry_date = request.POST.get('expiry_date') or None
+        par.remarks = request.POST.get('remarks')
+
+        par.save()
+
+        ActivityLog.objects.create(
+            user=request.user,
+            action_type='UPDATE',
+            description=f"Updated PAR Record: {par.par_number}"
+        )
+
+        messages.success(request, "PAR record updated successfully.")
+        return redirect('mobility:par_management')
+
+    return redirect('mobility:par_management')
