@@ -58,5 +58,6 @@ urlpatterns = [
     ),
 path('vehicle/<int:pk>/mark-ber/', views.mark_vehicle_ber, name='mark_vehicle_ber'),
 path('vehicle/<int:pk>/send-disposal/', views.send_vehicle_to_disposal, name='send_vehicle_to_disposal'),
+path('par/edit/<int:pk>/', views.edit_par, name='edit_par'),
 
 ]
