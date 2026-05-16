@@ -45,6 +45,25 @@ def par_management(request):
                 remarks=p_form.cleaned_data['remarks'],
             )
 
+        par_record = FirearmPARRecord.objects.create(
+            firearm=firearm,
+            par_number=p_form.cleaned_data['par_number'],
+            fund_cluster=p_form.cleaned_data['fund_cluster'],
+            reference_no=p_form.cleaned_data['reference_no'],
+            issued_to=p_form.cleaned_data['issued_to'],
+            date_issued=p_form.cleaned_data['date_issued'],
+            expiry_date=p_form.cleaned_data['expiry_date'],
+            remarks=p_form.cleaned_data['remarks'],
+        )
+
+        if firearm:
+            log_firearm_activity(
+                firearm_id=firearm.pk,
+                action="PAR Added",
+                details=f"PAR '{par_record.par_number}' added for firearm '{firearm.assigned_to}'",
+                user=request.user
+            )
+
             return redirect('firearms:par_management')
 
     else:
@@ -194,6 +213,13 @@ def firearm_create(request):
         with _urllib.urlopen(firearm_req) as resp:
             firearm_result = json.loads(resp.read())
 
+        log_firearm_activity(
+            firearm_id=asset_id,
+            action="Created",
+            details=f"Firearm '{name}' added with serial {faid}",
+            user=request.user
+        )
+
         return JsonResponse({
             'success': True,
             'message': 'Firearm created successfully',
@@ -271,6 +297,29 @@ def firearm_update(request, pk):
         )
         _urllib.urlopen(firearm_req)
 
+
+        log_firearm_activity(
+            firearm_id=pk,
+                action="Edited",
+                details=f"Firearm '{data.get('name')}' record was updated",
+                user=request.user
+            )
+
+        if status_text.lower() == 'unserviceable':
+            log_firearm_activity(
+                firearm_id=pk,
+                action="Status Changed",
+                details=f"Firearm '{data.get('name')}' marked as Unserviceable",
+                user=request.user
+            )
+        elif status_text.lower() == 'serviceable':
+            log_firearm_activity(
+                firearm_id=pk,
+                action="Status Changed",
+                details=f"Firearm '{data.get('name')}' marked as Serviceable",
+                user=request.user
+            )
+
         return JsonResponse({'success': True, 'message': 'Firearm updated successfully'})
 
     except Exception as e:
@@ -332,10 +381,22 @@ def edit_par(request, pk):
         'active_page': 'par_management',
     })
 
-
 def delete_par(request, pk):
     record = get_object_or_404(FirearmPARRecord, pk=pk)
+
+    firearm_id = record.firearm_id
+    par_number = record.par_number
+
     record.delete()
+
+    if firearm_id:
+        log_firearm_activity(
+            firearm_id=firearm_id,
+            action="PAR Deleted",
+            details=f"PAR '{par_number}' was deleted",
+            user=request.user
+        )
+
     return redirect('firearms:par_management')
 
 
