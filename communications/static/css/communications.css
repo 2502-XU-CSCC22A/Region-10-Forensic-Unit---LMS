@@ -244,15 +244,21 @@ thead tr {
     background: #eef3fb;
 }
 
-th {
-    padding: 14px;
-    text-align: left;
-    font-size: 12px;
-    font-weight: 800;
-    color: #0d2155;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-    white-space: nowrap;
+th{
+    padding:11px 14px;
+    text-align:left;
+    font-weight:700;
+    font-size:13px;
+    color:var(--navy);
+    letter-spacing:.4px;
+    border-bottom:2px solid var(--border);
+    white-space:nowrap;
+    cursor:pointer;
+    user-select:none;
+}
+
+th:hover{
+    background:#d9e4f7;
 }
 
 td {

@@ -16,6 +16,8 @@ const pageSize = 5;
 let editingId = null;
 let pendingBerId = null;
 let expiringParSoonCount = 0;
+let sortKey = null;
+let sortDir = 1;
 
 function getValue(id) {
   return document.getElementById(id)?.value?.trim() || "";
@@ -312,15 +314,55 @@ function filterTable() {
       c.status.toLowerCase().includes(q) ||
       c.remarks.toLowerCase().includes(q);
 
-    const statusMatch = !statusFilter || c.status === statusFilter;
+    const statusMatch =
+      !statusFilter || c.status === statusFilter;
 
     return searchMatch && statusMatch;
   });
+
+  if (sortKey) {
+    applySortFiltered();
+  }
 
   currentPage = 1;
 
   renderTable();
   renderPagination();
+}
+
+function sortTable(key) {
+
+  sortDir = sortKey === key
+    ? sortDir * -1
+    : 1;
+
+  sortKey = key;
+
+  applySortFiltered();
+
+  renderTable();
+
+  renderPagination();
+}
+
+function applySortFiltered() {
+
+  filtered.sort((a, b) => {
+
+    const av = (a[sortKey] || "")
+      .toString()
+      .toLowerCase();
+
+    const bv = (b[sortKey] || "")
+      .toString()
+      .toLowerCase();
+
+    return av < bv
+      ? -sortDir
+      : av > bv
+        ? sortDir
+        : 0;
+  });
 }
 
 function inputField(label, id, val = "", type = "text") {
@@ -802,3 +844,4 @@ window.toggleConfirmationModal = toggleConfirmationModal;
 window.closeConfirmationModal = closeConfirmationModal;
 window.filterTable = filterTable;
 window.exportCSV = exportCSV;
+window.sortTable = sortTable;

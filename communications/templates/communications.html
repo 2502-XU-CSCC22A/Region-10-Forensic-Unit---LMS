@@ -8,7 +8,8 @@
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/communications.css' %}" />
@@ -20,7 +21,7 @@
     <div class="layout">
       {% include 'sidebar.html' %}
 
-      <main>
+      <main class="main-content">
         <div class="stat-cards">
           <div class="stat-card">
             <div class="stat-top">
@@ -35,79 +36,86 @@
             </div>
 
             <div class="stat-bar-wrap">
-              <div class="stat-bar blue" id="totalBar" style="width:0%;"></div>
-            </div>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-top">
-              <div class="stat-icon orange">
-                <i class="fas fa-check"></i>
-              </div>
-
-              <div>
-                <div class="stat-value" id="issuedCount">0</div>
-
-                <div class="stat-label">Serviceable Communications</div>
-              </div>
-            </div>
-
-            <div class="stat-bar-wrap">
-              <div class="stat-bar orange" id="issuedBar" style="width:0%;"></div>
+              <div class="stat-bar blue" id="totalBar" style="width:0%"></div>
             </div>
           </div>
 
           <div class="stat-card">
             <div class="stat-top">
               <div class="stat-icon green">
+                <i class="fas fa-check"></i>
+              </div>
+
+              <div>
+                <div class="stat-value" id="issuedCount">0</div>
+                <div class="stat-label">Serviceable Communications</div>
+              </div>
+            </div>
+
+            <div class="stat-bar-wrap">
+              <div class="stat-bar green" id="issuedBar" style="width:0%"></div>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon red">
                 <i class="fas fa-file-alt"></i>
               </div>
+
               <div>
                 <div class="stat-value" id="parCount">0</div>
                 <div class="stat-label">Validated PAR</div>
               </div>
             </div>
+
             <div class="stat-bar-wrap">
-              <div class="stat-bar green" id="parBar" style="width:0%;"></div>
+              <div class="stat-bar red" id="parBar" style="width:0%"></div>
             </div>
           </div>
 
-        <div class="stat-card">
-          <div class="stat-top">
-            <div class="stat-icon red">
-              <i class="fas fa-exclamation-triangle"></i>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon orange">
+                <i class="fas fa-exclamation-triangle"></i>
+              </div>
+
+              <div>
+                <div class="stat-value" id="expiringParCount">0</div>
+                <div class="stat-label">PAR Expiring Soon</div>
+              </div>
             </div>
 
-            <div>
-              <div class="stat-value" id="expiringParCount">0</div>
-
-              <div class="stat-label">PAR Expiring Soon</div>
+            <div class="stat-bar-wrap">
+              <div class="stat-bar orange" id="expiringParBar" style="width:0%"></div>
             </div>
-          </div>
-
-          <div class="stat-bar-wrap">
-            <div class="stat-bar red" id="expiringParBar" style="width:0%;"></div>
           </div>
         </div>
-</div>
+
         <div class="table-section">
           <div class="table-header">From Issuances Table</div>
 
           <div class="table-controls">
             <div class="search-wrap">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon"><i class="fas fa-search"></i></span>
+
               <input type="text" id="searchInput" placeholder="Search by type, serial, PAR, radio ID..." oninput="filterTable()" />
             </div>
 
-            <select id="statusFilter" class="btn btn-outline" style="font-size:13px;padding:7px 12px;" onchange="filterTable()">
+            <select id="statusFilter" class="btn btn-outline" onchange="filterTable()">
               <option value="">Serviceability</option>
               <option value="SERVICEABLE">Serviceable</option>
               <option value="UNSERVICEABLE">Unserviceable</option>
             </select>
+
             <button id="addRecordBtn" class="btn btn-primary">Add Record</button>
+
             <a href="{% url 'par_monitoring' %}" class="btn btn-outline">PAR Records</a>
+
             <a href="{% url 'ics_monitoring' %}" class="btn btn-outline">ICS Records</a>
-            <a href="{% url 'activity_logs' %}" class="btn btn-outline">Activity Log</a>
+
+            <a href="{% url 'activity_logs' %}" class="btn btn-outline">Activity Logs</a>
+
             <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
           </div>
 
@@ -115,20 +123,29 @@
             <table>
               <thead>
                 <tr>
-                  <th>TYPE</th>
-                  <th>SERIAL NO.</th>
-                  <th>PAR NO.</th>
-                  <th>RADIO ID</th>
-                  <th>STATUS</th>
-                  <th>REMARKS</th>
+                  <th onclick="sortTable('type')">TYPE ⇅</th>
+
+                  <th onclick="sortTable('serial')">SERIAL NO. ⇅</th>
+
+                  <th onclick="sortTable('parNo')">PAR NO. ⇅</th>
+
+                  <th onclick="sortTable('radio')">RADIO ID ⇅</th>
+
+                  <th onclick="sortTable('status')">STATUS ⇅</th>
+
+                  <th onclick="sortTable('remarks')">REMARKS ⇅</th>
+
                   <th>ACTION</th>
                 </tr>
               </thead>
+
               <tbody id="tableBody"></tbody>
             </table>
           </div>
+
           <div class="table-footer">
             <span id="rowInfo">Loading…</span>
+
             <div class="pagination" id="pagination"></div>
           </div>
         </div>
@@ -140,14 +157,19 @@
         <button class="close-modal" id="closeModalBtn">✕</button>
 
         <h3 id="modalTitle">Communications Details</h3>
+
         <div id="modalBody"></div>
+
         <div class="modal-actions">
           <button class="btn btn-outline" id="closeModalBtn2">Close</button>
+
           <button class="btn btn-primary" id="modalSaveBtn">Save</button>
         </div>
       </div>
     </div>
+
     {% include 'confirmation_modal.html' %}
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script src="{% static 'js/communications.js' %}"></script>
   </body>

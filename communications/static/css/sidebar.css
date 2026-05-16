@@ -28,7 +28,6 @@ header,
   z-index: 1100;
   height: var(--header-h);
   background: var(--white);
-  border-bottom: 3px solid var(--accent);
   display: flex;
   align-items: center;
   justify-content: space-between;
