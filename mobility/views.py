@@ -15,6 +15,9 @@ from InvestigativeEquipment.models import InvestigativeDetails
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 
+# Added: use develop config/models.py without changing it
+from config.models import Asset, AssetStatus, Category
+
 
 def can_edit(user):
     try:
@@ -22,6 +25,49 @@ def can_edit(user):
         return role in ['Admin', 'Logistics Officer']
     except Exception:
         return False
+
+
+def create_vehicle_asset(vehicle, request):
+    """
+    Creates an Asset record required by the develop branch config/models.py.
+    Do not change config/models.py; supply the required fields here instead.
+    """
+
+    status_name = getattr(vehicle, 'status', None) or 'Serviceable'
+
+    try:
+        asset_status = AssetStatus.objects.get(status_name=status_name)
+    except AssetStatus.DoesNotExist:
+        asset_status = AssetStatus.objects.get(status_name='Serviceable')
+
+    category, _ = Category.objects.get_or_create(category_name='Vehicle')
+
+    property_no = (
+        request.POST.get('property_no')
+        or getattr(vehicle, 'property_no', None)
+        or f"MOB-{getattr(vehicle, 'plate_number', '') or getattr(vehicle, 'conduction_number', '') or timezone.now().strftime('%Y%m%d%H%M%S')}"
+    )
+
+    serial_no = (
+        getattr(vehicle, 'chassis_number', None)
+        or getattr(vehicle, 'engine_number', None)
+        or getattr(vehicle, 'conduction_number', None)
+        or getattr(vehicle, 'plate_number', None)
+        or property_no
+    )
+
+    asset = Asset.objects.create(
+        date_acquired=request.POST.get('date_acquired') or timezone.now().date(),
+        property_no=property_no,
+        serial_no=serial_no,
+        model=getattr(vehicle, 'make_model', None) or 'Vehicle',
+        quantity='1',
+        status=asset_status,
+        category=category,
+        office='Mobility'
+    )
+
+    return asset
 
 
 @login_required
@@ -53,7 +99,16 @@ def vehicle_management(request):
         form = VehicleForm(request.POST)
 
         if form.is_valid():
-            vehicle = form.save()
+            vehicle = form.save(commit=False)
+
+            asset = create_vehicle_asset(vehicle, request)
+
+            # This works only if your Vehicle model has an asset field.
+            # Example: asset = models.ForeignKey(Asset, ...)
+            if hasattr(vehicle, 'asset'):
+                vehicle.asset = asset
+
+            vehicle.save()
 
             par_created = False
 
@@ -72,7 +127,6 @@ def vehicle_management(request):
                     expiry_date=expiry_date or None,
                     remarks=remarks
                 )
-
                 par_created = True
 
             ActivityLog.objects.create(
@@ -111,8 +165,6 @@ def vehicle_management(request):
         'vehicles': visible_v.filter(query).order_by('-id'),
         'can_edit': can_edit(request.user),
 
-        # Cards follow Communications UI:
-        # Total Vehicles, Serviceable, Validated PAR, Expiring PAR Records
         'total_vehicles': visible_v.count(),
         's_count': visible_v.filter(status='Serviceable').count(),
         'validated_par_count': PARRecord.objects.filter(
@@ -149,6 +201,16 @@ def edit_vehicle(request, pk):
 
         if form.is_valid():
             updated_vehicle = form.save()
+
+            # Optional: sync linked Asset status/model if Vehicle has asset
+            if hasattr(updated_vehicle, 'asset') and updated_vehicle.asset:
+                try:
+                    asset_status = AssetStatus.objects.get(status_name=updated_vehicle.status)
+                    updated_vehicle.asset.status = asset_status
+                    updated_vehicle.asset.model = updated_vehicle.make_model
+                    updated_vehicle.asset.save()
+                except AssetStatus.DoesNotExist:
+                    pass
 
             ActivityLog.objects.create(
                 user=request.user,
@@ -206,6 +268,14 @@ def mark_vehicle_ber(request, pk):
         vehicle.status = 'BER'
         vehicle.save()
 
+        if hasattr(vehicle, 'asset') and vehicle.asset:
+            try:
+                asset_status = AssetStatus.objects.get(status_name='BER')
+                vehicle.asset.status = asset_status
+                vehicle.asset.save()
+            except AssetStatus.DoesNotExist:
+                pass
+
         ActivityLog.objects.create(
             user=request.user,
             action_type='UPDATE',
@@ -227,6 +297,14 @@ def send_vehicle_to_disposal(request, pk):
     if vehicle.status == 'BER':
         vehicle.status = 'Disposed'
         vehicle.save()
+
+        if hasattr(vehicle, 'asset') and vehicle.asset:
+            try:
+                asset_status = AssetStatus.objects.get(status_name='Disposed')
+                vehicle.asset.status = asset_status
+                vehicle.asset.save()
+            except AssetStatus.DoesNotExist:
+                pass
 
         ActivityLog.objects.create(
             user=request.user,

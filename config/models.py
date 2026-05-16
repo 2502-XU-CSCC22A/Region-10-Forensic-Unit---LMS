@@ -2,7 +2,6 @@ from django.db import models
 from django.conf import settings
 from datetime import date
 
-
 class Personnel(models.Model):
     personnel_id = models.BigAutoField(primary_key=True, db_column='PersonnelID')
     name = models.CharField(max_length=255, db_column='Name')

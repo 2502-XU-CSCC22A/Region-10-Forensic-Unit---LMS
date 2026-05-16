@@ -5,7 +5,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('config', '0002_alter_asset_date_acquired'),
+        ('config', '0002_personnel_alter_assetstatus_options_asset_office_and_more'),
     ]
 
     operations = [
