@@ -39,8 +39,11 @@ def export_disposal_csv(request):
     return response
 
 def disposal_list(request):
-    all_items = DisposalItem.objects.filter(status_id = 4).order_by('-disposal_date')
-    
+    all_items = DisposalItem.objects.select_related(
+        'asset_ptr', 
+        'asset_ptr__category'
+    ).filter(status_id=4).order_by('-disposal_date')
+
     paginator = Paginator(all_items, 5)
     page_number = request.GET.get('page')
     disposal_items = paginator.get_page(page_number)
@@ -48,7 +51,8 @@ def disposal_list(request):
     vehicle_all = Vehicle.objects.count()
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
-    inves_all = InvestigativeDetails.objects.count()
+
+    inves_all = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     
     logs = DisposalActivityLog.objects.all().order_by('-timestamp')
     
@@ -70,27 +74,29 @@ def disposal_list(request):
     ).count()
     
     comms_ber = DisposalItem.objects.filter(
-        asset_ptr__status__status_id= '4',
+        asset_ptr__status__status_id='4',
         asset_ptr__category__category_name='communications'
     ).count()
     
     mobility_ber = DisposalItem.objects.filter(
-        asset_ptr__status__status_id= '4',
+        asset_ptr__status__status_id='4',
         asset_ptr__category__category_name='mobility'
     ).count()
     
     firearms_ber = DisposalItem.objects.filter(
-        asset_ptr__status__status_id= '4',
+        asset_ptr__status__status_id='4',
         asset_ptr__category__category_name='firearms'
     ).count()
     
+    target_categories = ['investigative_equipment', 'Technical Sections', 'Fingerprint Kit', 'Forensics', 'Photography']
+    
     inves_ber = DisposalItem.objects.filter(
-        asset_ptr__status__status_id= '4',
-        asset_ptr__category__category_name='investigative_equipment'
+        asset_ptr__status__status_id='4',
+        asset_ptr__category__category_name__in=target_categories
     ).count()
     
     total_ber = DisposalItem.objects.filter(
-        asset_ptr__status__status_id= '4',
+        asset_ptr__status__status_id='4',
     ).count()
     
     if request.method == "POST":
@@ -135,8 +141,10 @@ def history_log(request):
     vehicle_all = Vehicle.objects.count()
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
-    inves_all = InvestigativeDetails.objects.count()
-    total_ber = DisposalItem.objects.filter(asset_ptr__status_id = 4,).count()
+
+    inves_all = InvestigativeDetails.objects.exclude(asset_ptr__status_id__in=[4, 5]).count()
+    
+    total_ber = DisposalItem.objects.filter(asset_ptr__status_id=4).count()
     current_user_role = request.user.userprofile.role
     
     return render(request, 'disposal/history.html', {
@@ -147,7 +155,7 @@ def history_log(request):
         'firearms_all': firearms_all,
         'inves_all': inves_all,
         'current_user_role': current_user_role,
-        })
+    })
 
 def finalize_removal(request, pk):
     disposal_entry = DisposalItem.objects.filter(pk=pk).first()
