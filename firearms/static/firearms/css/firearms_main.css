@@ -23,7 +23,7 @@
   --red: #ef4444;
 }
 
-/* -- Main Content ---*/
+
 
 .main-content {
   flex: 1;
@@ -36,7 +36,7 @@
   margin-left: var(--sidebar-width);
 }
 
-/* --- Stat Cards --- */
+
 
 .stat-cards {
   display: grid;
@@ -112,7 +112,7 @@
 .stat-bar.green { background: linear-gradient(90deg, #10b981, #34d399); }
 .stat-bar.red   { background: linear-gradient(90deg, #ef4444, #f87171); }
 
-/* --- Table Section --- */
+
 
 .table-section {
   background: var(--card-bg);
@@ -180,7 +180,7 @@
   font-size: 14px;
 }
 
-/* --- Buttons --- */
+
 
 .btn {
   padding: 7px 16px;
@@ -227,7 +227,7 @@
   font-size: 14px;
 }
 
-/* --- Table --- */
+
 
 .table-wrap {
   width: 100%;
@@ -287,14 +287,14 @@ td:nth-child(9), th:nth-child(9) {
   width: auto;
 }
 
-/* Action column */
+
 td:last-child, th:last-child {
   max-width: none;
   width: auto;
   white-space: nowrap;
 }
 
-/* --- Badges --- */
+
 
 .badge {
   display: inline-block;
@@ -311,7 +311,7 @@ td:last-child, th:last-child {
 .badge-red    { background: #fee2e2; color: #991b1b; }
 .badge-orange { background: #ffedd5; color: #9a3412; }
 
-/* --- Action Button --- */
+
 
 .action-btn {
   background: var(--accent);
@@ -333,7 +333,7 @@ td:last-child, th:last-child {
 .action-btn:hover  { background: var(--navy-light); }
 .action-btn:active { transform: scale(.96); }
 
-/* --- Table Footer & Pagination --- */
+
 
 .table-footer {
   display: flex;
@@ -367,7 +367,7 @@ td:last-child, th:last-child {
 .page-btn:hover  { background: var(--accent); color: #fff; border-color: var(--accent); }
 .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
 
-/* --- Modal --- */
+
 
 body .modal-overlay {
   position: fixed !important;
@@ -409,6 +409,14 @@ body .modal {
   margin-bottom: 20px;
 }
 
+body #confirmationModal .modal {
+  max-height: fit-content !important;
+  min-height: unset !important;
+  height: auto !important;
+  width: auto !important;
+}
+
+
 @keyframes popIn {
   from { transform: scale(.92); opacity: 0; }
   to   { transform: scale(1);   opacity: 1; }
@@ -430,7 +438,7 @@ body .modal {
 
 .close-modal:hover { color: var(--red); }
 
-/* --- Navbar --- */
+
 
 .navbar-header {
   height: 70px;
@@ -491,7 +499,7 @@ body .modal {
   line-height: 1;
 }
 
-/* --- Layout --- */
+
 
 .layout {
   display: flex;

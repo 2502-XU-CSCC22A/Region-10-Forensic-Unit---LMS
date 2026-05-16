@@ -85,14 +85,22 @@ class FirearmsPARForm(forms.Form):
         self.fields['date_issued'].initial = __import__('datetime').date.today()
         
         try:
-            from firearms.models import Firearm
-            firearms = Firearm.objects.values_list('id', 'serial_no', 'model')
+            from firearms.models import Firearm, FirearmPARRecord
+
+            used_firearm_ids = FirearmPARRecord.objects.exclude(
+                firearm_id__isnull=True
+            ).values_list('firearm_id', flat=True)
+
+            firearms = Firearm.objects.exclude(
+                pk__in=used_firearm_ids
+            ).values_list('id', 'serial_no', 'model')
+
             self.fields['firearm'].widget.choices = (
                 [('', '---------')] +
                 [(f[0], f'{f[2]} / SN: {f[1]}') for f in firearms]
             )
+
         except Exception:
             self.fields['firearm'].widget.choices = [
                 ('', '---------'),
-                ('1', 'AK47 / SN: AGG8'),
             ]

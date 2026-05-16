@@ -116,7 +116,7 @@
     }
     .btn-edit { color: #3b82f6; background: #eff6ff; }
     .btn-print { color: #475569; background: #f1f5f9; }
-    .btn-delete { color: #ef4444; background: #fef2f2; }
+    .btn-delete { color: #ef4444; background: #fef2f2; cursor: pointer; }
     .btn-icon:hover { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
     .card { 
@@ -355,7 +355,14 @@
                     <div class="d-flex justify-content-end" style="gap: 8px;">
                       <a href="{% url 'firearms:print_par' par.pk %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
                       <a href="{% url 'firearms:edit_par' par.pk %}" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
-                      <a href="{% url 'firearms:delete_par' par.pk %}" class="btn-icon btn-delete" title="Delete" onclick="return confirm('Delete record?')"><i class="fas fa-trash-alt"></i></a>
+                      <button
+                        type="button"
+                        class="btn-icon btn-delete"
+                        title="Delete"
+                        onclick="openDeleteModal({{ par.pk }})">
+
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                     </div>
                   </td>
                 </tr>
@@ -375,5 +382,174 @@
 
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+#confirmationModal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(8px);
+    z-index:9999;
+    justify-content:center;
+    align-items:center;
+}
+
+#confirmationModal.active{
+    display:flex;
+}
+
+.filter-modal-content{
+    background:#fff;
+    width:500px;
+    border-radius:24px;
+    padding:30px;
+    box-shadow:0 10px 40px rgba(0,0,0,.12);
+}
+
+.filter-modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.filter-modal-header h2{
+    font-size:24px;
+    font-weight:700;
+    color:#1a237e;
+}
+
+.filter-close-btn{
+    background:none;
+    border:none;
+    font-size:30px;
+    cursor:pointer;
+    color:#64748b;
+}
+
+.filter-close-btn:hover{
+    color:#dc3545;
+}
+
+.filter-modal-footer{
+    display:flex;
+    gap:14px;
+    margin-top:28px;
+}
+
+.filter-btn-apply,
+.filter-btn-reset{
+    flex:1;
+    padding:14px;
+    border-radius:12px;
+    font-weight:700;
+    border:2px solid;
+    background:#fff;
+    transition:.2s;
+}
+
+.filter-btn-apply{
+    border-color:#dc3545;
+    color:#dc3545;
+}
+
+.filter-btn-apply:hover{
+    background:#dc3545;
+    color:#fff;
+}
+
+.filter-btn-reset{
+    border-color:#1a237e;
+    color:#1a237e;
+}
+
+.filter-btn-reset:hover{
+    background:#1a237e;
+    color:#fff;
+}
+</style>
+
+<div id="confirmationModal">
+
+    <div class="filter-modal-content">
+
+        <div class="filter-modal-header">
+            <h2>Delete PAR Record</h2>
+
+            <button
+                type="button"
+                class="filter-close-btn"
+                onclick="closeConfirmationModal()">
+
+                &times;
+            </button>
+        </div>
+
+        <p>
+            Are you sure you want to delete this PAR record?
+            This action cannot be undone.
+        </p>
+
+        <div class="filter-modal-footer">
+
+            <button
+                type="button"
+                class="filter-btn-apply"
+                onclick="confirmDelete()">
+
+                Confirm Delete
+            </button>
+
+            <button
+                type="button"
+                class="filter-btn-reset"
+                onclick="closeConfirmationModal()">
+
+                Cancel
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+let selectedDeleteId = null;
+
+function openDeleteModal(id){
+    selectedDeleteId = id;
+    document
+        .getElementById('confirmationModal')
+        .classList.add('active');
+}
+
+function closeConfirmationModal(){
+    selectedDeleteId = null;
+
+    document
+        .getElementById('confirmationModal')
+        .classList.remove('active');
+}
+
+function confirmDelete(){
+
+    if(!selectedDeleteId) return;
+
+    window.location.href =
+        `/firearms/par/delete/${selectedDeleteId}/`;
+}
+
+document
+    .getElementById('confirmationModal')
+    .addEventListener('click', function(e){
+
+        if(e.target === this){
+            closeConfirmationModal();
+        }
+});
+</script>
+
 </body>
 </html>
