@@ -199,7 +199,7 @@
             <div class="action-bar">
               <a href="{% url 'disposal:export_disposal_csv' %}?{{ request.GET.urlencode }}">
                 <button type="button" class="outline">
-                  Export CSV
+                  &#x2B07; Export CSV
                 </button>
               </a>
             </div>
@@ -209,16 +209,16 @@
           <table id="disposalTable">
             <thead>
               <tr>
-                <th> Asset ID</th>
-                <th> Asset Model</th>
-                <th> Days Overdue</th>
-                <th> Type</th>
-                <th> Disposal Reason</th>
-                <th> Disposal Date</th>
+                <th> Asset ID &#x21C5;</th>
+                <th> Asset Model &#x21C5;</th>
+                <th> Days Overdue &#x21C5;</th>
+                <th> Type &#x21C5;</th>
+                <th> Disposal Reason &#x21C5;</th>
+                <th> Disposal Date &#x21C5;</th>
                 
                 <!-- Check role for Header -->
                 {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
-                <th> Action</th>
+                <th class="text-center"> Action</th>
                 {% endif %}
               </tr>
             </thead>
@@ -228,11 +228,7 @@
                   <td>{{ item.asset_ptr_id }}</td>
                   <td>{{ item.asset_ptr.model }}</td>
                   <td>
-                    {% if item.days_overdue_calc > 0 %}
-                      <span class="badge badge-red">{{ item.days_overdue_calc }} days</span>
-                    {% else %}
-                      <span class="badge badge-gray">Not Overdue</span>
-                    {% endif %}
+                    {% if item.days_overdue_calc %}
                   </td>
                   <td>
                     {% if item.asset_ptr.category %}

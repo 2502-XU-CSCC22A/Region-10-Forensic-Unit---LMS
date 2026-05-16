@@ -233,9 +233,10 @@
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  font-family: 'Inter', sans-serif;
 }
 
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: 'Inter', sans-serif;}
 
 thead tr { background: #e8edf6; }
 
@@ -291,7 +292,7 @@ td:nth-child(9), th:nth-child(9) {
 td:last-child, th:last-child {
   max-width: none;
   width: auto;
-  white-space: nowrap;
+
 }
 
 /* --- Badges --- */
@@ -342,6 +343,7 @@ td:last-child, th:last-child {
   padding: 12px 20px;
   border-top: 1px solid var(--border);
   font-size: 13px;
+  font-weight: 800;
   color: var(--muted);
   flex-wrap: wrap;
   gap: 10px;
