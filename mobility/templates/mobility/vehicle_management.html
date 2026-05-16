@@ -65,14 +65,12 @@
 
                 <button type="submit" class="btn btn-primary">Search</button>
 
-                <a href="{% url 'mobility:vehicle_management' %}"
-                   class="btn btn-outline">
+                <a href="{% url 'mobility:vehicle_management' %}" class="btn btn-outline">
                     Clear
                 </a>
             </form>
 
             <div class="table-actions">
-
                 {% if can_edit %}
                 <button type="button"
                         class="btn btn-primary"
@@ -82,14 +80,12 @@
                 </button>
                 {% endif %}
 
-                <a href="{% url 'mobility:par_management' %}"
-                   class="btn btn-outline">
+                <a href="{% url 'mobility:par_management' %}" class="btn btn-outline">
                     <i class="fas fa-clipboard-list"></i>
                     PAR Monitoring
                 </a>
 
-                <a href="{% url 'mobility:activity_log' %}"
-                   class="btn btn-outline">
+                <a href="{% url 'mobility:activity_log' %}" class="btn btn-outline">
                     <i class="fas fa-file-invoice"></i>
                     Activity Log
                 </a>
@@ -100,7 +96,6 @@
                     <i class="fas fa-file-export"></i>
                     Export CSV
                 </button>
-
             </div>
         </div>
 
@@ -121,10 +116,8 @@
                 </thead>
 
                 <tbody>
-
                     {% for vehicle in vehicles %}
                     <tr>
-
                         <td>{{ vehicle.vehicle_id|default:"—" }}</td>
 
                         <td>
@@ -140,36 +133,23 @@
                         <td>
                             {% if vehicle.status == 'Serviceable' %}
                                 <span class="badge badge-green">Serviceable</span>
-
                             {% elif vehicle.status == 'Unserviceable' %}
                                 <span class="badge badge-orange">Unserviceable</span>
-
                             {% elif vehicle.status == 'BER' %}
                                 <span class="badge badge-red">BER</span>
-
                             {% elif vehicle.status == 'Disposed' %}
                                 <span class="badge badge-secondary">Disposed</span>
-
                             {% else %}
-                                <span class="badge badge-secondary">
-                                    {{ vehicle.status }}
-                                </span>
+                                <span class="badge badge-secondary">{{ vehicle.status }}</span>
                             {% endif %}
                         </td>
 
-                        <td>
-                            {{ vehicle.registration_renewal_date|date:"M d, Y"|default:"—" }}
-                        </td>
-
-                        <td>
-                            {{ vehicle.insurance_renewal_date|date:"M d, Y"|default:"—" }}
-                        </td>
+                        <td>{{ vehicle.registration_renewal_date|date:"M d, Y"|default:"—" }}</td>
+                        <td>{{ vehicle.insurance_renewal_date|date:"M d, Y"|default:"—" }}</td>
 
                         <td class="action-cell">
-
                             {% if can_edit %}
                             <div class="action-group">
-
                                 <button type="button"
                                         class="action-btn"
                                         onclick="openModal('editVehicleModal{{ vehicle.id }}')">
@@ -183,29 +163,19 @@
                                     <i class="fas fa-trash"></i>
                                     Delete
                                 </button>
-
                             </div>
-
                             {% else %}
-
                             <span class="disposed-label">
                                 <i class="fas fa-eye"></i>
                                 View Only
                             </span>
-
                             {% endif %}
-
                         </td>
                     </tr>
 
                     {% if can_edit and vehicle.status != 'Disposed' %}
-
-                    <!-- EDIT VEHICLE MODAL -->
-                    <div class="mobility-modal-overlay"
-                         id="editVehicleModal{{ vehicle.id }}">
-
+                    <div class="mobility-modal-overlay" id="editVehicleModal{{ vehicle.id }}">
                         <div class="mobility-modal-card">
-
                             <button type="button"
                                     class="close-modal"
                                     onclick="closeModal('editVehicleModal{{ vehicle.id }}')">
@@ -216,185 +186,115 @@
 
                             <form method="post"
                                   action="{% url 'mobility:edit_vehicle' vehicle.id %}"
-                                  class="vehicle-edit-form"
-                                  data-original-status="{{ vehicle.status }}">
-
+                                  class="vehicle-edit-form">
                                 {% csrf_token %}
 
                                 <h4>Vehicle Information</h4>
 
                                 <div class="form-grid">
-
                                     <div class="form-group">
                                         <label>Vehicle ID</label>
-                                        <input type="text"
-                                               name="vehicle_id"
-                                               class="form-control"
-                                               value="{{ vehicle.vehicle_id }}">
+                                        <input type="text" name="vehicle_id" class="form-control" value="{{ vehicle.vehicle_id }}">
                                     </div>
 
                                     <div class="form-group">
                                         <label>Plate Number</label>
-                                        <input type="text"
-                                               name="plate_number"
-                                               class="form-control"
-                                               value="{{ vehicle.plate_number }}">
+                                        <input type="text" name="plate_number" class="form-control" value="{{ vehicle.plate_number }}">
                                     </div>
 
                                     <div class="form-group">
                                         <label>Primary Driver</label>
-                                        <input type="text"
-                                               name="primary_driver"
-                                               class="form-control"
-                                               value="{{ vehicle.primary_driver }}">
+                                        <input type="text" name="primary_driver" class="form-control" value="{{ vehicle.primary_driver }}">
                                     </div>
 
                                     <div class="form-group">
                                         <label>Alternative Driver</label>
-                                        <input type="text"
-                                               name="alternative_driver"
-                                               class="form-control"
-                                               value="{{ vehicle.alternative_driver }}">
+                                        <input type="text" name="alternative_driver" class="form-control" value="{{ vehicle.alternative_driver }}">
                                     </div>
 
                                     <div class="form-group">
                                         <label>Vehicle Classification</label>
-
-                                        <select name="classification"
-                                                class="form-select">
-
-                                            <option value="Sedan"
-                                                {% if vehicle.classification == 'Sedan' %}selected{% endif %}>
-                                                Sedan
-                                            </option>
-
-                                            <option value="SUV"
-                                                {% if vehicle.classification == 'SUV' %}selected{% endif %}>
-                                                SUV
-                                            </option>
-
-                                            <option value="Pick-up"
-                                                {% if vehicle.classification == 'Pick-up' %}selected{% endif %}>
-                                                Pick-up
-                                            </option>
-
-                                            <option value="Van"
-                                                {% if vehicle.classification == 'Van' %}selected{% endif %}>
-                                                Van
-                                            </option>
-
+                                        <select name="classification" class="form-select">
+                                            <option value="">Select Classification</option>
+                                            <option value="Sedan" {% if vehicle.classification == 'Sedan' %}selected{% endif %}>Sedan</option>
+                                            <option value="SUV" {% if vehicle.classification == 'SUV' %}selected{% endif %}>SUV</option>
+                                            <option value="Pick-up" {% if vehicle.classification == 'Pick-up' %}selected{% endif %}>Pick-up</option>
+                                            <option value="Van" {% if vehicle.classification == 'Van' %}selected{% endif %}>Van</option>
+                                            <option value="Motorcycle" {% if vehicle.classification == 'Motorcycle' %}selected{% endif %}>Motorcycle</option>
+                                            <option value="Multi-Cab" {% if vehicle.classification == 'Multi-Cab' %}selected{% endif %}>Multi-Cab</option>
+                                            <option value="Utility Vehicle" {% if vehicle.classification == 'Utility Vehicle' %}selected{% endif %}>Utility Vehicle</option>
+                                            <option value="Mobile Laboratory" {% if vehicle.classification == 'Mobile Laboratory' %}selected{% endif %}>Mobile Laboratory</option>
+                                            <option value="Service Vehicle" {% if vehicle.classification == 'Service Vehicle' %}selected{% endif %}>Service Vehicle</option>
+                                            <option value="Patrol Vehicle" {% if vehicle.classification == 'Patrol Vehicle' %}selected{% endif %}>Patrol Vehicle</option>
+                                            <option value="Transport Vehicle" {% if vehicle.classification == 'Transport Vehicle' %}selected{% endif %}>Transport Vehicle</option>
+                                            <option value="Rescue Vehicle" {% if vehicle.classification == 'Rescue Vehicle' %}selected{% endif %}>Rescue Vehicle</option>
+                                            <option value="Tactical Vehicle" {% if vehicle.classification == 'Tactical Vehicle' %}selected{% endif %}>Tactical Vehicle</option>
                                         </select>
                                     </div>
 
                                     <div class="form-group">
                                         <label>Make / Model</label>
-                                        <input type="text"
-                                               name="make_model"
-                                               class="form-control"
-                                               value="{{ vehicle.make_model }}">
+                                        <input type="text" name="make_model" class="form-control" value="{{ vehicle.make_model }}" required>
                                     </div>
 
                                     <div class="form-group">
                                         <label>Year</label>
-                                        <input type="text"
-                                               name="year"
-                                               class="form-control"
-                                               value="{{ vehicle.year }}">
+                                        <input type="text" name="year" class="form-control" value="{{ vehicle.year }}">
                                     </div>
 
                                     <div class="form-group">
                                         <label>Conduction Number</label>
-                                        <input type="text"
-                                               name="conduction_number"
-                                               class="form-control"
-                                               value="{{ vehicle.conduction_number }}">
+                                        <input type="text" name="conduction_number" class="form-control" value="{{ vehicle.conduction_number }}">
                                     </div>
 
                                     <div class="form-group">
                                         <label>Status</label>
-
-                                        <select name="status"
-                                                class="form-select">
-
-                                            <option value="Serviceable"
-                                                {% if vehicle.status == 'Serviceable' %}selected{% endif %}>
-                                                Serviceable
-                                            </option>
-
-                                            <option value="Unserviceable"
-                                                {% if vehicle.status == 'Unserviceable' %}selected{% endif %}>
-                                                Unserviceable
-                                            </option>
-
-                                            <option value="BER"
-                                                {% if vehicle.status == 'BER' %}selected{% endif %}>
-                                                BER
-                                            </option>
-
+                                        <select name="status" class="form-select">
+                                            <option value="Serviceable" {% if vehicle.status == 'Serviceable' %}selected{% endif %}>Serviceable</option>
+                                            <option value="Unserviceable" {% if vehicle.status == 'Unserviceable' %}selected{% endif %}>Unserviceable</option>
+                                            <option value="BER" {% if vehicle.status == 'BER' %}selected{% endif %}>BER</option>
                                         </select>
                                     </div>
 
                                     <div class="form-group">
                                         <label>Engine Number</label>
-                                        <input type="text"
-                                               name="engine_number"
-                                               class="form-control"
-                                               value="{{ vehicle.engine_number }}">
+                                        <input type="text" name="engine_number" class="form-control" value="{{ vehicle.engine_number }}">
                                     </div>
 
                                     <div class="form-group">
                                         <label>Chassis Number</label>
-                                        <input type="text"
-                                               name="chassis_number"
-                                               class="form-control"
-                                               value="{{ vehicle.chassis_number }}">
+                                        <input type="text" name="chassis_number" class="form-control" value="{{ vehicle.chassis_number }}">
                                     </div>
 
                                     <div class="form-group">
                                         <label>Registration Renewal Date</label>
-                                        <input type="date"
-                                               name="registration_renewal_date"
-                                               class="form-control"
-                                               value="{{ vehicle.registration_renewal_date|date:'Y-m-d' }}">
+                                        <input type="date" name="registration_renewal_date" class="form-control" value="{{ vehicle.registration_renewal_date|date:'Y-m-d' }}">
                                     </div>
 
                                     <div class="form-group">
                                         <label>Insurance Renewal Date</label>
-                                        <input type="date"
-                                               name="insurance_renewal_date"
-                                               class="form-control"
-                                               value="{{ vehicle.insurance_renewal_date|date:'Y-m-d' }}">
+                                        <input type="date" name="insurance_renewal_date" class="form-control" value="{{ vehicle.insurance_renewal_date|date:'Y-m-d' }}">
                                     </div>
-
                                 </div>
 
                                 <div class="modal-actions">
-
                                     <button type="button"
                                             class="btn btn-secondary"
                                             onclick="closeModal('editVehicleModal{{ vehicle.id }}')">
                                         Cancel
                                     </button>
 
-                                    <button type="submit"
-                                            class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary">
                                         Save Changes
                                     </button>
-
                                 </div>
-
                             </form>
                         </div>
                     </div>
 
-                    <!-- DELETE VEHICLE MODAL -->
-                    <div class="filter-modal-overlay"
-                         id="deleteVehicleModal{{ vehicle.id }}">
-
+                    <div class="filter-modal-overlay" id="deleteVehicleModal{{ vehicle.id }}">
                         <div class="filter-modal-content">
-
                             <div class="filter-modal-header">
-
                                 <h2>Delete Vehicle Record</h2>
 
                                 <button class="filter-close-btn"
@@ -402,34 +302,23 @@
                                         onclick="closeDeleteVehicleModal('deleteVehicleModal{{ vehicle.id }}')">
                                     &times;
                                 </button>
-
                             </div>
 
                             <div class="filter-modal-body">
-
                                 <div class="filter-section">
-
                                     <p>
                                         Are you sure you want to delete vehicle
-                                        <strong>{{ vehicle.vehicle_id }}</strong>?
+                                        <strong>{{ vehicle.vehicle_id|default:vehicle.plate_number|default:vehicle.conduction_number }}</strong>?
                                     </p>
-
                                 </div>
-
                             </div>
 
                             <div class="filter-modal-footer">
-
-                                <form method="post"
-                                      action="{% url 'mobility:delete_vehicle' vehicle.id %}">
-
+                                <form method="post" action="{% url 'mobility:delete_vehicle' vehicle.id %}">
                                     {% csrf_token %}
-
-                                    <button type="submit"
-                                            class="filter-btn-apply">
+                                    <button type="submit" class="filter-btn-apply">
                                         Delete
                                     </button>
-
                                 </form>
 
                                 <button type="button"
@@ -437,24 +326,18 @@
                                         onclick="closeDeleteVehicleModal('deleteVehicleModal{{ vehicle.id }}')">
                                     Cancel
                                 </button>
-
                             </div>
-
                         </div>
                     </div>
-
                     {% endif %}
 
                     {% empty %}
-
                     <tr>
                         <td colspan="9" style="text-align:center;">
                             No vehicles registered.
                         </td>
                     </tr>
-
                     {% endfor %}
-
                 </tbody>
             </table>
         </div>
@@ -465,26 +348,218 @@
         </div>
     </div>
 
+    {% if can_edit %}
+    <div class="mobility-modal-overlay" id="addVehicleModal">
+        <div class="mobility-modal-card">
+            <button type="button"
+                    class="close-modal"
+                    onclick="closeModal('addVehicleModal')">
+                ✕
+            </button>
+
+            <h3>Add Vehicle</h3>
+
+            <form method="post" action="{% url 'mobility:vehicle_management' %}">
+                {% csrf_token %}
+
+                <h4>Vehicle Information</h4>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Vehicle ID</label>
+                        <input type="text" name="vehicle_id" class="form-control" placeholder="e.g. VEH-001">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Plate Number</label>
+                        <input type="text" name="plate_number" class="form-control" placeholder="e.g. ABC 1234">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Primary Driver</label>
+                        <input type="text" name="primary_driver" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Alternative Driver</label>
+                        <input type="text" name="alternative_driver" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Vehicle Classification</label>
+                        <select name="classification" class="form-select">
+                            <option value="">Select Classification</option>
+                            <option value="Sedan">Sedan</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Pick-up">Pick-up</option>
+                            <option value="Van">Van</option>
+                            <option value="Motorcycle">Motorcycle</option>
+                            <option value="Multi-Cab">Multi-Cab</option>
+                            <option value="Utility Vehicle">Utility Vehicle</option>
+                            <option value="Mobile Laboratory">Mobile Laboratory</option>
+                            <option value="Service Vehicle">Service Vehicle</option>
+                            <option value="Patrol Vehicle">Patrol Vehicle</option>
+                            <option value="Transport Vehicle">Transport Vehicle</option>
+                            <option value="Rescue Vehicle">Rescue Vehicle</option>
+                            <option value="Tactical Vehicle">Tactical Vehicle</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Make / Model <span style="color:red;">*</span></label>
+                        <input type="text" name="make_model" class="form-control" placeholder="e.g. Toyota Hilux" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="text" name="year" class="form-control" maxlength="4" placeholder="e.g. 2024">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Conduction Number</label>
+                        <input type="text" name="conduction_number" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" class="form-select">
+                            <option value="Serviceable" selected>Serviceable</option>
+                            <option value="Unserviceable">Unserviceable</option>
+                            <option value="BER">BER</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Engine Number</label>
+                        <input type="text" name="engine_number" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Chassis Number</label>
+                        <input type="text" name="chassis_number" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Registration Renewal Date</label>
+                        <input type="date" name="registration_renewal_date" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Insurance Renewal Date</label>
+                        <input type="date" name="insurance_renewal_date" class="form-control">
+                    </div>
+                </div>
+
+                <h4>PAR Information</h4>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>PAR Number</label>
+                        <input type="text" name="par_number" class="form-control" placeholder="Enter PAR number">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Issued To</label>
+                        <input type="text" name="issued_to" class="form-control" placeholder="Enter accountable person">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date Acquired</label>
+                        <input type="date" name="date_acquired" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="date" name="expiry_date" class="form-control">
+                    </div>
+
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Remarks</label>
+                        <textarea name="remarks" rows="3" class="form-control" placeholder="Enter remarks"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button"
+                            class="btn btn-secondary"
+                            onclick="closeModal('addVehicleModal')">
+                        Cancel
+                    </button>
+
+                    <button type="submit" class="btn btn-primary">
+                        Save Vehicle
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
 </main>
 
 <script>
-
     function openModal(id) {
-        document.getElementById(id).classList.add('open');
+        const modal = document.getElementById(id);
+
+        if (modal) {
+            modal.classList.add('open');
+        } else {
+            console.error('Modal not found:', id);
+        }
     }
 
     function closeModal(id) {
-        document.getElementById(id).classList.remove('open');
+        const modal = document.getElementById(id);
+
+        if (modal) {
+            modal.classList.remove('open');
+        }
     }
 
     function openDeleteVehicleModal(id) {
-        document.getElementById(id).classList.add('active');
+        const modal = document.getElementById(id);
+
+        if (modal) {
+            modal.classList.add('active');
+        } else {
+            console.error('Delete modal not found:', id);
+        }
     }
 
     function closeDeleteVehicleModal(id) {
-        document.getElementById(id).classList.remove('active');
+        const modal = document.getElementById(id);
+
+        if (modal) {
+            modal.classList.remove('active');
+        }
     }
 
+    function exportVehicleCSV() {
+        let csv = [];
+        const rows = document.querySelectorAll("table tr");
+
+        rows.forEach(row => {
+            let cols = row.querySelectorAll("td, th");
+            let rowData = [];
+
+            cols.forEach(col => {
+                rowData.push('"' + col.innerText.replace(/"/g, '""') + '"');
+            });
+
+            csv.push(rowData.join(","));
+        });
+
+        const csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+        const downloadLink = document.createElement("a");
+
+        downloadLink.download = "vehicle_registry.csv";
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
 </script>
 
 {% endblock %}

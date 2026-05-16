@@ -124,7 +124,6 @@ def vehicle_management(request):
                     expiry_date=expiry_date or None,
                     remarks=remarks
                 )
-
                 par_created = True
 
             ActivityLog.objects.create(
