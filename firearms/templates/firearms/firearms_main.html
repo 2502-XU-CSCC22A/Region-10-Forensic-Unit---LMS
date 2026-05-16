@@ -106,6 +106,22 @@
 <div class="layout">
   {% include 'firearms/firearms_sidebar.html' %}
 
+<div id="confirmationModal" class="modal-overlay">
+  <div class="modal" style="max-width:420px;">
+    <button type="button" class="close-modal" onclick="closeConfirmationModal()">&times;</button>
+    <h3>Move to BER & Disposal</h3>
+    <form id="confirmRemovalForm">
+      <p style="margin:16px 0;color:var(--muted);font-size:14px;">
+        Are you sure you want to move this firearm to BER & Disposal? This action cannot be undone.
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeConfirmationModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" style="background:#ef4444;border-color:#ef4444">Confirm</button>
+      </div>
+    </form>
+  </div>
+</div>
+
   <main class="main-content">
     <div class="stat-cards">
       <!-- Total Firearms -->
@@ -178,18 +194,18 @@
         
         <a href="{% url 'firearms:par_management' %}" class="btn btn-outline" 
            style="font-size:13px;padding:7px 16px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-          <i class="fas fa-file-contract"></i> PAR Records
+          PAR Records
         </a>
         
-        <button class="btn btn-primary" onclick="openAddModal()">&#xFF0B; Add Record</button>
+        <button class="btn btn-primary" onclick="openAddModal()">Add Record</button>
         
         <a href="{% url 'firearms:activity_logs' %}"
         class="btn btn-outline"
         style="font-size:13px;padding:7px 16px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-        <i class="fas fa-history"></i> Activity Logs
+        Activity Logs
       </a>
         
-        <button class="btn btn-outline" onclick="exportCSV()">&#x2B07; Export CSV</button>
+        <button class="btn btn-outline" onclick="exportCSV()">Export CSV</button>
       </div>
 
       <div class="table-wrap">
@@ -221,7 +237,7 @@
 </div>
 
 <div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
+  <div class="modal" style="max-width:420px; max-height:fit-content; min-height:unset;">
     <div>
       <button type="button" class="close-modal" onclick="closeModal()">&#x2715;</button>
       <h3 id="modalTitle">Firearm Details</h3>

@@ -6,7 +6,6 @@ const API = {
   ber:    (id) => `/firearms/api/ber/${id}/`, 
 };
 
-
 const PAR_API = {
   list: '/firearms/api/par/list/', 
 };
@@ -19,12 +18,15 @@ let sortKey     = null;
 let sortDir     = 1;
 let editingId   = null;
 
+let selectedBERId = null;
+
 function getCookie(name) {
   const val   = `; ${document.cookie}`;
   const parts = val.split(`; ${name}=`);
   if (parts.length === 2) return parts.pop().split(';').shift();
   return null;
 }
+
 
 async function apiPost(url, data) {
   const res = await fetch(url, {
@@ -38,30 +40,91 @@ async function apiPost(url, data) {
   return res.json();
 }
 
-async function moveToBER(id) {
-  const confirmed = confirm("Move this firearm to BER & Disposal?");
-  if (!confirmed) return;
-
-  const f = allFirearms.find(item => item.id == id);
-  if (!f) { alert("Firearm record not found."); return; }
-
-  try {
-    const result = await apiPost(API.ber(id), {});
-    if (result.success) {
-      await loadFirearms();
-    } else {
-      alert('Error: ' + result.error);
-    }
-  } catch (err) {
-    alert('Network error.');
-    console.error(err);
+function prepareRemoval(id) {
+  selectedBERId = id;
+  const modal = document.getElementById('confirmationModal');
+  if (modal) {
+    modal.classList.add('open');
   }
 }
 
+function closeConfirmationModal() {
+  selectedBERId = null;
+  const modal = document.getElementById('confirmationModal');
+  if (modal) {
+    modal.classList.remove('open');
+  }
+}
+
+async function moveToBER(id) {
+  const firearm = allFirearms.find((item) => item.id == id);
+  
+  if (!firearm) {
+    alert('Firearm record not found.');
+    return;
+  }
+
+  const submitBtn = document.querySelector('#confirmRemovalForm button[type="submit"]');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Processing...';
+  }
+
+  try {
+    const berResponse = await fetch(API.ber(id), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      body: JSON.stringify({}),
+    });
+
+    const berResult = await berResponse.json();
+
+    if (!berResult.success) {
+      console.error('FIREARM STATUS UPDATE ERROR:', berResult.error);
+      alert('Failed to update firearm status: ' + berResult.error);
+      return;
+    }
+
+    closeConfirmationModal();
+    await loadFirearms();
+
+  } catch (err) {
+    console.error('BER WORKFLOW ERROR:', err);
+    alert('Network error: ' + err.message);
+  } finally {
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Confirm';
+    }
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.getElementById('modalOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  });
+
+  document.getElementById('confirmRemovalForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    if (!selectedBERId) {
+      alert('No firearm selected.');
+      return;
+    }
+    
+    await moveToBER(selectedBERId);
+  });
+
+  loadFirearms();
+  loadPARStats();
+});
 
 async function loadFirearms() {
   try {
-
     const [firearmsRes, parRes] = await Promise.all([
       fetch(API.list),
       fetch(PAR_API.list)
@@ -92,7 +155,6 @@ async function loadFirearms() {
   }
 }
 
-
 function updatePARStatsFromFallback() {
   const el = document.getElementById('par-initial-data');
   if (!el) return false;
@@ -108,7 +170,6 @@ function updatePARStatsFromFallback() {
 }
 
 async function loadPARStats() {
-
   try {
     const res = await fetch(PAR_API.list);
     if (!res.ok) throw new Error('PAR API not available');
@@ -125,13 +186,13 @@ async function loadPARStats() {
     document.getElementById('parBar').style.width   = validatedPAR > 0 ? '100%' : '0%';
   } catch (err) {
     console.error('Failed to load PAR stats:', err);
-   
     if (!updatePARStatsFromFallback()) {
       document.getElementById('parCount').textContent = '—';
       document.getElementById('parBar').style.width   = '0%';
     }
   }
 }
+
 
 function updateStats() {
   const total     = allFirearms.length;
@@ -176,7 +237,7 @@ function renderTable() {
           <td>
             <button class="action-btn" onclick="openActionModal(${f.id})">Edit ▸</button>
             <button class="action-btn" style="background:#ef4444;margin-left:4px"
-                    onclick="moveToBER(${f.id})">BER</button>
+                    onclick="prepareRemoval(${f.id})">BER</button>
           </td>
         </tr>`).join('')
     : `<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted)">No records found.</td></tr>`;
@@ -208,7 +269,10 @@ function filterTable() {
   filtered = allFirearms.filter(f => {
     const textMatch   = [f.name, f.serialNo, f.station, f.faid, f.makeModel, f.subunit]
                           .some(v => (v || '').toLowerCase().includes(q));
-    const statusMatch = !sf || f.status === sf;
+    const effectiveStatus = (f.status === 'BER' || f.status?.toLowerCase() === 'unserviceable')
+      ? 'Unserviceable'
+      : f.status;
+    const statusMatch = !sf || effectiveStatus === sf;
     return textMatch && statusMatch;
   });
 
@@ -231,6 +295,7 @@ function applySortFiltered() {
     return av < bv ? -sortDir : av > bv ? sortDir : 0;
   });
 }
+
 
 function inputField(label, id, val = '') {
   return `
@@ -270,6 +335,7 @@ function buildForm(f = {}) {
     selectField('Remarks', 'f_validated', ['Validated', 'Expired/For Renewal'],                 f.validated || 'VALIDATED')
   );
 }
+
 
 function openActionModal(id) {
   editingId = id;
@@ -345,6 +411,7 @@ async function deleteRecord(id) {
   }
 }
 
+
 function exportCSV() {
   const headers = ['NAME','UNIT','SUBUNIT','STATION','ISSUING UNIT','FAID','SERIAL NO.','MAKE/MODEL','STATUS','VALIDATED'];
   const rows    = filtered.map(f =>
@@ -359,20 +426,14 @@ function exportCSV() {
   a.click();
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('modalOverlay').addEventListener('click', e => {
-    if (e.target === document.getElementById('modalOverlay')) closeModal();
-  });
-  loadFirearms();
-  loadPARStats();   
-});
 
-window.openAddModal    = openAddModal;
-window.openActionModal = openActionModal;
-window.closeModal      = closeModal;
-window.saveRecord      = saveRecord;
-window.deleteRecord    = deleteRecord;
-window.moveToBER       = moveToBER;
-window.filterTable     = filterTable;
-window.sortTable       = sortTable;
-window.exportCSV       = exportCSV;
+window.openAddModal           = openAddModal;
+window.openActionModal        = openActionModal;
+window.closeModal             = closeModal;
+window.saveRecord             = saveRecord;
+window.deleteRecord           = deleteRecord;
+window.prepareRemoval         = prepareRemoval; 
+window.filterTable            = filterTable;
+window.sortTable              = sortTable;
+window.exportCSV              = exportCSV;
+window.closeConfirmationModal = closeConfirmationModal;
