@@ -1,13 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import connection
+from django.utils import timezone
 
 from .models import Communication, CommunicationPARRecord, CommunicationICSRecord
 from .forms import CommunicationPARForm, CommunicationICSForm
-from django.contrib.auth.models import User
 from mobility.views import Vehicle
 from firearms.models import Firearm
 from disposal.models import DisposalItem
-from config.models import Category, Asset, AssetStatus
 
 def create_activity_log(communication_id, action, details):
     with connection.cursor() as cursor:
@@ -44,25 +43,11 @@ def communications_list(request):
         'total_vehicles': all_v.count(),
         'total_firearms': all_f.count(),
         })
-    
 
 
 # ACTIVITY LOGS
 def activity_logs(request):
-    all_c = Communication.objects.exclude(status_id__in=[4, 5])
-    all_f = Firearm.objects.all()
-    all_v = Vehicle.objects.all()
-    all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4)
-    
-    current_user_role = request.user.userprofile.role
-    
-    return render(request, "communications/activity_logs.html", {
-        'total_comms': all_c.count() ,
-        'total_ber': all_d.count(),
-        'total_vehicles': all_v.count(),
-        'total_firearms': all_f.count(),
-        'current_user_role':  current_user_role
-    })
+    return render(request, "activity_logs.html")
 
 
 # PAR MONITORING
@@ -72,13 +57,23 @@ def par_monitoring(request):
         .all()
         .order_by("-created_at")
     )
-    
+
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
     all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4)
     
     current_user_role = request.user.userprofile.role
+
+    today = timezone.now().date()
+
+    for par in pars:
+        if par.expiry_date:
+            par.days_until_expiry = (
+                par.expiry_date - today
+            ).days
+        else:
+            par.days_until_expiry = 9999
 
     if request.method == "POST":
         p_form = CommunicationPARForm(request.POST)
@@ -106,6 +101,7 @@ def par_monitoring(request):
         {
             "p_form": p_form,
             "pars": pars,
+            "today": today,
             'total_comms': all_c.count() ,
             'total_ber': all_d.count(),
             'total_vehicles': all_v.count(),
@@ -206,6 +202,16 @@ def ics_monitoring(request):
         .order_by("-created_at")
     )
 
+    today = timezone.now().date()
+
+    for ics in icss:
+        if ics.expiry_date:
+            ics.days_until_expiry = (
+                ics.expiry_date - today
+            ).days
+        else:
+            ics.days_until_expiry = 9999
+
     if request.method == "POST":
         i_form = CommunicationICSForm(request.POST)
 
@@ -232,7 +238,8 @@ def ics_monitoring(request):
         {
             "i_form": i_form,
             "icss": icss,
-            'total_comms': all_c.count() ,
+            "today": today,
+             'total_comms': all_c.count() ,
             'total_ber': all_d.count(),
             'total_vehicles': all_v.count(),
             'total_firearms': all_f.count(),
