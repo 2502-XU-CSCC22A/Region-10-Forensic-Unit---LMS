@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
-from config.models import Asset
+from config.models import Asset, AssetStatus, Category
 
 
 class ConfigAsset(models.Model):
@@ -88,7 +88,7 @@ class Vehicle(models.Model):
             self.vehicle_id
             or self.plate_number
             or self.conduction_number
-            or f"VEH-{self.pk or 'NEW'}"
+            or f"VEH-{self.pk or timezone.now().strftime('%Y%m%d%H%M%S')}"
         )
 
     def get_asset_serial_no(self):
@@ -98,8 +98,26 @@ class Vehicle(models.Model):
             or self.conduction_number
             or self.plate_number
             or self.vehicle_id
-            or f"NO-SERIAL-{self.pk or 'NEW'}"
+            or f"NO-SERIAL-{self.pk or timezone.now().strftime('%Y%m%d%H%M%S')}"
         )
+
+    def get_asset_status(self):
+        asset_status = AssetStatus.objects.filter(
+            status_name=self.status
+        ).first()
+
+        if not asset_status:
+            asset_status = AssetStatus.objects.filter(
+                status_name='Serviceable'
+            ).first()
+
+        return asset_status
+
+    def get_vehicle_category(self):
+        vehicle_category, _ = Category.objects.get_or_create(
+            category_name='Vehicle'
+        )
+        return vehicle_category
 
     def save(self, *args, **kwargs):
 
@@ -112,23 +130,38 @@ class Vehicle(models.Model):
 
         asset_property_no = self.get_asset_property_no()
         asset_serial_no = self.get_asset_serial_no()
+        asset_status = self.get_asset_status()
+        vehicle_category = self.get_vehicle_category()
+
+        if not asset_status:
+            raise ValueError(
+                "Asset status could not be found. Please make sure 'Serviceable' exists in Asset_Status table."
+            )
 
         # CREATE / LINK ASSET
         if not self.asset and asset_property_no:
-
             asset, created = Asset.objects.get_or_create(
                 property_no=asset_property_no,
                 defaults={
                     'model': self.make_model or '',
                     'serial_no': asset_serial_no,
                     'date_acquired': timezone.now().date(),
-                    'status_id': 1,
-                    'category_id': 10,
+                    'status': asset_status,
+                    'category': vehicle_category,
                     'quantity': '1',
                 }
             )
 
             self.asset = asset
+
+        # SYNC ASSET DETAILS WHEN VEHICLE IS UPDATED
+        if self.asset:
+            self.asset.model = self.make_model or self.asset.model
+            self.asset.serial_no = asset_serial_no or self.asset.serial_no
+            self.asset.status = asset_status
+            self.asset.category = vehicle_category
+            self.asset.quantity = self.asset.quantity or '1'
+            self.asset.save()
 
         super().save(*args, **kwargs)
 
@@ -144,7 +177,6 @@ class Vehicle(models.Model):
             ).first()
 
             if not existing_disposal:
-
                 DisposalItem.objects.create(
                     property_no=disposal_property_no,
                     model=self.make_model or '',
