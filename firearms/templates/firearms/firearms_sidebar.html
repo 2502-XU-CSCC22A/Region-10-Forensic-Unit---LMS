@@ -19,8 +19,9 @@
       </a>
     </li>
 
-    <li class="active">
-      <a href="{% url 'firearms:index' %}">
+    {% url 'firearms:index' as firearms_url %}
+    <li class="{% if request.path == firearms_url %}active{% endif %}">
+      <a href="{{ firearms_url }}">
         <span>
           <i class="fas fa-crosshairs"></i>
           <span class="sidebar-item-label">Firearms</span>
@@ -39,8 +40,9 @@
       </a>
     </li>
 
-    <li class="{% if active_page == 'investigative' %}active{% endif %}">
-      <a href="{% url 'InvestigativeEquipment:investigative_view'%}">
+    {% url 'InvestigativeEquipment:investigative_view' as inves_url %}
+    <li class="{% if request.path == inves_url %}active{% endif %}">
+      <a href="{{ inves_url }}">
         <i class="fas fa-microscope"></i>
         <span class="sidebar-item-label">Investigative Equipment</span>
         <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ inves_all|default:'0' }}</span>
@@ -57,15 +59,17 @@
 
     <p class="mt-4">Monitoring</p>
 
-    <li class="{% if active_page == 'reports' %}active{% endif %}">
-      <a href="{% url 'firearms:par_management' %}">
+    {% url 'firearms:par_management' as firearms_par_url %}
+    <li class="{% if request.path == firearms_par_url %}active{% endif %}">
+      <a href="{{ firearms_par_url }}">
         <i class="fas fa-clipboard-list"></i>
         <span class="sidebar-item-label">PAR Monitoring</span>
       </a>
     </li>
 
-    <li class="{% if active_page == 'reports' %}active{% endif %}">
-      <a href="{% url 'firearms:activity_logs' %}">
+    {% url 'firearms:firearms_activitylog' as firearms_reports_url %}
+    <li class="{% if request.path == firearms_reports_url %}active{% endif %}">
+      <a href="{{ firearms_reports_url }}">
         <i class="fas fa-file-invoice"></i>
         <span class="sidebar-item-label">Reports</span>
       </a>

@@ -47,16 +47,9 @@ class DisposalItem(Asset):
     class Meta:
         db_table = 'disposal_disposalitems' 
         verbose_name = "Disposal Item"
-    
-    @property
-    def days_overdue_calc(self):
-        if self.expiry_date and self.expiry_date < date.today():
-            delta = date.today() - self.expiry_date
-            return delta.days
-        return 0
 
     def __str__(self):
-        return f"Disposal: {self.property_no} - {self.reason[:20]}"
+        return f"Disposal: {self.property_no} - {self.disposal_reason[:20]}"
     
 class DisposalActivityLog(models.Model):
     ACTION_CHOICES = [

@@ -101,7 +101,7 @@ body {
 
 main {
   margin-top: var(--header-h);
-  margin-left: 300px;
+  margin-left: 320px;
   height: calc(100vh - 70px);
   overflow-y: auto;
   flex: 1;

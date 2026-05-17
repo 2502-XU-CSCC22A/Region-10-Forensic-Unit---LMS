@@ -81,8 +81,9 @@ def vehicle_management(request):
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
     inves_all = InvestigativeDetails.objects.count()
-    total_ber = DisposalItem.objects.all().count()
-     
+    total_ber = DisposalItem.objects.filter(
+        asset_ptr__status_id=4 
+    ).count()
      
     current_user_role = get_current_user_role(request.user)
 
@@ -189,7 +190,7 @@ def vehicle_management(request):
             expiry_date__lte=upcoming_limit
         ).count(),
 
-        'total_dispo': total_ber,
+        'total_disposal': total_ber,
         'total_inves': inves_all,
         'total_firearms': firearms_all,
         'total_comms': comms_all,
@@ -331,6 +332,8 @@ def par_management(request):
     search = request.GET.get('search')
     status = request.GET.get('status')
 
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
     inves_all = InvestigativeDetails.objects.count()
@@ -365,7 +368,8 @@ def par_management(request):
         'search': search,
         'status': status,
         'can_edit': can_edit(request.user),
-        'total_disposal': total_ber,
+        'total_vehicles': visible_v.count(),
+        'total_disposal': total_ber.count(),
         'total_inves': inves_all,
         'total_firearms': firearms_all,
         'total_comms': comms_all,
@@ -409,6 +413,8 @@ def activity_log(request):
     days = 7 if period == 'week' else 30
     cutoff = timezone.now() - timedelta(days=days)
 
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
     inves_all = InvestigativeDetails.objects.count()
@@ -424,7 +430,8 @@ def activity_log(request):
     return render(request, 'mobility/activity_log.html', {
         'logs': logs,
         'period': period,
-        'total_disposal': total_ber,
+        'total_vehicles': visible_v.count(),
+        'total_disposal': total_ber.count(),
         'total_inves': inves_all,
         'total_firearms': firearms_all,
         'total_comms': comms_all,

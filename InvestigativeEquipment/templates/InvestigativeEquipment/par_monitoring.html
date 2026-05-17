@@ -24,13 +24,15 @@
       }
       
       main {
-        margin-left: 315px;
-        margin-top: 72px;
-        width: calc(100% - 315px);
-        min-height: 100vh;
-        background: #f8fafc;
-        padding: 24px;
-        overflow-x: auto;
+        flex: 1;
+        margin-left: var(--sidebar-width);
+        width: calc(100% - var(--sidebar-width));
+        padding: 28px;
+        min-height: calc(100vh - var(--header-h));
+        background-color: #f4f7fe;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
       }
       
       .registry-container {

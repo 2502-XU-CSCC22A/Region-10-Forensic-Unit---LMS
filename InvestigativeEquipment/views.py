@@ -556,3 +556,23 @@ def move_to_ber_investigative(request, item_id):
         messages.success(request, "Investigative asset moved to BER.")
 
     return redirect("InvestigativeEquipment:investigative_view")
+
+def activity_logs(request):
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    all_d = DisposalItem.objects.filter(
+        asset_ptr__status_id=4 
+    )
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    current_user_role = request.user.userprofile.role
+    
+    return render(request, "InvestigativeEquipment/activity_logs.html", {
+        'current_user_role':  current_user_role,
+        'total_comms': all_c.count() ,
+        'total_ber': all_d.count(),
+        'total_inves': all_i,
+        'total_vehicles': visible_v.count(),
+        'total_firearms': all_f.count(),
+    })

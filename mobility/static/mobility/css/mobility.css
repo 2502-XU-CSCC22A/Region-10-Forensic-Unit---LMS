@@ -32,88 +32,6 @@ body {
   overflow-x: hidden;
 }
 
-/* TOPBAR */
-
-.topbar {
-  height: var(--header-h);
-  background: var(--white);
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 2px 12px rgba(13, 33, 85, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 28px;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1100;
-}
-
-.header-brand {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  padding-left: 0;
-}
-
-.header-logo {
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.1;
-  color: #1a2b6d;
-  text-transform: uppercase;
-}
-
-.header-divider {
-  width: 2px;
-  height: 46px;
-  background: var(--pnp-blue);
-  border-radius: 999px;
-}
-
-.header-title {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--pnp-blue);
-}
-
-.header-user {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-
-.notification-icon,
-.user-avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #f1f5f9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6b7280;
-}
-
-.user-avatar {
-  width: 46px;
-  height: 46px;
-  background: #e5e7eb;
-}
-
-.user-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--blue);
-}
-
-.user-role {
-  font-size: 14px;
-  color: #6b7280;
-}
-
 
 /* ── Stat Cards ──────────────────────────────────────────────────────────── */
 .stat-cards {
@@ -1023,25 +941,85 @@ tbody tr:hover {
 
 /* Header same as Communications */
 .topbar,
+/* HEADER */
+
 header,
 .navbar-header {
-  height: var(--header-h);
-  padding: 0 24px 0 0;
-  box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
+  height: 73px;
+  background-color: #ffffff;
   border-bottom: none;
+  box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px 0 0;
 }
 
 .header-brand {
+  display: flex;
+  align-items: center;
   gap: 14px;
   padding: 0 20px;
   margin: 8px 20px 8px 12px;
+  border-radius: 6px;
   height: 54px;
+}
+
+.header-logo {
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #1a2b6d;
+  text-transform: uppercase;
+}
+
+.header-divider {
+  height: 40px;
+  width: 2px;
+  background-color: #1a2b6d;
+  margin: 0 15px;
 }
 
 .header-title {
   font-size: 1.25rem;
   font-weight: 700;
   color: #1a2b6d;
+  margin: 0;
+}
+
+.notification-wrapper i {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background-color: #e9ecef;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  border: none;
+}
+
+.user-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user-name {
+  color: #2563eb;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.user-role {
+  font-size: 12px;
+  line-height: 1;
 }
 
 /* Stat cards same as Communications */
@@ -1075,4 +1053,20 @@ header,
   font-size: 13px;
   color: #475569;
   font-weight: 600;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
 }

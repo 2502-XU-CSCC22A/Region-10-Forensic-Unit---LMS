@@ -27,8 +27,9 @@
       </a>
     </li>
 
-    <li>
-      <a href="{% url 'InvestigativeEquipment:investigative_view' %}">
+    {% url 'InvestigativeEquipment:investigative_view' as inves_url %}
+    <li class="{% if request.path == inves_url %}active{% endif %}">
+      <a href="{{ inves_url }}">
         <i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
         <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_inves|default:'0' }}</span>
       </a>

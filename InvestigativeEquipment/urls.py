@@ -11,6 +11,7 @@ urlpatterns = [
     path('add/', views.investigative_view, name='investigative_add'),
     path('update/', views.investigative_view, name='investigative_update'),
     path('investigative/move-to-ber/<int:item_id>/', views.move_to_ber_investigative, name='move_to_ber_investigative'),    
+    path("reports/", views.activity_logs, name="activity_logs"),
     
     # PAR Monitoring
     path('par-monitoring/', views.par_monitoring_view, name='par_monitoring'),
