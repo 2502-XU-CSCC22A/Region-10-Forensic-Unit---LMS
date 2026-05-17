@@ -1,238 +1,289 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>User Management</title>
 
-    <link rel="stylesheet" href="{% static 'usermanagement/usermanagement_style.css' %}" />
+    <link
+      rel="stylesheet"
+      href="{% static 'usermanagement/usermanagement_style.css' %}"
+    />
     <link rel="stylesheet" href="{% static 'usermanagement/sidebar.css' %}" />
 
     <!-- External Dependencies -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-</head>
+  </head>
 
-<body>
+  <body>
     {% include 'usermanagement/header.html' %}
     <div class="dashboard-container">
-        {% include 'usermanagement/sidebar.html' %}
+      {% include 'usermanagement/sidebar.html' %}
 
-        <main class="main-content">
+      <main class="main-content">
+        <div class="table-container">
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Last Active</th>
+                  {% if current_user_role == "Admin" %}
+                  <th>Action</th>
+                  {% endif %}
+                </tr>
+              </thead>
 
-            <div class="table-container">
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th>Last Active</th>
-                                {% if current_user_role == "Admin" %}
-                                <th>Action</th>
-                                {% endif %}
-                            </tr>
-                        </thead>
+              <tbody>
+                {% for u in users %}
+                <tr>
+                  <td class="name-cell">
+                    {% if u.userprofile.avatar %}
+                    <img
+                      src="{{ u.userprofile.avatar }}"
+                      alt="avatar"
+                      class="avatar"
+                    />
+                    {% else %}
+                    <div class="avatar-placeholder">
+                      {{ u.first_name|default:u.username|first }}
+                    </div>
+                    {% endif %}
+                    <span>{{ u.get_full_name|default:u.username }}</span>
+                  </td>
 
-                        <tbody>
-                            {% for u in users %}
-                            <tr>
-                                <td class="name-cell">
-                                    {% if u.userprofile.avatar %}
-                                    <img src="{{ u.userprofile.avatar }}" alt="avatar" class="avatar" />
-                                    {% else %}
-                                    <div class="avatar-placeholder">
-                                        {{ u.first_name|default:u.username|first }}
-                                    </div>
-                                    {% endif %}
-                                    <span>{{ u.get_full_name|default:u.username }}</span>
-                                </td>
+                  <td class="email-cell">{{ u.email|default:"—" }}</td>
 
-                                <td class="email-cell">{{ u.email|default:"—" }}</td>
+                  <td>
+                    {% if current_user_role == "Admin" %}
+                    <select
+                      class="role-select"
+                      data-user-id="{{ u.id }}"
+                      data-original-role="{{ u.userprofile.role|default:'User' }}"
+                    >
+                      <option
+                        value="User"
+                        {%
+                        if
+                        u.userprofile.role=""
+                        ="User"
+                        or
+                        not
+                        u.userprofile.role
+                        %}selected{%
+                        endif
+                        %}
+                      >
+                        User
+                      </option>
 
-                                <td>
-                                    {% if current_user_role == "Admin" %}
-                                    <select class="role-select" data-user-id="{{ u.id }}"
-                                        data-original-role="{{ u.userprofile.role|default:'User' }}">
-                                        <option value="User" {% if u.userprofile.role=="User" or not u.userprofile.role
-                                            %}selected{% endif %}>User</option>
-                                        <option value="Admin" {% if u.userprofile.role=="Admin" %}selected{% endif %}>
-                                            Admin</option>
-                                    </select>
-                                    {% else %}
-                                    {{ u.userprofile.role|default:"—" }}
-                                    {% endif %}
-                                </td>
+                      <option
+                        value="Admin"
+                        {%
+                        if
+                        u.userprofile.role=""
+                        ="Admin"
+                        %}selected{%
+                        endif
+                        %}
+                      >
+                        Admin
+                      </option>
+                    </select>
+                    {% else %} {{ u.userprofile.role|default:"—" }} {% endif %}
+                  </td>
 
-                                <td class="last-active">
-                                    {% if u.last_login %}
-                                    {{ u.last_login|date:"M d, Y H:i" }}
-                                    {% else %}
-                                    Never
-                                    {% endif %}
-                                </td>
+                  <td class="last-active">
+                    {% if u.last_login %} {{ u.last_login|date:"M d, Y H:i" }}
+                    {% else %} Never {% endif %}
+                  </td>
 
-                                {% if current_user_role == "Admin" %}
-                                <td>
-                                    <button class="save-role-btn" data-user-id="{{ u.id }}"
-                                        onclick="saveRole({{ u.id }})" disabled>
-                                        Save
-                                    </button>
-                                </td>
-                                {% endif %}
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="{% if current_user_role == 'Admin' %}5{% else %}4{% endif %}"
-                                    style="text-align: center; padding: 40px; color: #64748b;">
-                                    No users found in the database.
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
+                  {% if current_user_role == "Admin" %}
+                  <td>
+                    <button
+                      class="save-role-btn"
+                      data-user-id="{{ u.id }}"
+                      onclick="saveRole({{ u.id }})"
+                      disabled
+                    >
+                      Save
+                    </button>
+                  </td>
+                  {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                  <td
+                    colspan="{% if current_user_role == 'Admin' %}5{% else %}4{% endif %}"
+                    style="text-align: center; padding: 40px; color: #64748b"
+                  >
+                    No users found in the database.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
     </div>
 
     {% if current_user_role == "Admin" %}
     <style>
-        .role-select {
-            padding: 5px 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.875rem;
-            color: #1e293b;
-            background-color: #f8fafc;
-            cursor: pointer;
-            outline: none;
-            transition: border-color 0.2s;
-        }
+      .role-select {
+        padding: 5px 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-family: "Inter", sans-serif;
+        font-size: 0.875rem;
+        color: #1e293b;
+        background-color: #f8fafc;
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.2s;
+      }
 
-        .role-select:focus {
-            border-color: #6366f1;
-        }
+      .role-select:focus {
+        border-color: #6366f1;
+      }
 
-        .role-select.changed {
-            border-color: #f59e0b;
-            background-color: #fffbeb;
-        }
+      .role-select.changed {
+        border-color: #f59e0b;
+        background-color: #fffbeb;
+      }
 
-        .save-role-btn {
-            padding: 5px 14px;
-            font-size: 0.8rem;
-            font-family: 'Inter', sans-serif;
-            border: none;
-            border-radius: 6px;
-            background-color: #6366f1;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.2s, opacity 0.2s;
-        }
+      .save-role-btn {
+        padding: 5px 14px;
+        font-size: 0.8rem;
+        font-family: "Inter", sans-serif;
+        border: none;
+        border-radius: 6px;
+        background-color: #6366f1;
+        color: white;
+        cursor: pointer;
+        transition:
+          background-color 0.2s,
+          opacity 0.2s;
+      }
 
-        .save-role-btn:disabled {
-            background-color: #cbd5e1;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
+      .save-role-btn:disabled {
+        background-color: #cbd5e1;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
 
-        .save-role-btn:not(:disabled):hover {
-            background-color: #4f46e5;
-        }
+      .save-role-btn:not(:disabled):hover {
+        background-color: #4f46e5;
+      }
 
-        .save-role-btn.saving {
-            background-color: #94a3b8;
-            cursor: not-allowed;
-        }
+      .save-role-btn.saving {
+        background-color: #94a3b8;
+        cursor: not-allowed;
+      }
 
-        .save-role-btn.saved {
-            background-color: #22c55e;
-        }
+      .save-role-btn.saved {
+        background-color: #22c55e;
+      }
     </style>
 
     <script>
-        document.querySelectorAll('.role-select').forEach(select => {
-            select.addEventListener('change', function () {
-                const userId = this.dataset.userId;
-                const originalRole = this.dataset.originalRole;
-                const saveBtn = document.querySelector(`.save-role-btn[data-user-id="${userId}"]`);
+      document.querySelectorAll(".role-select").forEach((select) => {
+        select.addEventListener("change", function () {
+          const userId = this.dataset.userId;
+          const originalRole = this.dataset.originalRole;
+          const saveBtn = document.querySelector(
+            `.save-role-btn[data-user-id="${userId}"]`,
+          );
 
-                if (this.value !== originalRole) {
-                    this.classList.add('changed');
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save';
-                    saveBtn.classList.remove('saved');
-                } else {
-                    this.classList.remove('changed');
-                    saveBtn.disabled = true;
-                }
-            });
-        });
-
-        async function saveRole(userId) {
-            const select = document.querySelector(`.role-select[data-user-id="${userId}"]`);
-            const saveBtn = document.querySelector(`.save-role-btn[data-user-id="${userId}"]`);
-            const newRole = select.value;
-
+          if (this.value !== originalRole) {
+            this.classList.add("changed");
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save";
+            saveBtn.classList.remove("saved");
+          } else {
+            this.classList.remove("changed");
             saveBtn.disabled = true;
-            saveBtn.classList.add('saving');
-            saveBtn.textContent = 'Saving...';
+          }
+        });
+      });
 
-            try {
-                const response = await fetch(`/usermanagement/update-role/${userId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'),
-                    },
-                    body: JSON.stringify({ role: newRole }),
-                });
+      async function saveRole(userId) {
+        const select = document.querySelector(
+          `.role-select[data-user-id="${userId}"]`,
+        );
+        const saveBtn = document.querySelector(
+          `.save-role-btn[data-user-id="${userId}"]`,
+        );
+        const newRole = select.value;
 
-                const data = await response.json();
+        saveBtn.disabled = true;
+        saveBtn.classList.add("saving");
+        saveBtn.textContent = "Saving...";
 
-                if (response.ok && data.success) {
-                    select.dataset.originalRole = newRole;
-                    select.classList.remove('changed');
-                    saveBtn.classList.remove('saving');
-                    saveBtn.classList.add('saved');
-                    saveBtn.textContent = 'Saved ✓';
-                    saveBtn.disabled = true;
-                } else {
-                    alert(data.error || 'Failed to update role. Please try again.');
-                    saveBtn.classList.remove('saving');
-                    saveBtn.disabled = false;
-                    saveBtn.textContent = 'Save';
-                }
-            } catch (err) {
-                alert('Network error. Please try again.');
-                saveBtn.classList.remove('saving');
-                saveBtn.disabled = false;
-                saveBtn.textContent = 'Save';
-            }
+        try {
+          const response = await fetch(
+            `/usermanagement/update-role/${userId}/`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+              },
+              body: JSON.stringify({ role: newRole }),
+            },
+          );
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            select.dataset.originalRole = newRole;
+            select.classList.remove("changed");
+            saveBtn.classList.remove("saving");
+            saveBtn.classList.add("saved");
+            saveBtn.textContent = "Saved ✓";
+            saveBtn.disabled = true;
+          } else {
+            alert(data.error || "Failed to update role. Please try again.");
+            saveBtn.classList.remove("saving");
+            saveBtn.disabled = false;
+            saveBtn.textContent = "Save";
+          }
+        } catch (err) {
+          alert("Network error. Please try again.");
+          saveBtn.classList.remove("saving");
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Save";
         }
+      }
 
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                document.cookie.split(';').forEach(cookie => {
-                    const trimmed = cookie.trim();
-                    if (trimmed.startsWith(name + '=')) {
-                        cookieValue = decodeURIComponent(trimmed.slice(name.length + 1));
-                    }
-                });
+      function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+          document.cookie.split(";").forEach((cookie) => {
+            const trimmed = cookie.trim();
+            if (trimmed.startsWith(name + "=")) {
+              cookieValue = decodeURIComponent(trimmed.slice(name.length + 1));
             }
-            return cookieValue;
+          });
         }
+        return cookieValue;
+      }
     </script>
     {% endif %}
-
-</body>
-
+  </body>
 </html>

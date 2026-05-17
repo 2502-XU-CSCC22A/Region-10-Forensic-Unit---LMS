@@ -2,13 +2,13 @@
   <ul class="list-unstyled components">
     <p>Dashboard</p>
     <li>
-      <a href="{% url 'dashboard:dashboard_view'%}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
+      <a href="{% url 'dashboard:dashboard_view' %}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
     </li>
 
     <li>
       <a href="{% url 'mobility:vehicle_management' %}">
         <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicle|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span>
       </a>
     </li>
 
@@ -19,40 +19,64 @@
       </a>
     </li>
 
-    <li>
-      <a href="{% url 'communications:communications_list' %}">
+    {% url 'communications:communications_list' as comms_url %}
+    <li class="{% if request.path == comms_url %}active{% endif %}">
+      <a href="{{ comms_url }}">
         <span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;"> {{ total_comms|default:'0' }}</span>
-      </a> 
+        <span class="badge badge-light badge-pill">{{ total_comms|default:'0' }}</span>
+      </a>
     </li>
 
-    <li class="active">
-      <a href="{% url 'InvestigativeEquipment:investigative_view'%}">
+    <li>
+      <a href="{% url 'InvestigativeEquipment:investigative_view' %}">
         <i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
         <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_inves|default:'0' }}</span>
-      </a> 
+      </a>
     </li>
 
     <li>
       <a href="{% url 'disposal:disposal_list' %}">
         <i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span>
-        <span class="badge badge-light badge-pill">{{ total_ber|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_ber|default:'0' }}</span>
       </a>
     </li>
 
     <p class="mt-4">Monitoring</p>
-    <li>
-      <a href="{% url 'disposal:history_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
-    </li>
-    <li>
-      <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
+
+    {% url 'InvestigativeEquipment:par_monitoring' as inves_par_url %}
+    <li class="{% if request.path == inves_par_url %}active{% endif %}">
+      <a href="{{ inves_par_url }}">
+        <i class="fas fa-clipboard-list"></i>
+        <span class="sidebar-item-label">PAR Monitoring</span>
+      </a>
     </li>
 
-    <div class = "UM">
+    {% url 'InvestigativeEquipment:ics_monitoring' as inves_ics_url %}
+    <li class="{% if request.path == inves_ics_url %}active{% endif %}">
+      <a href="{{ inves_ics_url }}">
+        <i class="fas fa-clipboard-list"></i>
+        <span class="sidebar-item-label">ICS Monitoring</span>
+      </a>
+    </li>
+    {% url 'InvestigativeEquipment:activity_logs' as inves_reports_url %}
+    <li class="{% if request.path == inves_reports_url %}active{% endif %}">
+      <a href="{{ inves_reports_url }}">
+        <i class="fas fa-file-invoice"></i>
+        <span class="sidebar-item-label">Reports</span>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'user_management:user_list' %}">
+        <i class="fas fa-user-shield mr-2"></i>
+        <span class="sidebar-item-label">User Management</span>
+      </a>
+    </li>
+
+    <div class="UM">
       <p>System Action</p>
 
       <li>
-        <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
+        <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label">Logout</span></a>
       </li>
     </div>
   </ul>

@@ -21,18 +21,18 @@ body {
 
 header,
 .navbar-header {
-  position: fixed;
+  height: 73px;
+  background-color: #ffffff;
+  border-bottom: none;
+  box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
+  width: 100%;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 1100;
-  height: var(--header-h);
-  background: var(--white);
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px 0 0;
-  box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
 }
 
 .header-brand {
@@ -67,17 +67,39 @@ header,
   margin: 0;
 }
 
+.notification-wrapper i {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
 .user-avatar {
-  width: 36px;
-  height: 36px;
-  background: var(--bg);
+  width: 40px;
+  height: 40px;
+  background-color: #e9ecef;
   border-radius: 50%;
-  border: 2px solid var(--border);
+  font-size: 1.1rem;
+  border: none;
+}
+
+.user-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user-name {
+  color: #2563eb;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.user-role {
+  font-size: 12px;
+  line-height: 1;
 }
 
 .layout {
   display: flex;
-  padding-top: var(--header-h);
   min-height: 100vh;
 }
 
