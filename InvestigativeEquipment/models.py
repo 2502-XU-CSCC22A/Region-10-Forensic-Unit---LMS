@@ -64,3 +64,44 @@ class ICSRecord(models.Model):
 
     def __str__(self):
         return f"ICS {self.ics_number}"
+
+class InvestigativeActivityLog(models.Model):
+    log_id = models.AutoField(primary_key=True)
+    investigative = models.ForeignKey(
+        InvestigativeDetails,
+        on_delete=models.CASCADE,
+        related_name="activity_logs",
+        db_column="asset_ptr_id"
+    )
+    action = models.CharField(max_length=100)
+    details = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "Investigative_Activity_Log"
+
+    def __str__(self):
+        return f"{self.action} - {self.investigative.asset_id_id}"
+    
+class InvestigativePARRecord(models.Model):
+    par_id = models.AutoField(primary_key=True)
+    par_number = models.CharField(max_length=100, blank=True, null=True)
+    reference_no = models.CharField(max_length=100, blank=True, null=True)
+    issued_to = models.CharField(max_length=255, blank=True, null=True)
+    date_issued = models.DateField(blank=True, null=True)
+    expiry_date = models.DateField(blank=True, null=True)
+    remarks = models.TextField(blank=True, null=True)
+
+    asset = models.ForeignKey(
+        Asset,
+        on_delete=models.CASCADE,
+        related_name="inves_par_records",
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        db_table = "Investigative_PAR_Record"
+
+    def __str__(self):
+        return f"PAR {self.par_number}"

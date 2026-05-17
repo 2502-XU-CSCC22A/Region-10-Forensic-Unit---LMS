@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ICSRecord',
             fields=[
-                ('ics_id', models.AutoField(db_column='IcsID', primary_key=True, serialize=False)),
+                ('ics_id', models.AutoField(db_column='ics_id', primary_key=True, serialize=False)),
                 ('ics_number', models.CharField(db_column='ICS_Number', max_length=100, unique=True)),
                 ('date_issued', models.DateField(db_column='Date_Issued', default=datetime.date.today)),
                 ('return_date', models.DateField(blank=True, db_column='Return_Date', null=True)),

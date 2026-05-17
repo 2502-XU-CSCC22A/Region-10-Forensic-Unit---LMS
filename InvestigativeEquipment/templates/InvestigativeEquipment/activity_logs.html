@@ -5,15 +5,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Activity Logs</title>
+  <title>Investigative Activity Logs</title>
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
-
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
   <style>
@@ -213,14 +211,14 @@
     </div>
   </header>
 
-  {% include 'communications/sidebar.html' %}
+  {% include 'InvestigativeEquipment/sidebar.html' %}
 
   <main>
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h3 class="page-title mb-0">Activity History</h3>
         <p class="text-muted small">
-          Tracking Communications modifications, additions, and updates
+          Tracking Investigative Equipment modifications, additions, and updates
         </p>
       </div>
 
@@ -242,8 +240,8 @@
       </div>
     </div>
 
-    <a href="{% url 'communications:communications_list' %}" class="return-link">
-      <i class="fas fa-arrow-left mr-1"></i> Return to Communications
+    <a href="{% url 'InvestigativeEquipment:investigative_view' %}" class="return-link">
+      <i class="fas fa-arrow-left mr-1"></i> Return to Investigative Equipment
     </a>
   </main>
 
@@ -294,6 +292,7 @@
       if (lower.includes("create")) return "fa-plus-circle";
       if (lower.includes("update")) return "fa-edit";
       if (lower.includes("move")) return "fa-undo";
+      if (lower.includes("print")) return "fa-print";
 
       return "fa-history";
     }
@@ -313,7 +312,7 @@
       const startDate = getDateDaysAgo(days);
 
       const { data, error } = await sb
-        .from("communications_activitylog")
+        .from("Investigative_Activity_Log")
         .select("*")
         .gte("created_at", startDate)
         .order("created_at", { ascending: false });
@@ -352,11 +351,11 @@
               <div>
                 <div class="d-flex align-items-center mb-2">
                   <span class="badge asset-id-badge mr-2">
-                    ID: ${log.communication_id ?? "-"}
+                    ID: ${log.asset_ptr_id ?? "-"}
                   </span>
 
                   <span class="badge badge-pill badge-secondary">
-                    communications
+                    investigative
                   </span>
 
                   <span class="action-label">
