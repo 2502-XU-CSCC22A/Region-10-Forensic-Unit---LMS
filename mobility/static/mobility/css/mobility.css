@@ -1,6 +1,6 @@
 :root {
   --pnp-blue: #1a237e;
-  --sidebar-width: 320px;
+  --sidebar-width: 315px;
   --figma-active: #4338ca;
 
   --navy: #1a237e;
@@ -15,6 +15,7 @@
   --orange: #f97316;
   --green: #16a34a;
   --header-h: 72px;
+  --card-bg: #ffffff;
 }
 
 *,
@@ -36,8 +37,8 @@ body {
 .topbar {
   height: var(--header-h);
   background: var(--white);
-  border-bottom: none;
-  box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(13, 33, 85, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -53,6 +54,7 @@ body {
   display: flex;
   align-items: center;
   gap: 18px;
+  padding-left: 0;
 }
 
 .header-logo {
@@ -112,20 +114,6 @@ body {
   color: #6b7280;
 }
 
-/* LAYOUT */
-
-.layout-wrapper {
-  display: flex;
-}
-
-.main-content {
-  margin-left: var(--sidebar-width);
-  margin-top: var(--header-h);
-  width: calc(100% - var(--sidebar-width));
-  min-height: calc(100vh - var(--header-h));
-  padding: 28px;
-  background: var(--bg);
-}
 
 /* ── Stat Cards ──────────────────────────────────────────────────────────── */
 .stat-cards {
@@ -1001,4 +989,90 @@ tbody tr:hover {
     background: #ffffff;
     color: #1d4ed8;
     border: 2px solid #1d4ed8;
+}
+
+/* FORCE MOBILITY TO MATCH COMMUNICATIONS LAYOUT */
+
+:root {
+  --sidebar-width: 315px;
+  --header-h: 72px;
+  --bg: #f4f7fe;
+}
+
+.layout-wrapper {
+  display: flex;
+  padding-top: var(--header-h);
+  min-height: 100vh;
+}
+
+.main-content {
+  margin-left: var(--sidebar-width) !important;
+  margin-top: 0 !important;
+  width: calc(100% - var(--sidebar-width)) !important;
+  padding: 28px !important;
+  min-height: calc(100vh - var(--header-h));
+  background: var(--bg);
+}
+
+.main-content > main {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  min-height: auto !important;
+}
+
+/* Header same as Communications */
+.topbar,
+header,
+.navbar-header {
+  height: var(--header-h);
+  padding: 0 24px 0 0;
+  box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
+  border-bottom: none;
+}
+
+.header-brand {
+  gap: 14px;
+  padding: 0 20px;
+  margin: 8px 20px 8px 12px;
+  height: 54px;
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a2b6d;
+}
+
+/* Stat cards same as Communications */
+.stat-cards {
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  border-radius: 12px;
+  border: 1px solid #dfe7f3;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(13, 33, 85, 0.06);
+}
+
+.stat-icon {
+  width: 46px;
+  height: 46px;
+  font-size: 20px;
+}
+
+.stat-value {
+  font-size: 38px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
 }

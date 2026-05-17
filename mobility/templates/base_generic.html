@@ -80,39 +80,9 @@
 
 <body>
 
-<header class="topbar">
-    <div class="header-brand">
-        <div class="header-logo">
-            PNP<br>FORENSIC<br>GROUP
-        </div>
+{% include 'mobility/header.html' %}
 
-        <div class="header-divider"></div>
-
-        <h1 class="header-title">
-            Regional Forensic Unit 10 LMS
-        </h1>
-    </div>
-
-    <div class="header-user">
-        <div class="notification-icon">
-            <i class="fas fa-bell"></i>
-        </div>
-
-        <div class="user-avatar">
-            <i class="fas fa-user"></i>
-        </div>
-
-        <div class="user-text">
-            <div class="user-name">
-                {{ user.get_full_name|default:user.username }}
-            </div>
-            <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
-        </div>
-        </div>
-    </div>
-</header>
-
-<div class="layout-wrapper">
+<div class="layout">
     {% include 'mobility/sidebar.html' %}
 
     <main class="main-content">
