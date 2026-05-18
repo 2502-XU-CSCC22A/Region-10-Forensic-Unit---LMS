@@ -17,7 +17,8 @@ def user_list(request):
         .filter(is_active=True) \
         .order_by('-last_login')[:50]
         
-    vehicle_all = Vehicle.objects.count()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearm_all = Firearm.objects.exclude(status_id__in=[4, 5]).count()
     disposal_all = DisposalItem.objects.filter(
@@ -35,7 +36,7 @@ def user_list(request):
 
     return render(request, 'usermanagement/usermanagement.html', {
         'users': users,
-        'vehicle_all': vehicle_all,
+        'vehicle_all': visible_v.count(),
         'comms_all': comms_all,
         'disposal_all': disposal_all,
         'firearm_all': firearm_all,
