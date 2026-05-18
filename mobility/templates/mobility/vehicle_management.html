@@ -2,6 +2,11 @@
 {% load static %}
 
 {% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="{% static 'js/mobility.js' %}"></script>
+
 <main>
 
     <div class="stat-cards">
@@ -9,44 +14,44 @@
             <div class="stat-top">
                 <div class="stat-icon blue"><i class="fas fa-car"></i></div>
                 <div>
-                    <div class="stat-value">{{ total_vehicles|default:"0" }}</div>
+                    <div class="stat-value" id="totalVehiclesCount">{{ total_vehicles|default:"0" }}</div>
                     <div class="stat-label">Total Vehicles</div>
                 </div>
             </div>
-            <div class="stat-bar-wrap"><div class="stat-bar blue"></div></div>
+            <div class="stat-bar-wrap" ><div class="stat-bar blue" id="totalVehiclesBar" style="width:0%"></div></div>
         </div>
 
         <div class="stat-card">
             <div class="stat-top">
                 <div class="stat-icon orange"><i class="fas fa-check-circle"></i></div>
                 <div>
-                    <div class="stat-value">{{ s_count|default:"0" }}</div>
-                    <div class="stat-label">Serviceable Vehicles</div>
+                    <div class="stat-value" id="serviceableVehiclesCount">{{ s_count|default:"0" }}</div>
+                    <div class="stat-label" >Serviceable Vehicles</div>
                 </div>
             </div>
-            <div class="stat-bar-wrap"><div class="stat-bar orange"></div></div>
+            <div class="stat-bar-wrap"><div class="stat-bar orange" id="serviceableVehiclesBar" style="width:0%"></div></div>
         </div>
 
         <div class="stat-card">
             <div class="stat-top">
                 <div class="stat-icon green"><i class="fas fa-file-alt"></i></div>
                 <div>
-                    <div class="stat-value">{{ validated_par_count|default:"0" }}</div>
+                    <div class="stat-value" id="validatedParCount">{{ validated_par_count|default:"0" }}</div>
                     <div class="stat-label">Validated PAR</div>
                 </div>
             </div>
-            <div class="stat-bar-wrap"><div class="stat-bar green"></div></div>
+            <div class="stat-bar-wrap"><div class="stat-bar green" id="validatedParBar" style="width:0%"></div></div>
         </div>
 
         <div class="stat-card">
             <div class="stat-top">
                 <div class="stat-icon red"><i class="fas fa-clock"></i></div>
                 <div>
-                    <div class="stat-value">{{ expiring_count|default:"0" }}</div>
+                    <div class="stat-value" id="expiringParCount">{{ expiring_count|default:"0" }}</div>
                     <div class="stat-label">Expiring PAR Records</div>
                 </div>
             </div>
-            <div class="stat-bar-wrap"><div class="stat-bar red"></div></div>
+            <div class="stat-bar-wrap"><div class="stat-bar red" id="expiringParBar" style="width:0%"></div></div>
         </div>
     </div>
 

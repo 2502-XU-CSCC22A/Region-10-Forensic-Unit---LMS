@@ -6,12 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RFU 10 LMS Dashboard</title>
 
-    <link rel="stylesheet" href="{% static 'disposal/disposal_style.css' %}" />
-    <link rel="stylesheet" href="{% static 'disposal/history.css' %}" />
-    <link rel="stylesheet" href="{% static 'disposal/sidebar.css' %}" />
-
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
+    <link rel="stylesheet" href="{% static 'disposal/history.css' %}" />
+    <link rel="stylesheet" href="{% static 'disposal/sidebar.css' %}" />
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -48,7 +47,7 @@
           <i class="fas fa-user text-muted"></i>
         </div>
         <div class="user-text ml-2">
-          <div class="user-name font-weight-bold text-dark">{{ user.get_full_name|default:user.username }}</div>
+          <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
           <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
         </div>
         </div>
@@ -124,39 +123,32 @@
       <!-- ───────────── Main Content ──────────────────────────────────── -->
 
       <main class="main-content">
-          <div class="header-history">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
             <h3 class="page-title mb-0">Removal History</h3>
-            <p class="text-muted small">Tracking Disposal and Beyond Economic Repairs (BER)</p>
+            <p class="text-muted small">
+              Tracking Removal History of All Assets
+            </p>
+          </div>
           
           <div class="btn-group">
-            <a href="?period=week"
-              class="btn filter-btn {% if period == 'week' %}
-                btn-primary
-              {% else %}
-                btn-outline-primary
-              {% endif %}">
+            <button id="btnLast7" class="btn filter-button btn-outline-primary">
               Last 7 Days
-            </a>
-            <a href="?period=month"
-              class="btn filter-btn {% if period == 'month' %}
-                btn-primary
-              {% else %}
-                btn-outline-primary
-              {% endif %}">
+            </button>
+          
+            <button id="btnLast30" class="btn filter-button btn-primary">
               Last 30 Days
-            </a>
+            </button>
           </div>
         </div>
 
         <div class="activity-timeline">
             {% for log in items %}
-              <div class="card shadow-sm mb-3 log-card-delete">
-                <div class="card-body p-3 log-card-delete">
+              <div class="activity-card shadow-sm mb-3 ">
                   <div class="d-flex justify-content-between align-items-start">
-                    <div class="card-body p-3">
-                      <div>
+                    <div class="card-body">
                       <div class="d-flex align-items-center mb-2">
-                        <span class="badge asset-id-badge mr-2">ID: {{ log.asset.id }}</span>
+                        <span class="badge asset-id-badge mr-2">ID: {% if log.asset.asset_ptr %}{{ log.asset.asset_ptr.id }}{% else %}{{ log.asset.id }}{% endif %}</span>
                         
                         <span class="badge badge-pill 
                           {% if log.asset.category.category_name|lower == 'mobility' %}
@@ -172,13 +164,13 @@
                         </span>
                       </div>
         
-                      <h6 class="mb-1">
-                        <strong>{{ log.asset.model }} (Serial No.: {{ log.asset.serial_no }})</strong>
+                      <h6 class="assetName mb-1">
+                        {{ log.asset.model }} (Serial No.: {{ log.asset.serial_no }})
                       </h6>
         
                       {% if log.disposal_reason %}
                       <p class="mb-0 text-danger small">
-                        <strong>Reason:</strong> {{ log.disposal_reason }}
+                        Reason:{{ log.disposal_reason }}
                       </p>
                       {% endif %}
                       
@@ -196,8 +188,6 @@
                       <small class="text-muted">{{ log.timestamp|date:'M d, Y H:i' }}</small>
                     </div>
                   </div>
-                </div>
-              </div>
             {% empty %}
               <div class="text-center py-5">
                 <i class="fas fa-history fa-3x text-light mb-3"></i>
@@ -212,4 +202,51 @@
       </main>
     </div>
   </body>
+  <script>
+    const btn7 = document.getElementById('btnLast7');
+    const btn30 = document.getElementById('btnLast30');
+
+    function toggleFilterState(clicked, unclicked) {
+      clicked.classList.add('btn-primary');
+      clicked.classList.remove('btn-outline-primary');
+      unclicked.classList.remove('btn-primary');
+      unclicked.classList.add('btn-outline-primary');
+    }
+ 
+    function filterLogs(daysLimit) {
+      const logCards = document.querySelectorAll('.log-card-delete');
+      const now = new Date();
+  
+      logCards.forEach(card => {
+        const dateElement = card.querySelector('.log-date');
+        if (!dateElement) return;
+  
+        const logDateText = dateElement.textContent.trim();
+        const logDate = new Date(logDateText);
+
+        const timeDiffInMs = now - logDate;
+        const ageInDays = timeDiffInMs / (1000 * 60 * 60 * 24);
+
+        if (ageInDays <= daysLimit) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';  
+        }
+      });
+    }
+
+    btn7.addEventListener('click', () => {
+      toggleFilterState(btn7, btn30);
+      filterLogs(7); 
+    });
+  
+    btn30.addEventListener('click', () => {
+      toggleFilterState(btn30, btn7);
+      filterLogs(30); 
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      filterLogs(7);
+    });
+  </script>
 </html>

@@ -7,6 +7,10 @@ from django.views.decorators.http import require_POST
 
 from config.models import Asset, AssetStatus, Category
 from disposal.models import DisposalItem
+from mobility.models import Vehicle
+from firearms.models import Firearm
+from InvestigativeEquipment.models import InvestigativeDetails
+from communications.models import Communication
 
 User = get_user_model()
 
@@ -26,12 +30,15 @@ def dashboard_view(request):
     def count_status(name):
         return Asset.objects.filter(status__status_name__iexact=name).count()
 
-    total_assets = Asset.objects.count()
-    total_firearms = count_category("Firearms")
-    total_mobility = count_category("Mobility")
-    total_communications = count_category("Communications")
-    total_investigative = count_category("Investigative Equipment")
-    total_ber = count_status("BER")
+    total_asset = Asset.objects.exclude(status__in=[4, 5])
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    firearms_all = Firearm.objects.count()
+    inves_all = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5])
+    
+    total_ber = DisposalItem.objects.filter(asset_ptr__status_id=4).count()
+    current_user_role = request.user.userprofile.role
 
     from django.contrib.contenttypes.models import ContentType
 
@@ -97,7 +104,7 @@ def dashboard_view(request):
                     "actor": current_actor,
                     "action": "recorded asset",
                     "item": f"{asset.category.category_name} – {asset.property_no}",
-                    "timestamp": asset.date_acquired.strftime("%b %d, %Y"),
+                    "timestamp": asset.date_acquired.strftime("%b %d, %Y") if asset.date_acquired else "N/A",
                     "unread": asset.id not in read_ids,
                 }
             )
@@ -105,13 +112,14 @@ def dashboard_view(request):
     unread_count = sum(1 for a in activities if a["unread"])
 
     context = {
-        "total_assets": total_assets,
-        "total_firearms": total_firearms,
-        "total_mobility": total_mobility,
-        "total_communications": total_communications,
-        "total_investigative": total_investigative,
+        "total_assets": total_asset.count(),
+        "total_firearms": firearms_all,
+        "total_mobility": visible_v.count(),
+        "total_communications": comms_all,
+        "total_investigative": inves_all.count(),
         "total_ber": total_ber,
         "activities": activities,
+        "current_user_role": current_user_role,
         "notification_count": unread_count,
     }
     return render(request, "dashboard/dashboard.html", context)

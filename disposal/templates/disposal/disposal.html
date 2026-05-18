@@ -16,6 +16,10 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700;800&display=swap" rel="stylesheet" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="{% static 'js/sample.js' %}"></script>
   </head>
 
   <header class="navbar-header d-flex align-items-center justify-content-between px-4">
@@ -95,24 +99,8 @@
             </div>
             <div class="stat-bar-wrap">
               <div class="stat-bar-wrap">
-                <div class="stat-bar green" id="totalBerBar" style="width:0%"></div>
+                <div class="stat-bar purple" id="totalBerBar" style="width:0%"></div>
               </div>
-            </div>
-          </div>
-
-          <!-- Total Firearms -->
-          <div class="stat-card">
-            <div class="stat-top">
-              <div class="stat-icon orange">
-                <i class="fas fa-crosshairs"></i>
-              </div>
-              <div>
-                <div class="stat-value" id="firearmsBerCount">{{ firearms_ber|default:'0' }}</div>
-                <div class="stat-label">BER Firearms</div>
-              </div>
-            </div>
-            <div class="stat-bar-wrap">
-              <div class="stat-bar orange" id="firearmsBerBar" style="width:0%"></div>
             </div>
           </div>
 
@@ -134,6 +122,22 @@
             </div>
           </div>
 
+          <!-- Total Firearms -->
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon orange">
+              <i class="fas fa-crosshairs"></i>
+            </div>
+            <div>
+              <div class="stat-value" id="firearmsBerCount">{{ firearms_ber|default:'0' }}</div>
+              <div class="stat-label">Total Firearms</div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar orange" id="firearmsBerBar" style="width:0%"></div>
+          </div>
+        </div>
+        
           <!-- Total Communication Devices -->
           <div class="stat-card">
             <div class="stat-top">
@@ -290,16 +294,8 @@
 
     {% include 'disposal/confirmation_modal.html' %}
     {% include 'disposal/summary_modal.html' %}
-
-    <script id="supabase-data" type="application/json">
-      [ {% for f in firearms %} ... {% endfor %} ]
-    </script>
-    <script>
-      const supabaseData = JSON.parse(document.getElementById('supabase-data').textContent);
-    </script>
     
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="{% static 'js/sample.js' %}"></script>
 
     <script>
       async function fetchDisposalData() {

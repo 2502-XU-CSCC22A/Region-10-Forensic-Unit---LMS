@@ -108,6 +108,7 @@ main {
   width: calc(100% - var(--sidebar-width));
   padding: 28px;
   min-height: calc(100vh - var(--header-h));
+  background-color: #f4f7fe;
 }
 
 /* SIDEBAR */

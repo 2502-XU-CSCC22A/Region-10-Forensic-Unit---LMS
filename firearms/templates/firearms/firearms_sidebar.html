@@ -15,7 +15,7 @@
           <i class="fas fa-car"></i>
           <span class="sidebar-item-label">Mobility</span>
         </span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicle|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span>
       </a>
     </li>
 
@@ -45,7 +45,7 @@
       <a href="{{ inves_url }}">
         <i class="fas fa-microscope"></i>
         <span class="sidebar-item-label">Investigative Equipment</span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ inves_all|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_inves|default:'0' }}</span>
       </a>
     </li>
 
@@ -67,7 +67,7 @@
       </a>
     </li>
 
-    {% url 'firearms:firearms_activitylog' as firearms_reports_url %}
+    {% url 'firearms:activity_logs' as firearms_reports_url %}
     <li class="{% if request.path == firearms_reports_url %}active{% endif %}">
       <a href="{{ firearms_reports_url }}">
         <i class="fas fa-file-invoice"></i>

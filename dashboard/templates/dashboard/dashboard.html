@@ -12,21 +12,64 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}" />
   <link rel="stylesheet" href="{% static 'dashboard/sidebar.css' %}" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-  <!-- ─ Header  -->
-  <header>
-    <div class="header-brand">
-      <img src="{% static 'img/RFU10_Logo.png' %}" alt="RFU10 Logo" class="header-logo-img" />
-      <span class="header-title">Regional Forensic Unit 10 LMS</span>
+  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+    <div class="header-brand d-flex align-items-center">
+      <div class="header-logo">
+        PNP<br />FORENSIC<br />GROUP
+      </div>
+      <div class="header-divider"></div>
+      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
     </div>
-    <div class="header-user">
-      <div class="user-avatar"><i class="fas fa-user-circle fa-2x" style="color:#3b82f6;"></i></div>
-      <div class="user-info">
-        <div class="user-role">{{ user.get_full_name|default:user.username }}</div>
-        <div class="user-greet">Welcome!</div>
+
+    <div class="header-user d-flex align-items-center">
+      <div class="notification-wrapper mr-4">
+        <i class="fas fa-bell {% if upcoming_pms > 0 or upcoming_repairs > 0 %}
+            
+            
+            
+            
+            
+            
+            text-danger
+
+
+
+
+
+
+          {% else %}
+            
+            
+            
+            
+            
+            
+            text-muted
+
+
+
+
+
+
+          {% endif %}">
+
+        </i>
+      </div>
+
+      <div class="profile-group d-flex align-items-center">
+        <div class="user-avatar d-flex align-items-center justify-content-center">
+          <i class="fas fa-user text-muted"></i>
+        </div>
+        <div class="user-text ml-2">
+          <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
+          <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
+        </div>
       </div>
     </div>
   </header>
@@ -39,92 +82,146 @@
       <ul class="list-unstyled components">
         <p>Dashboard</p>
         <li class="active">
-          <a href="#"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
+          <a href="{% url 'dashboard:dashboard_view'%}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
         </li>
+    
         <li>
-          <a href="#">
+          <a href="{% url 'mobility:vehicle_management' %}">
             <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
-            <span class="badge badge-light badge-pill">{{ total_mobility }}</span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_mobility|default:'0' }}</span>
           </a>
         </li>
+    
         <li>
-          <a href="#"><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></a>
+          <a href="{% url 'firearms:index' %}">
+            <span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span>
+          </a>
         </li>
+    
         <li>
-          <a href="#"><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></a>
+          <a href="{% url 'communications:communications_list' %}">
+            <span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;"> {{ total_communications|default:'0' }}</span>
+          </a> 
         </li>
+    
         <li>
-          <a href="#"><i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative
-              Equipment</span></a>
+          <a href="{% url 'InvestigativeEquipment:investigative_view'%}">
+            <i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_investigative|default:'0' }}</span>
+          </a> 
         </li>
-
+    
+        <li>
+          <a href="{% url 'disposal:disposal_list' %}">
+            <i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span>
+            <span class="badge badge-light badge-pill">{{ total_ber|default:'0' }}</span>
+          </a>
+        </li>
+    
         <p class="mt-4">Monitoring</p>
-        <li><a href="#"><i class="fas fa-desktop"></i> <span class="sidebar-item-label">PAR Monitoring</span></a></li>
-        <li><a href="#"><i class="fas fa-clipboard-check"></i> <span class="sidebar-item-label">Inspection
-              Monitoring</span></a></li>
-        <li><a href="#"><i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span></a></li>
-        <li><a href="#"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a></li>
+        <li>
+          <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
+        </li>
+    
+        <div class = "UM">
+          <p>System Action</p>
+    
+          <li>
+            <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
+          </li>
+        </div>
       </ul>
-      <div class="sidebar-bottom">
-        <a href="#"><i class="fas fa-user-shield"></i> <span class="sidebar-item-label">User Management</span></a>
-      </div>
     </nav>
 
     <!-- ── Main ── -->
     <main>
 
-      <!-- ─Stat Cards Row -->
+      <!-- ── Stat Cards ──────────────────────────────────────────────────── -->
       <div class="stat-cards">
-
+        <!-- Total BER Items -->
         <div class="stat-card">
-          <div class="stat-icon-wrap blue"><i class="fas fa-boxes"></i></div>
-          <div class="stat-info">
-            <div class="stat-value">{{ total_assets }}</div>
-            <div class="stat-label">Total Assets</div>
+          <div class="stat-top">
+            <div class="stat-icon purple">
+              <i class="fas fa-recycle"></i>
+            </div>
+            <div>
+              <div class="stat-value" id="totalAssetCount">{{ total_assets|default:'0' }}</div>
+              <div class="stat-label">Total Assets</div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar-wrap">
+              <div class="stat-bar purple" id="totalAssetBar" style="width:0%"></div>
+            </div>
+          </div>
+        </div> 
+
+        <!-- Total Mobility -->
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon green">
+              <i class="fas fa-car"></i>
+            </div>
+            <div>
+              <div class="stat-value" id="mobilityCount">{{ total_mobility|default:'0' }}</div>
+              <div class="stat-label">Total Mobility</div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar green" id="mobilityBar" style="width:0%"></div>
           </div>
         </div>
 
+        <!-- Total Firearms -->
         <div class="stat-card">
-          <div class="stat-icon-wrap orange"><i class="fas fa-crosshairs"></i></div>
-          <div class="stat-info">
-            <div class="stat-value">{{ total_firearms }}</div>
-            <div class="stat-label">Total Firearms</div>
+          <div class="stat-top">
+            <div class="stat-icon orange">
+              <i class="fas fa-crosshairs"></i>
+            </div>
+            <div>
+              <div class="stat-value" id="firearmsCount">{{ total_firearms|default:'0' }}</div>
+              <div class="stat-label">Total Firearms</div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar orange" id="firearmsBar" style="width:0%"></div>
           </div>
         </div>
 
+        <!-- Total Communication Devices -->
         <div class="stat-card">
-          <div class="stat-icon-wrap green"><i class="fas fa-car"></i></div>
-          <div class="stat-info">
-            <div class="stat-value">{{ total_mobility }}</div>
-            <div class="stat-label">Total Mobility</div>
+          <div class="stat-top">
+            <div class="stat-icon red">
+              <i class="fas fa-broadcast-tower"></i>
+            </div>
+            <div>
+              <div class="stat-value" id="commsCount">{{ total_communications|default:'0' }}</div>
+              <div class="stat-label">Total Communication</div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar red" id="commsBar" style="width: 0%"></div>
           </div>
         </div>
 
+        <!-- Total Investigative Equipment -->
         <div class="stat-card">
-          <div class="stat-icon-wrap red"><i class="fas fa-broadcast-tower"></i></div>
-          <div class="stat-info">
-            <div class="stat-value">{{ total_communications }}</div>
-            <div class="stat-label">Communication Devices</div>
+          <div class="stat-top">
+            <div class="stat-icon gray">
+              <i class="fas fa-microscope"></i>
+            </div>
+            <div>
+              <div class="stat-value" id="investCount">{{ total_investigative|default:'0' }}</div>
+              <div class="stat-label">Total Investigative Equip.</div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar gray" id="investBar" style="width: 0%"></div>
           </div>
         </div>
-
-        <div class="stat-card">
-          <div class="stat-icon-wrap gray"><i class="fas fa-microscope"></i></div>
-          <div class="stat-info">
-            <div class="stat-value">{{ total_investigative }}</div>
-            <div class="stat-label">Investigative Equip.</div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-icon-wrap purple"><i class="fas fa-recycle"></i></div>
-          <div class="stat-info">
-            <div class="stat-value">{{ total_ber }}</div>
-            <div class="stat-label">Total BER Items</div>
-          </div>
-        </div>
-
-      </div><!-- /stat-cards -->
+      </div> <!-- /stat-cards -->
 
       <div class="two-col">
 
@@ -147,8 +244,7 @@
               <div class="av-sm">{{ act.initials }}</div>
               <div class="activity-body">
                 <div class="activity-text">
-                  <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{%
-                  endif %}
+                  <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{% endif %}
                 </div>
                 <div class="activity-meta">{{ act.timestamp }}</div>
               </div>
@@ -181,8 +277,7 @@
               <div class="av-sm">{{ act.initials }}</div>
               <div class="activity-body">
                 <div class="activity-text">
-                  <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{%
-                  endif %}
+                  <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{% endif %}
                 </div>
                 <div class="activity-meta">{{ act.timestamp }}</div>
               </div>
@@ -216,8 +311,8 @@
             <div class="av-sm">{{ act.initials }}</div>
             <div class="activity-body">
               <div class="activity-text">
-                <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>{%
-                endif %}
+                <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %} <strong>{{ act.item }}</strong>
+                {% endif %}
               </div>
               <div class="activity-meta">{{ act.timestamp }}</div>
             </div>
@@ -232,7 +327,7 @@
     </main>
   </div><!-- /layout -->
 
-  <script src="{% static 'dashboard/dashboard.js' %}"></script>
+  <script src="{% static 'js/dashboard.js' %}"></script>
 </body>
 
 </html>

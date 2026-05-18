@@ -207,7 +207,7 @@
           <div class="user-name font-weight-bold text-dark">
             {{ user.get_full_name|default:user.username }}
           </div>
-          <div class="user-role text-muted">Logistics Officer</div>
+          <div class="user-role text-muted">{{ current_user_role }}</div>
         </div>
       </div>
     </div>

@@ -1,583 +1,555 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>PAR Management - Regional Forensic Unit 10 LMS</title>
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PAR Management - Regional Forensic Unit 10 LMS</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="{% static 'firearms/css/firearms_sidebar.css' %}" />
-    <link rel="stylesheet" href="{% static 'firearms/css/firearms_main.css' %}" />
+  <link rel="stylesheet" href="{% static 'firearms/css/firearms_sidebar.css' %}" />
+  <link rel="stylesheet" href="{% static 'firearms/css/firearms_main.css' %}" />
 
-    <style>
-      :root {
-        --navy: #0a1d43;
-        --muted: #64748b;
-        --border: #e2e8f0;
-        --bg: #f1f5f9;
-      }
-      
-      body {
-        font-family: 'Inter', sans-serif;
-        background: var(--bg);
-        color: #1e293b;
-        overflow-x: hidden;
-      }
-      
-      .main-content {
-        margin-left: var(--sidebar-width);
-        padding: 28px;
-        min-height: calc(100vh - var(--header-h));
-      }
-      
-      .registry-container {
-        max-width: 1400px;
-      }
-      
-      .btn-back {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--muted);
-        text-decoration: none !important;
-        transition: color 0.2s;
-        display: inline-flex;
-        align-items: center;
-        margin-bottom: 0.5rem;
-      }
-      .btn-back:hover {
-        color: var(--navy);
-      }
-      
-      .section-title {
-        font-weight: 800;
-        color: var(--navy);
-        letter-spacing: -0.02em;
-      }
-      
-      .form-label {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.025em;
-        margin-bottom: 0.5rem;
-      }
-      
-      .form-control,
-      .form-select,
-      .form-control select,
-      input[type='text'],
-      input[type='date'],
-      select,
-      textarea {
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        padding: 0.6rem 0.8rem;
-        font-size: 0.9rem;
-        font-family: 'Inter', sans-serif;
-        width: 100%;
-        display: block;
-      }
-      
-      select {
-        appearance: auto;
-        background-color: #fff;
-        height: calc(1.5em + 1.2rem + 2px);
-      }
-      
-      .btn-save {
-        background-color: var(--navy);
-        color: white;
-        border: none;
-        font-weight: 600;
-        padding: 0.6rem 2rem;
-        border-radius: 8px;
-      }
-      
-      .table thead th {
-        background-color: #f8fafc;
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--navy);
-        text-transform: uppercase;
-        border-bottom: 1px solid var(--border);
-        padding: 1rem;
-      }
-      
-      .table tbody td {
-        padding: 1rem;
-        vertical-align: middle;
-        font-size: 0.9rem;
-      }
-      
-      .btn-icon {
-        width: 32px;
-        height: 32px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-        border: 1px solid var(--border);
-        transition: all 0.2s;
-        text-decoration: none;
-      }
-      .btn-edit {
-        color: #3b82f6;
-        background: #eff6ff;
-      }
-      .btn-print {
-        color: #475569;
-        background: #f1f5f9;
-      }
-      .btn-delete {
-        color: #ef4444;
-        background: #fef2f2;
-        cursor: pointer;
-      }
-      .btn-icon:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-      }
-      
-      .card {
-        background: #fff;
-        border-radius: 12px;
-        border: none;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
-      }
-      
-      .navbar-header {
-        height: 72px;
-        background: #ffffff;
-        border-bottom: none !important;
-        box-shadow: 0 2px 12px rgba(13, 33, 85, 0.12);
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 1100;
-      }
-      
-      .layout {
-        padding-top: 72px;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Header -->
-    <header class="navbar-header d-flex align-items-center justify-content-between px-4">
-      <div class="header-brand d-flex align-items-center">
-        <div class="header-logo">
-          PNP<br />FORENSIC<br />GROUP
-        </div>
-        <div class="header-divider"></div>
-        <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
+  <style>
+    :root {
+      --navy: #0a1d43;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f1f5f9;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: #1e293b;
+      overflow-x: hidden;
+    }
+
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: 28px;
+      min-height: calc(100vh - var(--header-h));
+    }
+
+    .registry-container { max-width: 1400px; }
+
+    .btn-back {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none !important;
+      transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .btn-back:hover { color: var(--navy); }
+
+    .section-title { 
+      font-weight: 800; 
+      color: var(--navy); 
+      letter-spacing: -0.02em;
+    }
+
+    .form-label { 
+      font-size: 0.75rem; 
+      font-weight: 700; 
+      color: var(--muted); 
+      text-transform: uppercase; 
+      letter-spacing: 0.025em; 
+      margin-bottom: 0.5rem; 
+    }
+
+    .form-control, .form-select, 
+    .form-control select, 
+    input[type="text"], input[type="date"], select, textarea { 
+      border-radius: 8px; 
+      border: 1px solid var(--border); 
+      padding: 0.6rem 0.8rem; 
+      font-size: 0.9rem; 
+      font-family: 'Inter', sans-serif;
+      width: 100%;
+      display: block;
+    }
+
+
+    select {
+      appearance: auto;
+      background-color: #fff;
+      height: calc(1.5em + 1.2rem + 2px);
+    }
+
+    .btn-save { 
+      background-color: var(--navy); 
+      color: white;
+      border: none; 
+      font-weight: 600; 
+      padding: 0.6rem 2rem; 
+      border-radius: 8px; 
+    }
+
+    .table thead th { 
+      background-color: #f8fafc; 
+      font-size: 0.75rem; 
+      font-weight: 700; 
+      color: var(--navy); 
+      text-transform: uppercase; 
+      border-bottom: 1px solid var(--border); 
+      padding: 1rem;
+    }
+    
+    .table tbody td { 
+      padding: 1rem; 
+      vertical-align: middle; 
+      font-size: 0.9rem; 
+    }
+
+    .btn-icon { 
+      width: 32px; height: 32px; 
+      display: inline-flex; align-items: center; justify-content: center; 
+      border-radius: 6px; border: 1px solid var(--border); 
+      transition: all 0.2s; 
+      text-decoration: none;
+    }
+    .btn-edit { color: #3b82f6; background: #eff6ff; }
+    .btn-print { color: #475569; background: #f1f5f9; }
+    .btn-delete { color: #ef4444; background: #fef2f2; cursor: pointer; }
+    .btn-icon:hover { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+    .card { 
+      background: #fff; 
+      border-radius: 12px; 
+      border: none; 
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+
+    .navbar-header {
+      height: 72px; 
+      background: #ffffff;
+      border-bottom: none !important; 
+      box-shadow: 0 2px 12px rgba(13, 33, 85, .12); 
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1100;
+    }
+
+    .layout {
+      padding-top: 72px; 
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+    <div class="header-brand d-flex align-items-center">
+      <div class="header-logo">
+        PNP<br />FORENSIC<br />GROUP
       </div>
-
-      <div class="header-user d-flex align-items-center">
-        <div class="notification-wrapper mr-4">
-          <i class="fas fa-bell text-muted"></i>
-        </div>
-        <div class="profile-group d-flex align-items-center">
-          <div class="user-avatar d-flex align-items-center justify-content-center">
-            <i class="fas fa-user text-muted"></i>
-          </div>
-          <div class="user-text ml-2">
-            <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-            <div class="user-role text-muted">{{ current_user_role|default:'User' }}</div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <div class="layout">
-      <nav id="sidebar">
-        <ul class="list-unstyled components">
-          <p>Dashboard</p>
-
-          <li class="{% if active_page == 'home' %}active{% endif %}">
-            <a href="{% url 'dashboard:dashboard_view' %}">
-              <i class="fas fa-home"></i>
-              <span class="sidebar-item-label">Home</span>
-            </a>
-          </li>
-
-          <li class="{% if active_page == 'mobility' %}active{% endif %}">
-            <a href="{% url 'mobility:vehicle_management' %}">
-              <span>
-                <i class="fas fa-car"></i>
-                <span class="sidebar-item-label">Mobility</span>
-              </span>
-              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_vehicles|default:'0' }}</span>
-            </a>
-          </li>
-
-          <li>
-            <a href="{% url 'firearms:index' %}">
-              <span>
-                <i class="fas fa-crosshairs"></i>
-                <span class="sidebar-item-label">Firearms</span>
-              </span>
-              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span>
-            </a>
-          </li>
-
-          <li class="{% if active_page == 'communications' %}active{% endif %}">
-            <a href="{% url 'communications:communications_list' %}">
-              <span>
-                <i class="fas fa-broadcast-tower"></i>
-                <span class="sidebar-item-label">Communications</span>
-              </span>
-              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_comms|default:'0' }}</span>
-            </a>
-          </li>
-
-          <li class="{% if active_page == 'investigative' %}active{% endif %}">
-            <a href="{% url 'InvestigativeEquipment:investigative_view' %}">
-              <i class="fas fa-microscope"></i>
-              <span class="sidebar-item-label">Investigative Equipment</span>
-              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_inves|default:'0' }}</span>
-            </a>
-          </li>
-
-          <li class="{% if active_page == 'disposal' %}active{% endif %}">
-            <a href="{% url 'disposal:disposal_list' %}">
-              <i class="fas fa-recycle"></i>
-              <span class="sidebar-item-label">BER & Disposal</span>
-              <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_ber|default:'0' }}</span>
-            </a>
-          </li>
-
-          <p class="mt-4">Monitoring</p>
-
-          <li class="active">
-            <a href="{% url 'firearms:par_management' %}">
-              <i class="fas fa-clipboard-list"></i>
-              <span class="sidebar-item-label">PAR Monitoring</span>
-            </a>
-          </li>
-
-          <li class="{% if active_page == 'reports' %}active{% endif %}">
-            <a href="{% url 'firearms:activity_logs' %}">
-              <i class="fas fa-file-invoice"></i>
-              <span class="sidebar-item-label">Reports</span>
-            </a>
-          </li>
-
-          <li>
-            <a href="{% url 'user_management:user_list' %}">
-              <i class="fas fa-user-shield mr-2"></i>
-              <span class="sidebar-item-label">User Management</span>
-            </a>
-          </li>
-
-          <div class="UM">
-            <p>System Action</p>
-            <li>
-              <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label">Logout</span></a>
-            </li>
-          </div>
-        </ul>
-      </nav>
-
-      <main class="main-content">
-        <div class="registry-container">
-          <!-- Header -->
-          <div class="mb-4">
-            <a href="{% url 'firearms:index' %}" class="btn-back"><i class="fas fa-arrow-left mr-2"></i> Back to Firearms</a>
-            <div class="d-flex justify-content-between align-items-center">
-              <h2 class="section-title mb-0">PAR Management</h2>
-              <span class="badge badge-light border text-muted px-3 py-2" style="border-radius: 20px; font-weight: 600;">{{ pars|length }} Total Records</span>
-            </div>
-          </div>
-
-          <!-- Issuance Form Card -->
-          <div class="card mb-5">
-            <div class="card-body p-4">
-              <form method="POST">
-                {% csrf_token %}
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label class="form-label">PAR Number</label>
-                    {{ p_form.par_number }}
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Firearm Asset</label>
-                    {{ p_form.firearm }}
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Reference No.</label>
-                    {{ p_form.reference_no }}
-                  </div>
-
-                  <!-- Row 2: Issued To | Date Issued | Expiry Date -->
-                  <div class="col-md-4">
-                    <label class="form-label">Issued To</label>
-                    {{ p_form.issued_to }}
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Date Issued</label>
-                    {{ p_form.date_issued }}
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Expiry Date</label>
-                    {{ p_form.expiry_date }}
-                  </div>
-
-                  <div class="col-12 mt-2">
-                    <label class="form-label">Remarks</label>
-                    {{ p_form.remarks }}
-                  </div>
-
-                  <div class="col-12 mt-4 text-right">
-                    <button type="submit" class="btn-save shadow-sm"><i class="fas fa-check-circle mr-2"></i> Save to Registry</button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <!-- Registry History -->
-          <h3 class="section-title mb-3" style="font-size: 1.5rem;">PAR History Registry</h3>
-          <div class="card" style="border-radius: 12px; overflow: hidden;">
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
-                <thead>
-                  <tr>
-                    <th class="pl-4">PAR No.</th>
-                    <th>Personnel</th>
-                    <th>Asset Description</th>
-                    <th>Issue Date</th>
-                    <th>Expiry Date</th>
-                    <th class="text-center">Status</th>
-                    <th class="text-right pr-4">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for par in pars %}
-                    <tr>
-                      <td class="pl-4">
-                        <strong style="color: var(--navy);">{{ par.par_number }}</strong>
-                      </td>
-                      <td>
-                        <div class="font-weight-bold">{{ par.issued_to }}</div>
-                      </td>
-                      <td>
-                        <div class="font-weight-bold">{{ par.firearm.type }}</div>
-                        <small class="text-muted">{{ par.firearm.faid_serial }}</small>
-                      </td>
-                      <td>{{ par.date_issued|date:'M d, Y' }}</td>
-
-                      <td>
-                        {% if par.expiry_date %}
-                          {{ par.expiry_date|date:'M d, Y' }}
-                        {% else %}
-                          <span class="text-muted">No expiry date</span>
-                        {% endif %}
-                      </td>
-
-                      <td class="text-center">
-                        {% if not par.expiry_date %}
-                          <span style="
-      background:#e2e8f0;
-      color:#475569;
-      padding:6px 14px;
-      border-radius:999px;
-      font-size:0.75rem;
-      font-weight:700;
-      display:inline-block;
-    ">No Expiry</span>
-                        {% elif par.expiry_date <= today %}
-                          <span style="
-      background:#7f1d1d;
-      color:#ffffff;
-      padding:6px 14px;
-      border-radius:999px;
-      font-size:0.75rem;
-      font-weight:700;
-      display:inline-block;
-    ">Expired</span>
-                        {% elif par.days_until_expiry <= 30 %}
-                          <span style="
-      background:#fee2e2;
-      color:#dc2626;
-      padding:6px 14px;
-      border-radius:999px;
-      font-size:0.75rem;
-      font-weight:700;
-      display:inline-block;
-    ">Expiring Soon</span>
-                        {% else %}
-                          <span style="
-      background:#dcfce7;
-      color:#15803d;
-      padding:6px 14px;
-      border-radius:999px;
-      font-size:0.75rem;
-      font-weight:700;
-      display:inline-block;
-    ">Validated</span>
-                        {% endif %}
-
-                      </td>
-                      <td>
-                        <div class="d-flex justify-content-end" style="gap: 8px;">
-                          <a href="{% url 'firearms:print_par' par.pk %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
-                          <a href="{% url 'firearms:edit_par' par.pk %}" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
-                          <button type="button" class="btn-icon btn-delete" title="Delete" onclick="openDeleteModal({{ par.pk }})"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                      </td>
-                    </tr>
-                  {% empty %}
-                    <tr>
-                      <td colspan="5" class="text-center text-muted py-4">No PAR records found.</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </main>
+      <div class="header-divider"></div>
+      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="header-user d-flex align-items-center">
+      <div class="notification-wrapper mr-4">
+        <i class="fas fa-bell text-muted"></i>
+      </div>
+      <div class="profile-group d-flex align-items-center">
+        <div class="user-avatar d-flex align-items-center justify-content-center">
+          <i class="fas fa-user text-muted"></i>
+        </div>
+        <div class="user-text ml-2">
+          <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
+          <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-    <style>
-      #confirmationModal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.45);
-        backdrop-filter: blur(8px);
-        z-index: 9999;
-        justify-content: center;
-        align-items: center;
-      }
-      
-      #confirmationModal.active {
-        display: flex;
-      }
-      
-      .filter-modal-content {
-        background: #fff;
-        width: 500px;
-        border-radius: 24px;
-        padding: 30px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
-      }
-      
-      .filter-modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-      }
-      
-      .filter-modal-header h2 {
-        font-size: 24px;
-        font-weight: 700;
-        color: #1a237e;
-      }
-      
-      .filter-close-btn {
-        background: none;
-        border: none;
-        font-size: 30px;
-        cursor: pointer;
-        color: #64748b;
-      }
-      
-      .filter-close-btn:hover {
-        color: #dc3545;
-      }
-      
-      .filter-modal-footer {
-        display: flex;
-        gap: 14px;
-        margin-top: 28px;
-      }
-      
-      .filter-btn-apply,
-      .filter-btn-reset {
-        flex: 1;
-        padding: 14px;
-        border-radius: 12px;
-        font-weight: 700;
-        border: 2px solid;
-        background: #fff;
-        transition: 0.2s;
-      }
-      
-      .filter-btn-apply {
-        border-color: #dc3545;
-        color: #dc3545;
-      }
-      
-      .filter-btn-apply:hover {
-        background: #dc3545;
-        color: #fff;
-      }
-      
-      .filter-btn-reset {
-        border-color: #1a237e;
-        color: #1a237e;
-      }
-      
-      .filter-btn-reset:hover {
-        background: #1a237e;
-        color: #fff;
-      }
-    </style>
+  <div class="layout">
+    <nav id="sidebar">
+      <ul class="list-unstyled components">
+        <p>Dashboard</p>
 
-    <div id="confirmationModal">
-      <div class="filter-modal-content">
-        <div class="filter-modal-header">
-          <h2>Delete PAR Record</h2>
+        <li class="{% if active_page == 'home' %}active{% endif %}">
+          <a href="#">
+            <i class="fas fa-home"></i>
+            <span class="sidebar-item-label">Home</span>
+          </a>
+        </li>
 
-          <button type="button" class="filter-close-btn" onclick="closeConfirmationModal()">&times;</button>
+        <li class="{% if active_page == 'mobility' %}active{% endif %}">
+          <a href="#">
+            <span>
+              <i class="fas fa-car"></i>
+              <span class="sidebar-item-label">Mobility</span>
+            </span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ vehicle_all|default:'0' }}</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="{% url 'firearms:index' %}">
+            <span>
+              <i class="fas fa-crosshairs"></i>
+              <span class="sidebar-item-label">Firearms</span>
+            </span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span>
+          </a>
+        </li>
+
+        <li class="{% if active_page == 'communications' %}active{% endif %}">
+          <a href="#">
+            <span>
+              <i class="fas fa-broadcast-tower"></i>
+              <span class="sidebar-item-label">Communications</span>
+            </span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ comms_all|default:'0' }}</span>
+          </a>
+        </li>
+
+        <li class="{% if active_page == 'investigative' %}active{% endif %}">
+          <a href="#">
+            <i class="fas fa-microscope"></i>
+            <span class="sidebar-item-label">Investigative Equipment</span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ inves_all|default:'0' }}</span>
+          </a>
+        </li>
+
+        <li class="{% if active_page == 'disposal' %}active{% endif %}">
+          <a href="#">
+            <i class="fas fa-recycle"></i>
+            <span class="sidebar-item-label">BER & Disposal</span>
+            <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_ber|default:'0' }}</span>
+          </a>
+        </li>
+
+        <p class="mt-4">Monitoring</p>
+
+        <li class="active">
+          <a href="{% url 'firearms:par_management' %}">
+            <i class="fas fa-clipboard-list"></i>
+            <span class="sidebar-item-label">PAR Monitoring</span>
+          </a>
+        </li>
+
+        <li class="{% if active_page == 'reports' %}active{% endif %}">
+          <a href="#">
+            <i class="fas fa-file-invoice"></i>
+            <span class="sidebar-item-label">Reports</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="#">
+            <i class="fas fa-user-shield mr-2"></i> 
+            <span class="sidebar-item-label">User Management</span>
+          </a>
+        </li>
+
+        <div class="UM">
+          <p>System Action</p>
+          <li>
+            <a href="#"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label">Logout</span></a>
+          </li>
+        </div>
+      </ul>
+    </nav>
+
+    <main class="main-content">
+      <div class="registry-container">
+        <!-- Header -->
+        <div class="mb-4">
+          <a href="{% url 'firearms:index' %}" class="btn-back">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Firearms
+          </a>
+          <div class="d-flex justify-content-between align-items-center">
+            <h2 class="section-title mb-0">PAR Management</h2>
+            <span class="badge badge-light border text-muted px-3 py-2" style="border-radius: 20px; font-weight: 600;">
+              {{ pars|length }} Total Records
+            </span>
+          </div>
         </div>
 
-        <p>Are you sure you want to delete this PAR record? This action cannot be undone.</p>
+        <!-- Issuance Form Card -->
+        <div class="card mb-5">
+          <div class="card-body p-4">
+            <form method="POST">
+              {% csrf_token %}
+              <div class="row g-3">
+
+
+                <div class="col-md-4">
+                  <label class="form-label">PAR Number</label>
+                  {{ p_form.par_number }}
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Firearm Asset</label>
+                  {{ p_form.firearm }}
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Reference No.</label>
+                  {{ p_form.reference_no }}
+                </div>
+
+                <!-- Row 2: Issued To | Date Issued | Expiry Date -->
+                <div class="col-md-4">
+                  <label class="form-label">Issued To</label>
+                  {{ p_form.issued_to }}
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Date Issued</label>
+                  {{ p_form.date_issued }}
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Expiry Date</label>
+                  {{ p_form.expiry_date }}
+                </div>
+
+
+                <div class="col-12 mt-2">
+                  <label class="form-label">Remarks</label>
+                  {{ p_form.remarks }}
+                </div>
+
+                <div class="col-12 mt-4 text-right">
+                  <button type="submit" class="btn-save shadow-sm">
+                    <i class="fas fa-check-circle mr-2"></i> Save to Registry
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Registry History -->
+        <h3 class="section-title mb-3" style="font-size: 1.5rem;">PAR History Registry</h3>
+        <div class="card" style="border-radius: 12px; overflow: hidden;">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th class="pl-4">PAR No.</th>
+                  <th>Personnel</th>
+                  <th>Asset Description</th>
+                  <th>Issue Date</th>
+                  <th class="text-right pr-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for par in pars %}
+                <tr>
+                  <td class="pl-4"><strong style="color: var(--navy);">{{ par.par_number }}</strong></td>
+                  <td><div class="font-weight-bold">{{ par.issued_to }}</div></td>
+                  <td>
+                    <div class="font-weight-bold">{{ par.firearm.type }}</div>
+                    <small class="text-muted">{{ par.firearm.faid_serial }}</small>
+                  </td>
+                  <td>{{ par.date_issued|date:"M d, Y" }}</td>
+                  <td class="text-right pr-4">
+                    <div class="d-flex justify-content-end" style="gap: 8px;">
+                      <a href="{% url 'firearms:print_par' par.pk %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
+                      <a href="{% url 'firearms:edit_par' par.pk %}" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                      <button
+                        type="button"
+                        class="btn-icon btn-delete"
+                        title="Delete"
+                        onclick="openDeleteModal({{ par.pk }})">
+
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                    </div>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">No PAR records found.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+#confirmationModal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(8px);
+    z-index:9999;
+    justify-content:center;
+    align-items:center;
+}
+
+#confirmationModal.active{
+    display:flex;
+}
+
+.filter-modal-content{
+    background:#fff;
+    width:500px;
+    border-radius:24px;
+    padding:30px;
+    box-shadow:0 10px 40px rgba(0,0,0,.12);
+}
+
+.filter-modal-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.filter-modal-header h2{
+    font-size:24px;
+    font-weight:700;
+    color:#1a237e;
+}
+
+.filter-close-btn{
+    background:none;
+    border:none;
+    font-size:30px;
+    cursor:pointer;
+    color:#64748b;
+}
+
+.filter-close-btn:hover{
+    color:#dc3545;
+}
+
+.filter-modal-footer{
+    display:flex;
+    gap:14px;
+    margin-top:28px;
+}
+
+.filter-btn-apply,
+.filter-btn-reset{
+    flex:1;
+    padding:14px;
+    border-radius:12px;
+    font-weight:700;
+    border:2px solid;
+    background:#fff;
+    transition:.2s;
+}
+
+.filter-btn-apply{
+    border-color:#dc3545;
+    color:#dc3545;
+}
+
+.filter-btn-apply:hover{
+    background:#dc3545;
+    color:#fff;
+}
+
+.filter-btn-reset{
+    border-color:#1a237e;
+    color:#1a237e;
+}
+
+.filter-btn-reset:hover{
+    background:#1a237e;
+    color:#fff;
+}
+</style>
+
+<div id="confirmationModal">
+
+    <div class="filter-modal-content">
+
+        <div class="filter-modal-header">
+            <h2>Delete PAR Record</h2>
+
+            <button
+                type="button"
+                class="filter-close-btn"
+                onclick="closeConfirmationModal()">
+
+                &times;
+            </button>
+        </div>
+
+        <p>
+            Are you sure you want to delete this PAR record?
+            This action cannot be undone.
+        </p>
 
         <div class="filter-modal-footer">
-          <button type="button" class="filter-btn-apply" onclick="confirmDelete()">Confirm Delete</button>
 
-          <button type="button" class="filter-btn-reset" onclick="closeConfirmationModal()">Cancel</button>
+            <button
+                type="button"
+                class="filter-btn-apply"
+                onclick="confirmDelete()">
+
+                Confirm Delete
+            </button>
+
+            <button
+                type="button"
+                class="filter-btn-reset"
+                onclick="closeConfirmationModal()">
+
+                Cancel
+            </button>
+
         </div>
-      </div>
+
     </div>
 
-    <script>
-      let selectedDeleteId = null
-      
-      function openDeleteModal(id) {
-        selectedDeleteId = id
-        document.getElementById('confirmationModal').classList.add('active')
-      }
-      
-      function closeConfirmationModal() {
-        selectedDeleteId = null
-      
-        document.getElementById('confirmationModal').classList.remove('active')
-      }
-      
-      function confirmDelete() {
-        if (!selectedDeleteId) return
-      
-        window.location.href = `/firearms/par/delete/${selectedDeleteId}/`
-      }
-      
-      document.getElementById('confirmationModal').addEventListener('click', function (e) {
-        if (e.target === this) {
-          closeConfirmationModal()
+</div>
+
+<script>
+let selectedDeleteId = null;
+
+function openDeleteModal(id){
+    selectedDeleteId = id;
+    document
+        .getElementById('confirmationModal')
+        .classList.add('active');
+}
+
+function closeConfirmationModal(){
+    selectedDeleteId = null;
+
+    document
+        .getElementById('confirmationModal')
+        .classList.remove('active');
+}
+
+function confirmDelete(){
+
+    if(!selectedDeleteId) return;
+
+    window.location.href =
+        `/firearms/par/delete/${selectedDeleteId}/`;
+}
+
+document
+    .getElementById('confirmationModal')
+    .addEventListener('click', function(e){
+
+        if(e.target === this){
+            closeConfirmationModal();
         }
-      })
-    </script>
-  </body>
+});
+</script>
+
+</body>
 </html>

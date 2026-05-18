@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from datetime import timedelta
 import csv
 from django.http import HttpResponse
 from django.contrib import messages
-from django.contrib.auth.models import User
-from django.db.models import Q, Count
+from django.contrib.admin.models import LogEntry, DELETION
+from django.contrib.contenttypes.models import ContentType
 from mobility.models import Vehicle
 from communications.models import Communication
 from config.models import Asset, AssetStatus, Personnel
@@ -177,12 +176,22 @@ def finalize_removal(request, pk):
     asset.status_id = disposed_status
     asset.save()
 
+    # 1. Keep your custom log working perfectly
     DisposalActivityLog.objects.create(
         user=request.user,
-        asset=asset,
+        asset_id=asset.asset_ptr.id if hasattr(asset, 'asset_ptr') else asset.id,
         action_type='REMOVE',
         disposal_reason=reason,
         description=f"Finalized disposal for {asset.model} ({asset.serial_no})"
+    )
+
+    LogEntry.objects.log_action(
+        user_id=request.user.id,
+        content_type_id=ContentType.objects.get_for_model(Asset).id,
+        object_id=asset.id,
+        object_repr=f"{asset.category.category_name} – {asset.property_no}",
+        action_flag=DELETION,
+        change_message=f"Disposed asset. Reason: {reason}"
     )
 
     messages.success(request, f"Asset {asset.serial_no} successfully disposed.")
