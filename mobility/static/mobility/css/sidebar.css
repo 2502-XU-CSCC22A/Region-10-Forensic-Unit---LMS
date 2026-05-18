@@ -129,6 +129,9 @@ header,
 }
 
 /* SIDEBAR */
+.mt-4, .my-4 {
+  margin-top: 1.5rem !important;
+}
 
 #sidebar {
   width: var(--sidebar-width);
