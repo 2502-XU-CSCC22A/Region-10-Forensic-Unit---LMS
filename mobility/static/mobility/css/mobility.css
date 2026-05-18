@@ -952,7 +952,7 @@ header,
   width: 100%;
   position: sticky;
   top: 0;
-  z-index: 1100;
+  z-index: 1001;
   display: flex;
   align-items: center;
   justify-content: space-between;

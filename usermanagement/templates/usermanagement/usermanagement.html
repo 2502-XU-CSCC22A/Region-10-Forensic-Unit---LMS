@@ -22,7 +22,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700;800&display=swap"
       rel="stylesheet"
     />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -75,53 +75,45 @@
                       class="role-select"
                       data-user-id="{{ u.id }}"
                       data-original-role="{{ u.userprofile.role|default:'User' }}"
+                      aria-label="Role for {{ u.get_full_name|default:u.username }}"
                     >
-                      <option
-                        value="User"
-                        {%
-                        if
-                        u.userprofile.role=""
-                        ="User"
-                        or
-                        not
-                        u.userprofile.role
-                        %}selected{%
-                        endif
-                        %}
-                      >
-                        User
-                      </option>
-
-                      <option
-                        value="Admin"
-                        {%
-                        if
-                        u.userprofile.role=""
-                        ="Admin"
-                        %}selected{%
-                        endif
-                        %}
-                      >
-                        Admin
-                      </option>
-                    </select>
+                    <option value="User" {% if u.userprofile.role == "User" or not u.userprofile.role %}selected{% endif %}>User</option>
+                    <option value="Admin" {% if u.userprofile.role == "Admin" %}selected{% endif %}>Admin</option>
+                  </select>
                     {% else %} {{ u.userprofile.role|default:"—" }} {% endif %}
                   </td>
 
                   <td class="last-active">
-                    {% if u.last_login %} {{ u.last_login|date:"M d, Y H:i" }}
-                    {% else %} Never {% endif %}
+                    {% if u.last_login %}
+                      <time datetime="{{ u.last_login|date:'Y-m-d' }}">{{ u.last_login|date:"M d, Y H:i" }}</time>
+                    {% else %}
+                      Never
+                    {% endif %}
                   </td>
 
                   {% if current_user_role == "Admin" %}
-                  <td>
+                  <td class="action-cell">
                     <button
                       class="save-role-btn"
                       data-user-id="{{ u.id }}"
                       onclick="saveRole({{ u.id }})"
                       disabled
+                      aria-label="Save role change for {{ u.get_full_name|default:u.username }}"
                     >
-                      Save
+                      Save Role
+                    </button>
+
+                    <button
+                      class="edit-user-btn"
+                      aria-label="Edit name and email for {{ u.get_full_name|default:u.username }}"
+                      onclick="openEditModal(
+                        {{ u.id }},
+                        '{{ u.first_name|escapejs }}',
+                        '{{ u.last_name|escapejs }}',
+                        '{{ u.email|escapejs }}'
+                      )"
+                    >
+                      <i aria-hidden="true"></i> Edit
                     </button>
                   </td>
                   {% endif %}
@@ -131,6 +123,7 @@
                   <td
                     colspan="{% if current_user_role == 'Admin' %}5{% else %}4{% endif %}"
                     style="text-align: center; padding: 40px; color: #64748b"
+                    role="cell"
                   >
                     No users found in the database.
                   </td>
@@ -144,7 +137,111 @@
     </div>
 
     {% if current_user_role == "Admin" %}
+
+    <!-- ─── Edit User Modal ─────────────────────────────────────────────── -->
+    <div
+      id="editUserModal"
+      class="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      aria-describedby="modal-desc"
+      hidden
+    >
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2 id="modal-title">Edit User Info</h2>
+          <button
+            class="modal-close-btn"
+            onclick="closeEditModal()"
+            aria-label="Close edit modal"
+          >
+            <i class="fas fa-times" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <p id="modal-desc" class="modal-desc">
+          Changes apply to your Django database (and Supabase if that's your Django DB backend).
+        </p>
+
+        <form id="editUserForm" novalidate onsubmit="submitEditUser(event)">
+          <input type="hidden" id="editUserId" name="user_id" />
+
+          <div class="form-group">
+            <label for="editFirstName">First Name <span aria-hidden="true" class="required-star">*</span></label>
+            <input
+              type="text"
+              id="editFirstName"
+              name="first_name"
+              class="form-input"
+              maxlength="150"
+              required
+              autocomplete="given-name"
+              aria-required="true"
+              aria-describedby="firstNameHint"
+            />
+            <span id="firstNameHint" class="field-hint">Max 150 characters. No HTML allowed.</span>
+            <span class="field-error" id="firstNameError" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="editLastName">Last Name</label>
+            <input
+              type="text"
+              id="editLastName"
+              name="last_name"
+              class="form-input"
+              maxlength="150"
+              autocomplete="family-name"
+              aria-describedby="lastNameHint"
+            />
+            <span id="lastNameHint" class="field-hint">Optional. Max 150 characters.</span>
+            <span class="field-error" id="lastNameError" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div class="form-group">
+            <label for="editEmail">Email <span aria-hidden="true" class="required-star">*</span></label>
+            <input
+              type="email"
+              id="editEmail"
+              name="email"
+              class="form-input"
+              maxlength="254"
+              required
+              autocomplete="email"
+              aria-required="true"
+              aria-describedby="emailHint"
+            />
+            <span id="emailHint" class="field-hint">Must be a valid email address. Max 254 characters.</span>
+            <span class="field-error" id="emailError" role="alert" aria-live="polite"></span>
+          </div>
+
+          <div id="formGlobalError" class="global-error" role="alert" aria-live="assertive" hidden></div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+            <button type="submit" class="btn-save" id="submitEditBtn">
+              <span class="btn-label">Save Changes</span>
+              <span class="btn-spinner" hidden aria-hidden="true">
+                <i class="fas fa-circle-notch fa-spin"></i>
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ─── Live region for toast/status announcements ─────────────────── -->
+    <div id="statusAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ─── Toast notification ─────────────────────────────────────────── -->
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true" hidden>
+      <i class="fas fa-check-circle toast-icon" aria-hidden="true"></i>
+      <span id="toastMsg"></span>
+    </div>
+
     <style>
+     /* ── Role select ────────────────────────────────── */
       .role-select {
         padding: 5px 10px;
         border: 1px solid #cbd5e1;
@@ -157,63 +254,262 @@
         outline: none;
         transition: border-color 0.2s;
       }
-
       .role-select:focus {
         border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
       }
-
       .role-select.changed {
         border-color: #f59e0b;
         background-color: #fffbeb;
       }
 
-      .save-role-btn {
+      /* ── Action cell buttons ────────────────────────── */
+      .action-cell { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+      .save-role-btn, .edit-user-btn {
         padding: 5px 14px;
         font-size: 0.8rem;
         font-family: "Inter", sans-serif;
         border: none;
         border-radius: 6px;
-        background-color: #6366f1;
-        color: white;
         cursor: pointer;
-        transition:
-          background-color 0.2s,
-          opacity 0.2s;
+        transition: background-color 0.2s, opacity 0.2s, box-shadow 0.2s;
       }
 
-      .save-role-btn:disabled {
-        background-color: #cbd5e1;
-        cursor: not-allowed;
-        opacity: 0.6;
+      .save-role-btn {
+        background-color: #2563eb;
+        color: white;
       }
 
-      .save-role-btn:not(:disabled):hover {
-        background-color: #4f46e5;
+      .save-role-btn:disabled { background-color: #cbd5e1; cursor: not-allowed; opacity: 0.6; }
+      .save-role-btn:not(:disabled):hover { background-color: white; color: #2563eb; border: 1px solid #2563eb;}
+      .save-role-btn:not(:disabled):focus-visible {
+        outline: 3px solid #2563eb;
+        outline-offset: 2px;
       }
 
-      .save-role-btn.saving {
-        background-color: #94a3b8;
-        cursor: not-allowed;
+      .save-role-btn.saving { background-color: #94a3b8; cursor: not-allowed; }
+      .save-role-btn.saved  { background-color: #22c55e; }
+
+      .edit-user-btn {
+        font-weight: 700;
+        background-color: white;
+        color: #2563eb;
+        border: 1px solid #2563eb;
+      }
+      .edit-user-btn:hover { background-color: #2563eb; color: white; }
+      .edit-user-btn:focus-visible {
+        outline: 3px solid #6366f1;
+        outline-offset: 2px;
       }
 
-      .save-role-btn.saved {
-        background-color: #22c55e;
+      /* ── Modal overlay ──────────────────────────────── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(3px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 16px;
+      }
+      .modal-overlay[hidden] { display: none; }
+
+      .modal-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 28px 32px;
+        width: 100%;
+        max-width: 480px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+        animation: slideUp 0.2s ease;
+      }
+      @keyframes slideUp {
+        from { transform: translateY(16px); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 4px;
+      }
+      .modal-header h2 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: #0f172a;
+        margin: 0;
+      }
+      .modal-close-btn {
+        background: none;
+        border: none;
+        color: #64748b;
+        font-size: 1rem;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: background 0.15s;
+      }
+      .modal-close-btn:hover { background: #f1f5f9; }
+      .modal-close-btn:focus-visible { outline: 3px solid #6366f1; outline-offset: 2px; }
+
+      .modal-desc {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin-bottom: 20px;
+        line-height: 1.5;
+      }
+
+      /* ── Form fields ─────────────────────────────────── */
+      .form-group { margin-bottom: 16px; }
+      .form-group label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #374151;
+        margin-bottom: 5px;
+      }
+      .required-star { color: #ef4444; margin-left: 2px; }
+
+      .form-input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        font-size: 0.9rem;
+        font-family: "Inter", sans-serif;
+        color: #1e293b;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        box-sizing: border-box;
+      }
+      .form-input:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99,102,241,0.18);
+      }
+      .form-input.invalid {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
+      }
+
+      .field-hint {
+        display: block;
+        font-size: 0.73rem;
+        color: #94a3b8;
+        margin-top: 3px;
+      }
+      .field-error {
+        display: block;
+        font-size: 0.78rem;
+        color: #ef4444;
+        margin-top: 3px;
+        min-height: 1em;
+      }
+
+      .global-error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 7px;
+        padding: 10px 14px;
+        font-size: 0.83rem;
+        color: #b91c1c;
+        margin-bottom: 14px;
+      }
+      .global-error[hidden] { display: none; }
+
+      /* ── Modal actions ───────────────────────────────── */
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 22px;
+      }
+      .btn-cancel {
+        padding: 8px 18px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        background: #fff;
+        color: #374151;
+        font-size: 0.875rem;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .btn-cancel:hover { background: #f9fafb; }
+      .btn-cancel:focus-visible { outline: 3px solid #6366f1; outline-offset: 2px; }
+
+      .btn-save {
+        padding: 8px 20px;
+        background: #6366f1;
+        color: #fff;
+        border: none;
+        border-radius: 7px;
+        font-size: 0.875rem;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 0.2s;
+      }
+      .btn-save:hover { background: #4f46e5; }
+      .btn-save:focus-visible { outline: 3px solid #6366f1; outline-offset: 2px; }
+      .btn-save:disabled { background: #a5b4fc; cursor: not-allowed; }
+
+      /* ── Toast ───────────────────────────────────────── */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: #1e293b;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-family: "Inter", sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        z-index: 2000;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        animation: fadeInUp 0.25s ease;
+      }
+      .toast[hidden] { display: none; }
+      .toast.error { background: #991b1b; }
+      .toast-icon { color: #4ade80; }
+      .toast.error .toast-icon { color: #fca5a5; }
+      @keyframes fadeInUp {
+        from { transform: translateY(10px); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+      }
+
+      /* ── Screen-reader only ──────────────────────────── */
+      .sr-only {
+        position: absolute;
+        width: 1px; height: 1px;
+        padding: 0; margin: -1px;
+        overflow: hidden;
+        clip: rect(0,0,0,0);
+        white-space: nowrap;
+        border: 0;
       }
     </style>
 
     <script>
+      // ── Role select: enable Save button on change ──────────────────────
       document.querySelectorAll(".role-select").forEach((select) => {
         select.addEventListener("change", function () {
           const userId = this.dataset.userId;
           const originalRole = this.dataset.originalRole;
-          const saveBtn = document.querySelector(
-            `.save-role-btn[data-user-id="${userId}"]`,
-          );
+          const saveBtn = document.querySelector(`.save-role-btn[data-user-id="${userId}"]`);
 
           if (this.value !== originalRole) {
             this.classList.add("changed");
             saveBtn.disabled = false;
-            saveBtn.textContent = "Save";
+            saveBtn.textContent = "Save Role";
             saveBtn.classList.remove("saved");
           } else {
             this.classList.remove("changed");
@@ -222,31 +518,25 @@
         });
       });
 
+      // ── Save role ──────────────────────────────────────────────────────
       async function saveRole(userId) {
-        const select = document.querySelector(
-          `.role-select[data-user-id="${userId}"]`,
-        );
-        const saveBtn = document.querySelector(
-          `.save-role-btn[data-user-id="${userId}"]`,
-        );
+        const select  = document.querySelector(`.role-select[data-user-id="${userId}"]`);
+        const saveBtn = document.querySelector(`.save-role-btn[data-user-id="${userId}"]`);
         const newRole = select.value;
 
         saveBtn.disabled = true;
         saveBtn.classList.add("saving");
-        saveBtn.textContent = "Saving...";
+        saveBtn.textContent = "Saving…";
 
         try {
-          const response = await fetch(
-            `/usermanagement/update-role/${userId}/`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie("csrftoken"),
-              },
-              body: JSON.stringify({ role: newRole }),
+          const response = await fetch(`/usermanagement/update-role/${encodeURIComponent(userId)}/`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCookie("csrftoken"),
             },
-          );
+            body: JSON.stringify({ role: newRole }),
+          });
 
           const data = await response.json();
 
@@ -257,18 +547,204 @@
             saveBtn.classList.add("saved");
             saveBtn.textContent = "Saved ✓";
             saveBtn.disabled = true;
+            showToast("Role updated successfully.");
           } else {
-            alert(data.error || "Failed to update role. Please try again.");
-            saveBtn.classList.remove("saving");
-            saveBtn.disabled = false;
-            saveBtn.textContent = "Save";
+            throw new Error(data.error || "Failed to update role.");
           }
         } catch (err) {
-          alert("Network error. Please try again.");
+          showToast(err.message || "Network error. Please try again.", true);
           saveBtn.classList.remove("saving");
           saveBtn.disabled = false;
-          saveBtn.textContent = "Save";
+          saveBtn.textContent = "Save Role";
         }
+      }
+
+      // ── Edit modal state ───────────────────────────────────────────────
+      let previouslyFocused = null;
+
+      function openEditModal(userId, firstName, lastName, email) {
+        previouslyFocused = document.activeElement;
+
+        document.getElementById("editUserId").value    = userId;
+        document.getElementById("editFirstName").value = firstName;
+        document.getElementById("editLastName").value  = lastName;
+        document.getElementById("editEmail").value     = email;
+
+        clearFormErrors();
+
+        const modal = document.getElementById("editUserModal");
+        modal.hidden = false;
+        document.getElementById("editFirstName").focus();
+
+        // Trap focus inside modal
+        modal.addEventListener("keydown", trapFocus);
+        document.addEventListener("keydown", closeOnEscape);
+      }
+
+      function closeEditModal() {
+        const modal = document.getElementById("editUserModal");
+        modal.hidden = true;
+        modal.removeEventListener("keydown", trapFocus);
+        document.removeEventListener("keydown", closeOnEscape);
+
+        if (previouslyFocused) previouslyFocused.focus();
+      }
+
+      function closeOnEscape(e) {
+        if (e.key === "Escape") closeEditModal();
+      }
+
+      function trapFocus(e) {
+        if (e.key !== "Tab") return;
+        const modal = document.getElementById("editUserModal");
+        const focusable = Array.from(
+          modal.querySelectorAll(
+            'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])'
+          )
+        ).filter(el => !el.closest('[hidden]'));
+
+        const first = focusable[0];
+        const last  = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault(); last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault(); first.focus();
+        }
+      }
+
+      // ── Submit edit user form ──────────────────────────────────────────
+      async function submitEditUser(event) {
+        event.preventDefault();
+        clearFormErrors();
+
+        const userId    = document.getElementById("editUserId").value;
+        const firstName = document.getElementById("editFirstName").value.trim();
+        const lastName  = document.getElementById("editLastName").value.trim();
+        const email     = document.getElementById("editEmail").value.trim();
+        const submitBtn = document.getElementById("submitEditBtn");
+
+        // ── Client-side validation ────────────────────────────────────
+        let valid = true;
+
+        if (!firstName) {
+          setFieldError("editFirstName", "firstNameError", "First name is required.");
+          valid = false;
+        } else if (firstName.length > 150) {
+          setFieldError("editFirstName", "firstNameError", "First name must be 150 characters or fewer.");
+          valid = false;
+        } else if (/<|>|&lt;|&gt;|<script/i.test(firstName)) {
+          setFieldError("editFirstName", "firstNameError", "First name contains invalid characters.");
+          valid = false;
+        }
+
+        if (lastName.length > 150) {
+          setFieldError("editLastName", "lastNameError", "Last name must be 150 characters or fewer.");
+          valid = false;
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+          setFieldError("editEmail", "emailError", "Email is required.");
+          valid = false;
+        } else if (!emailPattern.test(email)) {
+          setFieldError("editEmail", "emailError", "Please enter a valid email address.");
+          valid = false;
+        } else if (email.length > 254) {
+          setFieldError("editEmail", "emailError", "Email must be 254 characters or fewer.");
+          valid = false;
+        }
+
+        if (!valid) return;
+
+        // ── Submit ────────────────────────────────────────────────────
+        submitBtn.disabled = true;
+        submitBtn.querySelector(".btn-spinner").hidden = false;
+        submitBtn.querySelector(".btn-label").textContent = "Saving…";
+
+        try {
+          const response = await fetch(`/usermanagement/update-user/${encodeURIComponent(userId)}/`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify({
+              first_name: firstName,
+              last_name:  lastName,
+              email:      email,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.success) {
+            closeEditModal();
+            showToast("User info updated. Refreshing…");
+            // Refresh the row without a full page reload if desired,
+            // or do a soft reload to reflect new data from Django:
+            setTimeout(() => location.reload(), 1200);
+          } else if (response.status === 409) {
+            // Email already in use (server-side unique check)
+            setFieldError("editEmail", "emailError", data.error || "This email is already in use.");
+          } else {
+            showGlobalError(data.error || "Something went wrong. Please try again.");
+          }
+        } catch (err) {
+          showGlobalError("Network error. Please check your connection and try again.");
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.querySelector(".btn-spinner").hidden = true;
+          submitBtn.querySelector(".btn-label").textContent = "Save Changes";
+        }
+      }
+
+      // ── Helpers ────────────────────────────────────────────────────────
+      function setFieldError(inputId, errorId, message) {
+        const input = document.getElementById(inputId);
+        const error = document.getElementById(errorId);
+        input.classList.add("invalid");
+        input.setAttribute("aria-invalid", "true");
+        error.textContent = message;
+      }
+
+      function clearFormErrors() {
+        ["editFirstName", "editLastName", "editEmail"].forEach(id => {
+          const el = document.getElementById(id);
+          el.classList.remove("invalid");
+          el.removeAttribute("aria-invalid");
+        });
+        ["firstNameError", "lastNameError", "emailError"].forEach(id => {
+          document.getElementById(id).textContent = "";
+        });
+        const globalErr = document.getElementById("formGlobalError");
+        globalErr.hidden = true;
+        globalErr.textContent = "";
+      }
+
+      function showGlobalError(message) {
+        const el = document.getElementById("formGlobalError");
+        el.textContent = message;
+        el.hidden = false;
+      }
+
+      let toastTimer = null;
+      function showToast(message, isError = false) {
+        const toast   = document.getElementById("toast");
+        const toastMsg = document.getElementById("toastMsg");
+        const icon     = toast.querySelector(".toast-icon");
+
+        toastMsg.textContent = message;
+        toast.classList.toggle("error", isError);
+        icon.className = isError
+          ? "fas fa-exclamation-circle toast-icon"
+          : "fas fa-check-circle toast-icon";
+
+        toast.hidden = false;
+        document.getElementById("statusAnnouncer").textContent = message;
+
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => { toast.hidden = true; }, 4000);
       }
 
       function getCookie(name) {

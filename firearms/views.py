@@ -377,6 +377,15 @@ def print_par(request, pk):
     })
 
 def edit_par(request, pk):
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
+    firearms_all = Firearm.objects.count()
+    
+    current_user_role = request.user.userprofile.role
+    inves_all = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    total_ber = DisposalItem.objects.filter(asset_ptr__status_id=4).count()
+    
     record = get_object_or_404(FirearmPARRecord, pk=pk)
 
     if request.method == 'POST':
@@ -417,6 +426,12 @@ def edit_par(request, pk):
         'form': form,
         'record': record,
         'active_page': 'par_management',
+        'total_vehicles': visible_v.count(),
+        'total_comms': comms_all,
+        'total_firearms': firearms_all,
+        'total_inves': inves_all,
+        'total_ber': total_ber,
+        'current_user_role': current_user_role,
     })
 
 def delete_par(request, pk):

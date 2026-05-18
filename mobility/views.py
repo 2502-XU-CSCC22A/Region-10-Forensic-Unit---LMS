@@ -80,7 +80,7 @@ def vehicle_management(request):
 
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
-    inves_all = InvestigativeDetails.objects.count()
+    inves_all = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     total_ber = DisposalItem.objects.filter(
         asset_ptr__status_id=4 
     ).count()
@@ -336,7 +336,7 @@ def par_management(request):
     visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
-    inves_all = InvestigativeDetails.objects.count()
+    inves_all = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     total_ber = DisposalItem.objects.filter(
         asset_ptr__status_id=4 
     )
@@ -417,7 +417,7 @@ def activity_log(request):
     visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
-    inves_all = InvestigativeDetails.objects.count()
+    inves_all = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     total_ber = DisposalItem.objects.filter(
         asset_ptr__status_id=4 
     )

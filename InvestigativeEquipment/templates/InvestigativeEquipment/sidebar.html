@@ -45,7 +45,7 @@
     <p class="mt-4">Monitoring</p>
 
     {% url 'InvestigativeEquipment:par_monitoring' as inves_par_url %}
-    <li class="{% if request.path == inves_par_url %}active{% endif %}">
+    <li class="{% if 'par-monitoring/' in request.path %}active{% endif %}">
       <a href="{{ inves_par_url }}">
         <i class="fas fa-clipboard-list"></i>
         <span class="sidebar-item-label">PAR Monitoring</span>
@@ -53,12 +53,13 @@
     </li>
 
     {% url 'InvestigativeEquipment:ics_monitoring' as inves_ics_url %}
-    <li class="{% if request.path == inves_ics_url %}active{% endif %}">
+    <li class="{% if 'ics-monitoring/' in request.path %}active{% endif %}">
       <a href="{{ inves_ics_url }}">
         <i class="fas fa-clipboard-list"></i>
         <span class="sidebar-item-label">ICS Monitoring</span>
       </a>
     </li>
+
     {% url 'InvestigativeEquipment:activity_logs' as inves_reports_url %}
     <li class="{% if request.path == inves_reports_url %}active{% endif %}">
       <a href="{{ inves_reports_url }}">

@@ -25,14 +25,15 @@
     }
 
     .navbar-header {
-      height: 70px;
-      background-color: #ffffff;
-      border-bottom: 1px solid #e0e0e0;
-      width: 100%;
+      height: 73px;
+      background: #ffffff;
+      border-bottom: none !important;
+      box-shadow: 0 2px 12px rgba(13, 33, 85, 0.12);
       position: fixed;
       top: 0;
       left: 0;
-      z-index: 1000;
+      right: 0;
+      z-index: 1100;
     }
 
     .header-logo {
@@ -183,7 +184,7 @@
 
 <body>
 
-  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+  <header class="navbar-header d-flex align-items-center justify-content-between">
     <div class="header-brand d-flex align-items-center">
       <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
       <div class="header-divider"></div>
@@ -191,17 +192,16 @@
     </div>
     <div class="header-user d-flex align-items-center">
       <div class="notification-wrapper mr-4">
-        <i class="fas fa-bell text-muted"></i>
       </div>
       <div class="profile-group d-flex align-items-center">
         <div class="user-avatar d-flex align-items-center justify-content-center">
           <i class="fas fa-user text-muted"></i>
         </div>
         <div class="user-text ml-2">
-          <div class="user-name font-weight-bold text-dark">
+          <div class="user-name font-weight-bold">
             {{ user.get_full_name|default:user.username }}
           </div>
-          <div class="user-role text-muted">Logistics Officer</div>
+          <div class="user-role text-muted">{{ current_user_role }}</div>
         </div>
       </div>
     </div>

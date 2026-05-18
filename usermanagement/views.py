@@ -24,7 +24,7 @@ def user_list(request):
     disposal_all = DisposalItem.objects.filter(
         asset_ptr__status_id=4, 
     ).count()
-    inves_all = InvestigativeDetails.objects.count()
+    inves_all = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
 
     try:
         current_user_role = request.user.userprofile.role
@@ -64,6 +64,48 @@ def update_user_role(request, user_id):
 
         return JsonResponse({'success': True})
         
+    except User.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@login_required
+@require_POST
+def update_user(request, user_id):
+    if request.user.userprofile.role != 'Admin':
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    try:
+        data = json.loads(request.body)
+        first_name = data.get('first_name', '').strip()
+        last_name  = data.get('last_name', '').strip()
+        email      = data.get('email', '').strip()
+
+        # ── Server-side validation ────────────────────────────────────────
+        if not first_name:
+            return JsonResponse({'success': False, 'error': 'First name is required.'}, status=400)
+        if len(first_name) > 150:
+            return JsonResponse({'success': False, 'error': 'First name must be 150 characters or fewer.'}, status=400)
+        if len(last_name) > 150:
+            return JsonResponse({'success': False, 'error': 'Last name must be 150 characters or fewer.'}, status=400)
+        if not email:
+            return JsonResponse({'success': False, 'error': 'Email is required.'}, status=400)
+        if len(email) > 254:
+            return JsonResponse({'success': False, 'error': 'Email must be 254 characters or fewer.'}, status=400)
+
+        target_user = User.objects.get(id=user_id)
+
+        # ── Check email uniqueness (exclude the user being edited) ────────
+        if User.objects.filter(email=email).exclude(id=user_id).exists():
+            return JsonResponse({'success': False, 'error': 'This email is already in use.'}, status=409)
+
+        target_user.first_name = first_name
+        target_user.last_name  = last_name
+        target_user.email      = email
+        target_user.save()
+
+        return JsonResponse({'success': True})
+
     except User.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
     except Exception as e:

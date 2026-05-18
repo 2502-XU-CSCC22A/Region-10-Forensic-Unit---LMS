@@ -35,7 +35,7 @@
 
     <p class="mt-4">Monitoring</p>
     {% url 'communications:par_monitoring' as comms_par_url %}
-    <li class="{% if request.path == comms_par_url %}active{% endif %}">
+    <li class="{% if 'par/' in request.path %}active{% endif %}">
       <a href="{{ comms_par_url }}">
         <i class="fas fa-clipboard-list"></i>
         <span class="sidebar-item-label">PAR Monitoring</span>
@@ -43,7 +43,7 @@
     </li>
     
     {% url 'communications:ics_monitoring' as comms_ics_url %}
-    <li class="{% if request.path == comms_ics_url %}active{% endif %}">
+    <li class="{% if '/ics/' in request.path %}active{% endif %}">
       <a href="{{ comms_ics_url }}">
         <i class="fas fa-clipboard-list"></i>
         <span class="sidebar-item-label">ICS Monitoring</span>

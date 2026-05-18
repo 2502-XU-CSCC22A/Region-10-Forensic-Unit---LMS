@@ -28,7 +28,7 @@ header,
   width: 100%;
   position: sticky;
   top: 0;
-  z-index: 1100;
+  z-index: 1001;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -96,14 +96,6 @@ header,
 .user-role {
   font-size: 12px;
   line-height: 1;
-}
-
-/* LAYOUT */
-
-.layout {
-  display: flex;
-  padding-top: 10px;
-  min-height: 100vh;
 }
 
 /* SIDEBAR */
@@ -215,7 +207,6 @@ main,
 }
 
 /* SCROLLBAR */
-
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

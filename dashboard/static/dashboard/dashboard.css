@@ -29,7 +29,7 @@ body {
 /* ── Header ──────────────────────────────────────────────────────────────── */
 .navbar-header {
   position: fixed;
-  height: 70px;
+  height: 73px;
   background-color: #ffffff;
   border-bottom: none;
   box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
@@ -37,6 +37,7 @@ body {
   top: 0;
   left: 0;
   z-index: 1001;
+  padding-right: 1.5rem !important;
 }
 
 /* Brand Styles (Left) */
@@ -60,6 +61,16 @@ body {
   font-weight: 700;
   color: #1a2b6d;
   margin: 0;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  margin: 8px 20px 8px 12px;
+  border-radius: 6px;
+  height: 54px;
 }
 
 /* User Section Styles (Right) */

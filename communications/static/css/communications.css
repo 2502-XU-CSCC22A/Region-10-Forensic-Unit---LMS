@@ -208,6 +208,10 @@ body {
     font-size: 13px;
 }
 
+.showing {
+    font-weight: 700;
+  }
+
 /* BUTTONS */
 
 .btn,

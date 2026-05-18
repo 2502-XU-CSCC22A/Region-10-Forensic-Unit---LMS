@@ -28,15 +28,14 @@ body {
 }
 
 /* HEADER */
-
 header,
 .navbar-header {
     position: sticky;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1100;
-    height: var(--header-h);
+    z-index: 1001;
+    height: 73px;
     background: var(--white);
     display: flex;
     align-items: center;
@@ -774,7 +773,6 @@ th:last-child {
 }
 
 /* SCROLLBAR */
-
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;

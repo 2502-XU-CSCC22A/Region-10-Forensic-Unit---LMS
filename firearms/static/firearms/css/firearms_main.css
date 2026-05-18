@@ -222,8 +222,6 @@
   font-size: 14px;
 }
 
-
-
 .table-wrap {
   width: 100%;
   overflow-x: auto;
@@ -433,13 +431,12 @@ body #confirmationModal .modal {
 
 .close-modal:hover { color: var(--red); }
 
-
-
 .navbar-header {
   height: 70px;
   background-color: #ffffff;
   border-bottom: 3px solid var(--accent);
   width: 100%;
+  z-index: 1001;
 }
 
 .header-logo {

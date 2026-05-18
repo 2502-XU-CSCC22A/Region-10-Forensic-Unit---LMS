@@ -14,18 +14,26 @@ body {
 /* Header */
 .navbar-header {
     font-family: 'Inter', sans-serif;
-    height: 70px;
+    height: 73px;
     background-color: #ffffff;
     border-bottom: none;
     box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
     width: 100%;
     position: sticky;
-    z-index: 1030;
+    z-index: 1001;
     top: 0;
+    padding-right: 1.5rem !important;
 }
 
-.header-left p {
-    font-size: 14px;
+.header-brand {
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 20px;
+    margin: 8px 20px 8px 12px;
+    border-radius: 6px;
+    height: 54px;
 }
 
 /* Brand Styles (Left) */

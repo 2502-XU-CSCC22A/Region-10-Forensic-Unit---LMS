@@ -45,7 +45,6 @@ def get_common_counts(request):
     return {
         "total_comms": all_c.count(),
         "total_firearms": all_f.count(),
-        "total_vehicle": visible_v.count(),
         "total_vehicles": visible_v.count(),
         "total_ber": all_d.count(),
         "total_inves": all_i,
@@ -233,7 +232,15 @@ def investigative_view(request):
 
 def par_monitoring_view(request):
     common_counts = get_common_counts(request)
-
+    
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=["BER", "Disposed"])
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id=4)
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    current_user_role = request.user.userprofile.role
+    
     pars = (
         InvestigativePARRecord.objects.select_related("asset").all().order_by("-par_id")
     )
@@ -273,11 +280,26 @@ def par_monitoring_view(request):
             "pars": pars,
             "today": today,
             "current_page": "par_monitoring",
+            "total_comms": all_c.count(),
+            "total_firearms": all_f.count(),
+            "total_vehicles": visible_v.count(),
+            "total_ber": all_d.count(),
+            "total_inves": all_i,
+            "current_user_role": current_user_role,
         },
     )
 
 
 def edit_par_view(request, pk):
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=["BER", "Disposed"])
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id=4)
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    current_user_role = request.user.userprofile.role
+    
+    
     record = get_object_or_404(
         InvestigativePARRecord.objects.select_related("asset"),
         pk=pk,
@@ -321,6 +343,12 @@ def edit_par_view(request, pk):
         {
             "record": record,
             "assets": assets,
+            "total_comms": all_c.count(),
+            "total_firearms": all_f.count(),
+            "total_vehicles": visible_v.count(),
+            "total_ber": all_d.count(),
+            "total_inves": all_i,
+            "current_user_role": current_user_role,
         },
     )
 
@@ -369,6 +397,15 @@ def ics_monitoring_view(request):
 
     today = timezone.now().date()
 
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=["BER", "Disposed"])
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id=4)
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    current_user_role = request.user.userprofile.role
+    
+    
     for ics in icss:
         ics.days_until_expiry = (
             (ics.expiry_date - today).days if ics.expiry_date else 9999
@@ -402,11 +439,25 @@ def ics_monitoring_view(request):
             "icss": icss,
             "today": today,
             "current_page": "ics_monitoring",
+            "total_comms": all_c.count(),
+            "total_firearms": all_f.count(),
+            "total_vehicles": visible_v.count(),
+            "total_ber": all_d.count(),
+            "total_inves": all_i,
+            "current_user_role": current_user_role,
         },
     )
 
 
 def edit_ics_view(request, pk):
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=["BER", "Disposed"])
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id=4)
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    current_user_role = request.user.userprofile.role
+    
     record = get_object_or_404(
         ICSRecord.objects.select_related("asset"),
         pk=pk,
@@ -451,6 +502,12 @@ def edit_ics_view(request, pk):
         {
             "record": record,
             "assets": assets,
+            "total_comms": all_c.count(),
+            "total_firearms": all_f.count(),
+            "total_vehicles": visible_v.count(),
+            "total_ber": all_d.count(),
+            "total_inves": all_i,
+            "current_user_role": current_user_role,
         },
     )
 
@@ -478,6 +535,14 @@ def delete_ics_view(request, pk):
 
 
 def print_ics_view(request, pk):
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=["BER", "Disposed"])
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id=4)
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    current_user_role = request.user.userprofile.role
+    
     ics = get_object_or_404(
         ICSRecord.objects.select_related("asset"),
         pk=pk,
@@ -494,6 +559,12 @@ def print_ics_view(request, pk):
         "InvestigativeEquipment/print_ics.html",
         {
             "ics": ics,
+            "total_comms": all_c.count(),
+            "total_firearms": all_f.count(),
+            "total_vehicles": visible_v.count(),
+            "total_ber": all_d.count(),
+            "total_inves": all_i,
+            "current_user_role": current_user_role,
         },
     )
 

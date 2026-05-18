@@ -51,9 +51,7 @@ def activity_logs(request):
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
     visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
-    all_d = DisposalItem.objects.filter(
-        asset_ptr__status_id=4 
-    )
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id=4 )
     all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     current_user_role = request.user.userprofile.role
     
@@ -149,6 +147,15 @@ def print_par(request, pk):
 
 # EDIT PAR
 def edit_par(request, pk):
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4)
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    
+    current_user_role = request.user.userprofile.role
+    
     record = get_object_or_404(
         CommunicationPARRecord.objects.select_related("communication"),
         pk=pk
@@ -180,6 +187,12 @@ def edit_par(request, pk):
         {
             "form": form,
             "record": record,
+            'total_comms': all_c.count() ,
+            'total_ber': all_d.count(),
+            'total_vehicles': visible_v.count(),
+            'total_inves': all_i,
+            'total_firearms': all_f.count(),
+            'current_user_role': current_user_role,
         },
     )
 
@@ -288,6 +301,15 @@ def print_ics(request, pk):
 
 # EDIT ICS
 def edit_ics(request, pk):
+    all_c = Communication.objects.exclude(status_id__in=[4, 5])
+    all_f = Firearm.objects.all()
+    all_v = Vehicle.objects.all()
+    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    all_d = DisposalItem.objects.filter(asset_ptr__status_id = 4)
+    all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
+    
+    current_user_role = request.user.userprofile.role
+    
     record = get_object_or_404(
         CommunicationICSRecord.objects.select_related("communication"),
         pk=pk
@@ -319,6 +341,12 @@ def edit_ics(request, pk):
         {
             "form": form,
             "record": record,
+            'total_comms': all_c.count() ,
+            'total_ber': all_d.count(),
+            'total_vehicles': visible_v.count(),
+            'total_firearms': all_f.count(),
+            'total_inves': all_i,
+            'current_user_role': current_user_role,
         },
     )
 
