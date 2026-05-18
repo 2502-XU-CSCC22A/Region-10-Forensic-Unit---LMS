@@ -1,182 +1,197 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit ICS Record - RFU 10 LMS</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Update ICS Record - RFU 10 LMS</title>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'InvestigativeEquipment/inves.css' %}">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
 
-    <style>
-        :root {
-            --navy: #0d2155;
-            --border: #e2e8f0;
-            --bg: #f1f5f9;
-            --muted: #64748b;
-        }
+  <style>
+    .btn-back {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-decoration: none !important;
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
 
-        .btn-back {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--muted);
-            text-decoration: none !important;
-            display: inline-flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            transition: color 0.2s;
-        }
-        .btn-back:hover { color: var(--navy); }
+    .btn-back:hover {
+      color: var(--navy);
+    }
 
-        .section-title { font-weight: 800; color: var(--navy); }
+    .section-title {
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+    }
 
-        .form-label {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 0.025em;
-            margin-bottom: 0.5rem;
-            display: block;
-        }
+    .form-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.025em;
+      margin-bottom: 0.5rem;
+    }
 
-        .form-control, input, select, textarea {
-            border-radius: 8px !important;
-            border: 1px solid var(--border) !important;
-            padding: 0.6rem 0.8rem !important;
-            font-size: 0.9rem !important;
-            font-family: 'Inter', sans-serif !important;
-            width: 100%;
-        }
+    .form-control,
+    .form-select,
+    input,
+    select,
+    textarea {
+      border-radius: 8px !important;
+      border: 1px solid var(--border) !important;
+      padding: 0.6rem 0.8rem !important;
+      font-size: 0.9rem !important;
+      font-family: 'Inter', sans-serif !important;
+      width: 100%;
+    }
 
-        .btn-update {
-            background-color: var(--navy);
-            color: white;
-            border: none;
-            font-weight: 600;
-            padding: 0.6rem 2rem;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .btn-update:hover { color: white; opacity: 0.92; }
-    </style>
+    .btn-update {
+      background: #1a2b6d !important;
+      color: #ffffff !important;
+      border: none !important;
+      font-weight: 600;
+      padding: 0.6rem 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(26, 43, 109, 0.2);
+    }
+
+    .btn-update:hover {
+      background: #142158 !important;
+      color: #ffffff !important;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+    }
+  </style>
 </head>
 
 <body>
-    <!-- HEADER -->
-    <header class="navbar-header d-flex align-items-center justify-content-between px-4">
-        <div class="header-brand d-flex align-items-center">
-            <div class="header-logo">PNP<br>FORENSIC<br>GROUP</div>
-            <div class="header-divider"></div>
-            <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
+  {% include 'InvestigativeEquipment/header.html' %}
+
+  <div class="layout">
+    {% include 'InvestigativeEquipment/sidebar.html' %}
+
+    <main>
+      <div class="container-fluid" style="max-width: 1400px;">
+        <div class="mb-4">
+          <a href="{% url 'InvestigativeEquipment:ics_monitoring' %}" class="btn-back">
+            <i class="fas fa-arrow-left mr-2"></i>
+            Back to ICS Registry
+          </a>
+
+          <div class="d-flex justify-content-between align-items-end">
+            <div>
+              <h2 class="section-title mb-0">Update ICS Record</h2>
+              <p class="text-muted small mb-0">
+                Editing Registry Entry:
+                <span class="font-weight-bold" style="color: var(--navy);">{{ record.ics_number }}</span>
+              </p>
+            </div>
+          </div>
         </div>
-        <div class="header-user d-flex align-items-center">
-            <div class="mr-4">
-                <i class="fas fa-bell text-muted" style="font-size: 1.2rem;"></i>
-            </div>
-            <div class="profile-group d-flex align-items-center">
-                <div class="user-avatar d-flex align-items-center justify-content-center">
-                    <i class="fas fa-user text-muted"></i>
+
+        <div class="card">
+          <div class="card-body p-4">
+            <form method="POST" action="{% url 'InvestigativeEquipment:edit_ics' record.pk %}">
+              {% csrf_token %}
+
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label">ICS NO.</label>
+                  <input type="text" name="ics_number" class="form-control" value="{{ record.ics_number|default:'' }}">
                 </div>
-                <div class="user-text ml-2">
-                    <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-                    <div class="user-role text-muted">Logistics Officer</div>
+
+                <div class="col-md-8">
+                  <label class="form-label">INVESTIGATIVE ASSET</label>
+                  <select name="asset" class="form-control">
+                    <option value="">----------</option>
+
+                    {% for item in assets %}
+                      {% if record.asset.pk == item.asset_id.pk %}
+                        <option value="{{ item.asset_id.pk }}" selected>
+                          {{ item.asset_id.model }} — {{ item.asset_id.property_no }} — {{ item.asset_id.serial_no }}
+                        </option>
+                      {% else %}
+                        <option value="{{ item.asset_id.pk }}">
+                          {{ item.asset_id.model }} — {{ item.asset_id.property_no }} — {{ item.asset_id.serial_no }}
+                        </option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
                 </div>
-            </div>
+
+                <div class="col-md-4 mt-3">
+                  <label class="form-label">REFERENCE NO.</label>
+                  <input type="text" name="reference_no" class="form-control" value="{{ record.reference_no|default:'' }}">
+                </div>
+
+                <div class="col-md-4 mt-3">
+                  <label class="form-label">ISSUED TO</label>
+                  <input type="text" name="issued_to" class="form-control" value="{{ record.issued_to|default:'' }}">
+                </div>
+
+                <div class="col-md-4 mt-3">
+                  <label class="form-label">DATE ISSUED</label>
+                  <input type="date" name="date_issued" class="form-control" value="{{ record.date_issued|date:'Y-m-d'|default:'' }}">
+                </div>
+
+                <div class="col-md-4 mt-3">
+                  <label class="form-label">EXPIRY DATE</label>
+                  <input type="date" name="expiry_date" class="form-control" value="{{ record.expiry_date|date:'Y-m-d'|default:'' }}">
+                </div>
+
+                <div class="col-12 mt-3">
+                  <label class="form-label">REMARKS</label>
+                  <textarea name="remarks" class="form-control" rows="3">{{ record.remarks|default:'' }}</textarea>
+                  <small class="text-muted" style="font-size: 0.7rem;">
+                    Update specific conditions or observations for this investigative assignment.
+                  </small>
+                </div>
+              </div>
+
+              <hr class="my-4" style="border-top: 1px solid var(--border);" />
+
+              <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'InvestigativeEquipment:delete_ics' record.pk %}" class="text-danger small font-weight-bold"
+                  style="text-decoration: none;"
+                  onclick="return confirm('Are you sure you want to archive this record?');">
+                  <i class="fas fa-trash-alt mr-1"></i>
+                  ARCHIVE RECORD
+                </a>
+
+                <div>
+                  <a href="{% url 'InvestigativeEquipment:ics_monitoring' %}" class="btn btn-sm text-muted mr-2"
+                    style="font-weight: 600;">Cancel</a>
+
+                  <button type="submit" class="btn-update shadow-sm">
+                    <i class="fas fa-save mr-2"></i>
+                    Update Registry
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
-    </header>
+      </div>
+    </main>
+  </div>
 
-    <div class="layout">
-        {% include 'sidebar.html' %}
-
-        <main class="main-content">
-            <div class="container-fluid p-4" style="max-width: 1400px;">
-
-                <div class="mb-4">
-                    <a href="{% url 'InvestigativeEquipment:ics_monitoring' %}" class="btn-back">
-                        <i class="fas fa-arrow-left mr-2"></i> Back to ICS Registry
-                    </a>
-                    <div class="d-flex justify-content-between align-items-end">
-                        <div>
-                            <h2 class="section-title mb-0">Update ICS Record</h2>
-                            <p class="text-muted small mb-0">Editing Registry Entry:
-                                <span class="font-weight-bold" style="color: var(--navy);">{{ record.ics_number }}</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card border-0 shadow-sm" style="border-radius: 12px;">
-                    <div class="card-body p-4">
-                        <form method="POST" action="{% url 'InvestigativeEquipment:edit_ics' record.pk %}">
-                            {% csrf_token %}
-
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">ICS No.</label>
-                                    <input type="text" name="ics_number" class="form-control" value="{{ record.ics_number|default:'' }}">
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Investigative Asset</label>
-                                    <select name="asset_pk" class="form-control">
-                                        <option value="">----------</option>
-                                        {% for item in par_list %}
-                                        <option value="{{ item.asset_id.pk }}"
-                                            {% if record.asset and record.asset.pk == item.asset_id.pk %}selected{% endif %}>
-                                            {{ item.asset_id.model }} — {{ item.asset_id.property_no }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Reference No.</label>
-                                    <input type="text" name="reference_no" class="form-control" value="{{ record.reference_no|default:'' }}">
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Issued To</label>
-                                    <input type="text" name="issued_to" class="form-control" value="{{ record.issued_to|default:'' }}">
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Date Issued</label>
-                                    <input type="date" name="date_issued" class="form-control" value="{{ record.date_issued|date:'Y-m-d'|default:'' }}">
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label class="form-label">Expiry Date</label>
-                                    <input type="date" name="expiry_date" class="form-control" value="{{ record.expiry_date|date:'Y-m-d'|default:'' }}">
-                                </div>
-                                <div class="col-12 mb-3">
-                                    <label class="form-label">Remarks</label>
-                                    <textarea name="remarks" class="form-control" rows="3">{{ record.remarks|default:'' }}</textarea>
-                                    <small class="text-muted" style="font-size: 0.7rem;">Update specific conditions or observations for this assignment.</small>
-                                </div>
-                            </div>
-
-                            <hr style="border-top: 1px solid var(--border);">
-
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="{% url 'InvestigativeEquipment:delete_ics' record.pk %}" class="text-danger small font-weight-bold" style="text-decoration: none;" onclick="return confirm('Delete this ICS record?')">
-                                    <i class="fas fa-trash-alt mr-1"></i> DELETE RECORD
-                                </a>
-                                <div>
-                                    <a href="{% url 'InvestigativeEquipment:ics_monitoring' %}" class="btn btn-sm text-muted mr-2" style="font-weight: 600;">Cancel</a>
-                                    <button type="submit" class="btn-update shadow-sm">
-                                        <i class="fas fa-save mr-2"></i> Update Registry
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-            </div>
-        </main>
-    </div>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

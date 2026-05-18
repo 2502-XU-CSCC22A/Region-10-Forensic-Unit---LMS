@@ -370,7 +370,11 @@ def firearm_delete(request, pk):
     return JsonResponse({'success': True, 'message': f'Delete {pk} - implement me'})
 
 def print_par(request, pk):
-    return render(request, 'firearms/print_par.html')
+    par = get_object_or_404(FirearmPARRecord, pk=pk)
+
+    return render(request, 'firearms/print_par.html', {
+        'par': par
+    })
 
 def edit_par(request, pk):
     record = get_object_or_404(FirearmPARRecord, pk=pk)

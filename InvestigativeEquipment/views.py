@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db import connection
 from django.utils import timezone
+from django.db.models import Q
 
 from .models import (
     InvestigativeDetails,
@@ -282,31 +283,44 @@ def edit_par_view(request, pk):
         pk=pk,
     )
 
+    assets = (
+        InvestigativeDetails.objects.select_related("asset_id", "asset_id__status")
+        .filter(
+            Q(asset_id__status__status_name__iexact="Available")
+            | Q(asset_id__status__status_name__iexact="Issued")
+        )
+        .order_by("asset_id__model")
+    )
+
     if request.method == "POST":
-        form = InvestigativePARForm(request.POST, instance=record)
+        asset_pk = request.POST.get("asset")
 
-        if form.is_valid():
-            par = form.save()
+        record.par_number = request.POST.get("par_number")
+        record.reference_no = request.POST.get("reference_no")
+        record.issued_to = request.POST.get("issued_to")
+        record.date_issued = request.POST.get("date_issued") or None
+        record.expiry_date = request.POST.get("expiry_date") or None
+        record.remarks = request.POST.get("remarks")
 
-            create_investigative_activity_log(
-                par.asset.id,
-                "Updated PAR Record",
-                f"PAR {par.par_number} was updated for {par.asset.model}.",
-            )
+        if asset_pk:
+            record.asset = get_object_or_404(Asset, pk=asset_pk)
 
-            return redirect("InvestigativeEquipment:par_monitoring")
-        else:
-            print("EDIT PAR FORM ERRORS:", form.errors)
+        record.save()
 
-    else:
-        form = InvestigativePARForm(instance=record)
+        create_investigative_activity_log(
+            record.asset.id,
+            "Updated PAR Record",
+            f"PAR {record.par_number} was updated for {record.asset.model}.",
+        )
+
+        return redirect("InvestigativeEquipment:par_monitoring")
 
     return render(
         request,
         "InvestigativeEquipment/edit_par.html",
         {
-            "form": form,
             "record": record,
+            "assets": assets,
         },
     )
 
@@ -398,31 +412,45 @@ def edit_ics_view(request, pk):
         pk=pk,
     )
 
+    assets = (
+        InvestigativeDetails.objects.select_related("asset_id", "asset_id__status")
+        .filter(
+            Q(asset_id__status__status_name__iexact="Available")
+            | Q(asset_id__status__status_name__iexact="Issued")
+        )
+        .order_by("asset_id__model")
+    )
+
     if request.method == "POST":
-        form = InvestigativeICSForm(request.POST, instance=record)
 
-        if form.is_valid():
-            ics = form.save()
+        asset_pk = request.POST.get("asset")
 
-            create_investigative_activity_log(
-                ics.asset.id,
-                "Updated ICS Record",
-                f"ICS {ics.ics_number} was updated for {ics.asset.model}.",
-            )
+        record.ics_number = request.POST.get("ics_number")
+        record.reference_no = request.POST.get("reference_no")
+        record.issued_to = request.POST.get("issued_to")
+        record.date_issued = request.POST.get("date_issued") or None
+        record.expiry_date = request.POST.get("expiry_date") or None
+        record.remarks = request.POST.get("remarks")
 
-            return redirect("InvestigativeEquipment:ics_monitoring")
-        else:
-            print("EDIT ICS FORM ERRORS:", form.errors)
+        if asset_pk:
+            record.asset = get_object_or_404(Asset, pk=asset_pk)
 
-    else:
-        form = InvestigativeICSForm(instance=record)
+        record.save()
+
+        create_investigative_activity_log(
+            record.asset.id,
+            "Updated ICS Record",
+            f"ICS {record.ics_number} was updated for {record.asset.model}.",
+        )
+
+        return redirect("InvestigativeEquipment:ics_monitoring")
 
     return render(
         request,
         "InvestigativeEquipment/edit_ics.html",
         {
-            "form": form,
             "record": record,
+            "assets": assets,
         },
     )
 
@@ -461,7 +489,13 @@ def print_ics_view(request, pk):
         f"ICS {ics.ics_number} for {ics.asset.model} was opened for printing.",
     )
 
-    return render(request, "InvestigativeEquipment/print_ics.html", {"ics": ics})
+    return render(
+        request,
+        "InvestigativeEquipment/print_ics.html",
+        {
+            "ics": ics,
+        },
+    )
 
 
 def move_to_ber_investigative(request, item_id):
@@ -478,6 +512,10 @@ def move_to_ber_investigative(request, item_id):
         ]
         ics_deleted = ICSRecord.objects.filter(asset_id=item_id).delete()[0]
 
+        investigative_deleted = InvestigativeDetails.objects.filter(
+            asset_id=item_id
+        ).delete()[0]
+
         details = f"Investigative Asset ID {item_id} has been moved to BER"
 
         if pars_deleted and ics_deleted:
@@ -487,13 +525,19 @@ def move_to_ber_investigative(request, item_id):
         elif ics_deleted:
             details += ", and ICS Record is deleted"
 
+        if investigative_deleted:
+            details += ", and Investigative Details record is removed from the table"
+
         create_investigative_activity_log(
             item_id,
             "Moved to BER",
             details,
         )
 
-        messages.success(request, "Asset successfully moved to BER.")
+        messages.success(
+            request,
+            "Asset successfully moved to BER and removed from Investigative Details.",
+        )
 
     except Exception as e:
         messages.error(request, f"Error moving asset to BER: {str(e)}")
