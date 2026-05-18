@@ -44,7 +44,7 @@
             </div>
           </div>
           <div class="stat-bar-wrap">
-            <div class="stat-bar blue" style="width: 100%"></div>
+            <div class="stat-bar blue" style="width:{% if total_count %}100{% else %}0{% endif %}%"></div>
           </div>
         </div>
 
@@ -73,6 +73,21 @@
           <div class="stat-bar-wrap">
             <div class="stat-bar green"
               style="width:{% if total_count %}{% widthratio under_repair total_count 100 %}{% else %}0{% endif %}%">
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-top">
+            <div class="stat-icon red"><i class="fas fa-exclamation-triangle"></i></div>
+            <div>
+              <div class="stat-value">{{ expiring_par_count }}</div>
+              <div class="stat-label">PAR Expiring Soon</div>
+            </div>
+          </div>
+          <div class="stat-bar-wrap">
+            <div class="stat-bar red"
+              style="width:{% if total_count %}{% widthratio expiring_par_count total_count 100 %}{% else %}0{% endif %}%">
             </div>
           </div>
         </div>

@@ -184,6 +184,16 @@ def investigative_view(request):
     low_stock_items = all_investigative.filter(asset_id__quantity__lte=3)
     low_stock_count = low_stock_items.count()
 
+    today = timezone.now().date()
+    thirty_days_from_now = today + datetime.timedelta(days=30)
+
+    expiring_par_count = InvestigativePARRecord.objects.filter(
+        asset__investigative_details__isnull=False,
+        asset__status__status_name__in=["Available", "Issued", "Maintenance"],
+        expiry_date__gt=today,
+        expiry_date__lte=thirty_days_from_now,
+    ).count()
+
     category_filter = request.GET.get("category", "").strip()
     status_filter = request.GET.get("status", "").strip()
 
@@ -209,6 +219,7 @@ def investigative_view(request):
         "under_repair": all_investigative.filter(
             asset_id__status__status_name__iexact="Maintenance"
         ).count(),
+        "expiring_par_count": expiring_par_count,
         "selected_category": category_filter,
         "selected_status": status_filter,
         "low_stock_items": low_stock_items,
@@ -465,17 +476,14 @@ def move_to_ber_investigative(request, item_id):
         pars_deleted = InvestigativePARRecord.objects.filter(asset_id=item_id).delete()[
             0
         ]
-
         ics_deleted = ICSRecord.objects.filter(asset_id=item_id).delete()[0]
 
         details = f"Investigative Asset ID {item_id} has been moved to BER"
 
         if pars_deleted and ics_deleted:
             details += ", and PAR and ICS Records are deleted"
-
         elif pars_deleted:
             details += ", and PAR Record is deleted"
-
         elif ics_deleted:
             details += ", and ICS Record is deleted"
 

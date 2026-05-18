@@ -1,5 +1,4 @@
 let sb;
-
 let selectedBERId = null;
 
 function initSupabase() {
@@ -17,9 +16,7 @@ function initSupabase() {
     }
 
     sb = window.supabaseClient;
-
     console.log("✅ Supabase initialized successfully");
-
     return sb;
   } catch (e) {
     console.error("❌ Supabase init failed:", e);
@@ -39,7 +36,6 @@ function todayDate() {
 
 function toggleModal(id) {
   const modal = document.getElementById(id);
-
   if (!modal) return;
 
   modal.classList.toggle("active");
@@ -69,22 +65,12 @@ function closeConfirmationModal() {
   }
 }
 
-async function confirmBerRemoval() {
-  if (!selectedBERId) {
-    alert("No asset selected.");
-    return;
-  }
-
-  await moveToBER(selectedBERId);
-}
-
 /* =========================================
    SUBCATEGORIES
 ========================================= */
 
 function populateSubcategories() {
   const subSelect = document.getElementById("subcategorySelect");
-
   if (!subSelect) return;
 
   subSelect.innerHTML = '<option value="">Select Subcategory...</option>';
@@ -104,10 +90,8 @@ function populateSubcategories() {
 
   technicalSubcategories.forEach((item) => {
     const el = document.createElement("option");
-
     el.textContent = item;
     el.value = item;
-
     subSelect.appendChild(el);
   });
 }
@@ -124,17 +108,29 @@ async function addInvestigativeActivityLog({ assetId, action, details }) {
       asset_ptr_id: assetId,
       action: action,
       details: details,
+      created_at: new Date().toISOString(),
     },
   ]);
 
   if (error) {
     console.error("INVESTIGATIVE ACTIVITY LOG ERROR:", error);
+    alert("Activity log failed: " + error.message);
+    throw error;
   }
 }
 
 /* =========================================
    MOVE TO BER
 ========================================= */
+
+async function confirmBerRemoval() {
+  if (!selectedBERId) {
+    alert("No asset selected.");
+    return;
+  }
+
+  await moveToBER(selectedBERId);
+}
 
 async function moveToBER(id) {
   id = Number(id);
@@ -147,30 +143,10 @@ async function moveToBER(id) {
   try {
     const now = new Date().toISOString();
 
-    /* =========================
-       CHECK EXISTING DISPOSAL
-    ========================= */
-
-    const { data: existingDisposal, error: checkError } = await sb
+    const { error: disposalError } = await sb
       .from("disposal_disposalitems")
-      .select("asset_ptr_id")
-      .eq("asset_ptr_id", id)
-      .maybeSingle();
-
-    if (checkError) {
-      console.error("DISPOSAL CHECK ERROR:", checkError);
-      alert(checkError.message);
-      return;
-    }
-
-    /* =========================
-       INSERT DISPOSAL RECORD
-    ========================= */
-
-    if (!existingDisposal) {
-      const { error: disposalError } = await sb
-        .from("disposal_disposalitems")
-        .insert([
+      .upsert(
+        [
           {
             asset_ptr_id: id,
             days_overdue: 0,
@@ -181,19 +157,17 @@ async function moveToBER(id) {
             personnel_assigned: null,
             last_sync: now,
           },
-        ]);
+        ],
+        {
+          onConflict: "asset_ptr_id",
+        },
+      );
 
-      if (disposalError) {
-        console.error("DISPOSAL INSERT ERROR:", disposalError);
-
-        alert(disposalError.message);
-        return;
-      }
+    if (disposalError) {
+      console.error("DISPOSAL UPSERT ERROR:", disposalError);
+      alert(disposalError.message);
+      return;
     }
-
-    /* =========================
-       UPDATE ASSET STATUS
-    ========================= */
 
     const { error: assetError } = await sb
       .from("config_asset")
@@ -204,14 +178,9 @@ async function moveToBER(id) {
 
     if (assetError) {
       console.error("ASSET STATUS UPDATE ERROR:", assetError);
-
       alert(assetError.message);
       return;
     }
-
-    /* =========================
-       DELETE PAR RECORDS
-    ========================= */
 
     const { data: deletedPAR, error: parDeleteError } = await sb
       .from("Investigative_PAR_Record")
@@ -219,18 +188,11 @@ async function moveToBER(id) {
       .eq("asset_id", id)
       .select();
 
-    console.log("PAR DELETED:", deletedPAR);
-
     if (parDeleteError) {
       console.error("PAR DELETE ERROR:", parDeleteError);
-
       alert(parDeleteError.message);
       return;
     }
-
-    /* =========================
-       DELETE ICS RECORDS
-    ========================= */
 
     const { data: deletedICS, error: icsDeleteError } = await sb
       .from("Investigative_ICS_Record")
@@ -238,21 +200,13 @@ async function moveToBER(id) {
       .eq("asset_id", id)
       .select();
 
-    console.log("ICS DELETED:", deletedICS);
-
     if (icsDeleteError) {
       console.error("ICS DELETE ERROR:", icsDeleteError);
-
       alert(icsDeleteError.message);
       return;
     }
 
-    /* =========================
-       ACTIVITY LOG DETAILS
-    ========================= */
-
     const hasDeletedPAR = deletedPAR && deletedPAR.length > 0;
-
     const hasDeletedICS = deletedICS && deletedICS.length > 0;
 
     let logDetails = `Investigative Asset ID ${id} has been moved to BER`;
@@ -271,6 +225,17 @@ async function moveToBER(id) {
       details: logDetails,
     });
 
+    const { error: detailsDeleteError } = await sb
+      .from("Investigative_Details")
+      .delete()
+      .eq("asset_ptr_id", id);
+
+    if (detailsDeleteError) {
+      console.error("INVESTIGATIVE DETAILS DELETE ERROR:", detailsDeleteError);
+      alert(detailsDeleteError.message);
+      return;
+    }
+
     closeConfirmationModal();
 
     alert("✅ Successfully moved to BER!");
@@ -278,7 +243,6 @@ async function moveToBER(id) {
     window.location.reload();
   } catch (err) {
     console.error(err);
-
     alert("Failed to move to BER:\n" + err.message);
   }
 }
@@ -296,10 +260,8 @@ function autoDismissMessages() {
 
       closeBtn.className = "close-btn";
       closeBtn.innerHTML = "&times;";
-
       closeBtn.style.cssText =
         "float: right; font-size: 20px; cursor: pointer; margin-left: 15px;";
-
       closeBtn.onclick = () => msg.remove();
 
       msg.appendChild(closeBtn);
@@ -328,15 +290,11 @@ function openUpdateModal(id, name, propertyId, category, quantity) {
   console.log("Opening edit modal for ID:", id);
 
   const updateAssetId = document.getElementById("updateAssetId");
-
   const updateItemName = document.getElementById("updateItemName");
-
   const updateQuantity = document.getElementById("updateQuantity");
 
   if (updateAssetId) updateAssetId.value = id;
-
   if (updateItemName) updateItemName.value = name || "";
-
   if (updateQuantity) updateQuantity.value = quantity || 1;
 
   toggleModal("updateModal");
@@ -348,7 +306,6 @@ function openUpdateModal(id, name, propertyId, category, quantity) {
 
 document.addEventListener("DOMContentLoaded", function () {
   populateSubcategories();
-
   autoDismissMessages();
 
   const addForm = document.querySelector("#addModal form");
@@ -356,33 +313,21 @@ document.addEventListener("DOMContentLoaded", function () {
   if (addForm) {
     addForm.addEventListener("submit", function (e) {
       const propertyInput = document.querySelector("input[name='par_id']");
-
       const propertyId = propertyInput ? propertyInput.value.trim() : "";
 
       if (!propertyId) {
         alert("Property ID is required!");
-
         e.preventDefault();
       }
     });
   }
-
-  /* =========================
-       CONFIRM BER FORM
-    ========================= */
 
   const confirmForm = document.getElementById("confirmRemovalForm");
 
   if (confirmForm) {
     confirmForm.addEventListener("submit", async function (e) {
       e.preventDefault();
-
-      if (!selectedBERId) {
-        alert("No asset selected.");
-        return;
-      }
-
-      await moveToBER(selectedBERId);
+      await confirmBerRemoval();
     });
   }
 
