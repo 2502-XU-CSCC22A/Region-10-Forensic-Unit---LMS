@@ -22,61 +22,36 @@
     <script src="{% static 'js/sample.js' %}"></script>
   </head>
 
-  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+  <header class="navbar-header d-flex align-items-center justify-content-between ">
     <div class="header-brand d-flex align-items-center">
-      <div class="header-logo">
-        PNP<br />FORENSIC<br />GROUP
-      </div>
-      <div class="header-divider"></div>
-      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
+        <div class="header-logo">
+            PNP<br />FORENSIC<br />GROUP
+        </div>
+
+        <div class="header-divider"></div>
+
+        <h1 class="header-title">
+            Regional Forensic Unit 10 LMS
+        </h1>
     </div>
 
     <div class="header-user d-flex align-items-center">
-      <div class="notification-wrapper mr-4">
-        <i class="fas fa-bell {% if upcoming_pms > 0 or upcoming_repairs > 0 %}
-            
-            
-            
-            
-            
-            
-            text-danger
+        <div class="profile-group d-flex align-items-center">
 
+            <div class="user-avatar d-flex align-items-center justify-content-center">
+                <i class="fas fa-user text-muted"></i>
+            </div>
 
+            <div class="user-text ml-2">
+                <div class="user-name font-weight-bold">
+                    {{ user.get_full_name|default:user.username }}
+                </div>
+                <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
+            </div>
 
-
-
-
-          {% else %}
-            
-            
-            
-            
-            
-            
-            text-muted
-
-
-
-
-
-
-          {% endif %}">
-
-        </i>
-      </div>
-
-      <div class="profile-group d-flex align-items-center">
-        <div class="user-avatar d-flex align-items-center justify-content-center">
-          <i class="fas fa-user text-muted"></i>
         </div>
-        <div class="user-text ml-2">
-          <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-          <div class="user-role text-muted">{{ current_user_role|default:"User" }}</div>
-        </div>
-      </div>
     </div>
-  </header>
+</header>
 
   <body>
     <div class="dashboard-container">
@@ -267,7 +242,7 @@
 </table>
 
         <div class="pagination-wrapper">
-          <span class="page-info" style="color: #64748b; font-size: 0.9rem;">Showing page {{ disposal_items.number }} of {{ disposal_items.paginator.num_pages }}</span>
+          <span class="page-info" style="color: #64748b;">Showing page {{ disposal_items.number }} of {{ disposal_items.paginator.num_pages }}</span>
 
           <div class="pagination-buttons" style="display: flex; gap: 5px; align-items: center;">
             {% if disposal_items.has_previous %}

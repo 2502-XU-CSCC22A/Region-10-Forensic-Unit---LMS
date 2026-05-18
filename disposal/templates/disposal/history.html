@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{% static 'disposal/history.css' %}" />
     <link rel="stylesheet" href="{% static 'disposal/sidebar.css' %}" />
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700;800&display=swap" rel="stylesheet" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
   </head>
 
@@ -160,13 +160,13 @@
                         </span>
                         
                         <span class="badge badge-outline-dark ml-2 small text-uppercase">
-                          {{ log.get_action_type_display }}
+                          <i class="fa fa-trash-alt"></i> {{ log.get_action_type_display }}
                         </span>
                       </div>
         
-                      <h6 class="assetName mb-1">
+                      <div class="assetName mb-1">
                         {{ log.asset.model }} (Serial No.: {{ log.asset.serial_no }})
-                      </h6>
+                      </div>
         
                       {% if log.disposal_reason %}
                       <p class="mb-0 text-danger small">

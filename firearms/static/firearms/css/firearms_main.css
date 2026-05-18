@@ -12,7 +12,7 @@
   --navy-light: #1e3d8f;
   --accent:     #2563eb;
   --accent-2: #3b82f6;
-  --sidebar-w: 310px;
+  --sidebar-w: 320px;
   --header-h: 72px;
   --text: #1e293b;
   --muted: #64748b;
@@ -23,8 +23,6 @@
   --red: #ef4444;
 }
 
-
-
 .main-content {
   flex: 1;
   background-color: #f4f7fe;
@@ -33,16 +31,13 @@
   padding: 30px;
   display: flex;
   flex-direction: column;
-  margin-left: var(--sidebar-width);
+  margin-left: 320px;
 }
-
-
 
 .stat-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  margin-top: 20px;
   margin-bottom: 20px;
 }
 

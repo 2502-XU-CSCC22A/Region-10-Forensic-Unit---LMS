@@ -155,6 +155,21 @@
       text-decoration: none;
     }
 
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
     #sidebar {
       position: fixed;
       top: 70px !important;
@@ -182,34 +197,7 @@
 </head>
 
 <body>
-
-  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
-    <div class="header-brand d-flex align-items-center">
-      <div class="header-logo">
-        PNP<br>FORENSIC<br>GROUP
-      </div>
-      <div class="header-divider"></div>
-      <h1 class="header-title">Regional Forensic Unit 10 LMS</h1>
-    </div>
-
-    <div class="header-user d-flex align-items-center">
-      <div class="notification-wrapper mr-4">
-        <i class="fas fa-bell text-muted"></i>
-      </div>
-
-      <div class="profile-group d-flex align-items-center">
-        <div class="user-avatar d-flex align-items-center justify-content-center">
-          <i class="fas fa-user text-muted"></i>
-        </div>
-        <div class="user-text ml-2">
-          <div class="user-name font-weight-bold text-dark">
-            {{ user.get_full_name|default:user.username }}
-          </div>
-          <div class="user-role text-muted">Logistics Officer</div>
-        </div>
-      </div>
-    </div>
-  </header>
+  {% include 'InvestigativeEquipment/header.html' %}
 
   {% include 'InvestigativeEquipment/sidebar.html' %}
 

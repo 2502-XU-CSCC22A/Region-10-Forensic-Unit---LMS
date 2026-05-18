@@ -27,21 +27,39 @@ body {
     overflow-x: hidden;
 }
 
-/* Header */
+/* HEADER */
+
+header,
 .navbar-header {
-    font-family: 'Inter', sans-serif;
-    height: 70px;
-    background-color: #ffffff;
-    border-bottom: none;
-    box-shadow: 0 2px 12px rgba(13, 33, 85, .12);
-    width: 100%;
     position: sticky;
     top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1100;
+    height: var(--header-h);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px 0 0;
+    box-shadow: 0 2px 12px rgba(13, 33, 85, 0.12);
+    border-bottom: none !important;
 }
 
-/* Brand Styles (Left) */
-.header-logo {
+/* HEADER BRAND */
+
+.header-brand {
     font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 20px;
+    margin: 8px 20px 8px 12px;
+    border-radius: 6px;
+    height: 54px;
+}
+
+.header-logo {
     font-size: 11px;
     font-weight: 800;
     line-height: 1.1;
@@ -63,7 +81,8 @@ body {
     margin: 0;
 }
 
-/* User Section Styles (Right) */
+/* USER AREA */
+
 .notification-wrapper i {
     font-size: 1.2rem;
     cursor: pointer;
@@ -75,9 +94,14 @@ body {
     background-color: #e9ecef;
     border-radius: 50%;
     font-size: 1.1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .user-text {
+    font-family: 'Inter', sans-serif;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -92,6 +116,7 @@ body {
 .user-role {
     font-size: 12px;
     line-height: 1;
+    color: #64748b;
 }
 
 .layout {
@@ -310,20 +335,20 @@ a:has(.outline) {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     font-family: 'Inter', sans-serif;
-  }
-  
-  table {
+}
+
+table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
     font-family: 'Inter', sans-serif;
-  }
-  
-  thead tr {
+}
+
+thead tr {
     background: #e8edf6;
-  }
-  
-  th {
+}
+
+th {
     padding: 11px 14px;
     text-align: left;
     font-weight: 800;
@@ -335,60 +360,60 @@ a:has(.outline) {
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
-  }
-  
-  th:hover {
+}
+
+th:hover {
     background: #d9e4f7;
-  }
-  
-  td {
+}
+
+td {
     padding: 11px 14px;
     border-bottom: 1px solid var(--border);
     color: var(--text);
     vertical-align: middle;
-  }
-  
-  tbody tr:nth-child(even) {
+}
+
+tbody tr:nth-child(even) {
     background: var(--row-alt);
-  }
-  
-  tbody tr:hover {
+}
+
+tbody tr:hover {
     background: #eff6ff;
-  }
-  
-  td,
-  th {
+}
+
+td,
+th {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 140px;
-  }
-  
-  td:nth-child(7),
-  th:nth-child(7) {
+}
+
+td:nth-child(7),
+th:nth-child(7) {
     max-width: 200px;
     min-width: 160px;
-  }
-  
-  td:nth-child(8),
-  th:nth-child(8) {
+}
+
+td:nth-child(8),
+th:nth-child(8) {
     max-width: none;
     width: auto;
-  }
-  
-  td:nth-child(9),
-  th:nth-child(9) {
+}
+
+td:nth-child(9),
+th:nth-child(9) {
     max-width: none;
     width: auto;
-  }
-  
-  
-  td:last-child,
-  th:last-child {
+}
+
+
+td:last-child,
+th:last-child {
     max-width: none;
     width: auto;
-  
-  }
+
+}
 
 .modal-backdrop {
     z-index: 1040 !important;
@@ -687,7 +712,7 @@ a:has(.outline) {
     color: var(--pnp-blue);
     letter-spacing: .5px;
     border-bottom: 1px solid var(--border);
-  }
+}
 
 .table-controls {
     display: flex;
@@ -736,7 +761,7 @@ a:has(.outline) {
 .page-info {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
-    font-weight: 800;
+    font-weight: 700;
     padding: 10px;
     color: #0d2155;
 }
@@ -753,13 +778,13 @@ a:has(.outline) {
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
-  }
-  
-  ::-webkit-scrollbar-track {
+}
+
+::-webkit-scrollbar-track {
     background: var(--bg);
-  }
-  
-  ::-webkit-scrollbar-thumb {
+}
+
+::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 3px;
-  }
+}

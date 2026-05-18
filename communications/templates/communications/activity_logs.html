@@ -26,8 +26,9 @@
     }
 
     .navbar-header {
-      height: 70px;
+      height: 73px;
       background-color: #ffffff;
+      margin-left: 0;
       border-bottom: 1px solid #e0e0e0;
       width: 100%;
       position: fixed;
@@ -58,6 +59,17 @@
       margin: 0;
     }
 
+    .user-name {
+      color: #2563eb;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+    
+    .user-role {
+      font-size: 12px;
+      line-height: 1;
+    }
+
     main {
       margin-left: 315px !important;
       padding: 95px 24px 40px !important;
@@ -85,11 +97,32 @@
       margin: 0;
     }
 
-    .log-card-delete,
-    .log-card-update,
-    .log-card-create,
-    .log-card-moved {
+    .log-card-delete {
       border-left: 4px solid #ef4444 !important;
+      border-radius: 3px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
+      margin-bottom: 16px !important;
+      background: #ffffff;
+    }
+
+    .log-card-update {
+      border-left: 4px solid #f59e0b !important;
+      border-radius: 3px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
+      margin-bottom: 16px !important;
+      background: #ffffff;
+    }
+
+    .log-card-create {
+      border-left: 4px solid #10b981 !important;
+      border-radius: 3px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
+      margin-bottom: 16px !important;
+      background: #ffffff;
+    }
+
+    .log-card-moved {
+      border-left: 4px solid #2563eb !important;
       border-radius: 3px !important;
       box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
       margin-bottom: 16px !important;
@@ -180,12 +213,28 @@
     main {
       overflow-y: visible !important;
     }
+
+    /* SCROLLBAR */
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+      }
   </style>
 </head>
 
 <body>
 
-  <header class="navbar-header d-flex align-items-center justify-content-between px-4">
+  <header class="navbar-header d-flex align-items-center justify-content-between">
     <div class="header-brand d-flex align-items-center">
       <div class="header-logo">
         PNP<br>FORENSIC<br>GROUP
@@ -195,16 +244,13 @@
     </div>
 
     <div class="header-user d-flex align-items-center">
-      <div class="notification-wrapper mr-4">
-        <i class="fas fa-bell text-muted"></i>
-      </div>
 
       <div class="profile-group d-flex align-items-center">
         <div class="user-avatar d-flex align-items-center justify-content-center">
           <i class="fas fa-user text-muted"></i>
         </div>
         <div class="user-text ml-2">
-          <div class="user-name font-weight-bold text-dark">
+          <div class="user-name font-weight-bold">
             {{ user.get_full_name|default:user.username }}
           </div>
           <div class="user-role text-muted">{{ current_user_role }}</div>
@@ -285,18 +331,32 @@
       }
     }
 
-    function getActionIcon(action) {
-      if (!action) return "fa-history";
-
+    function getActionConfig(action) {
+      const defaults = { 
+        icon: "fa-history", 
+        cardClass: "log-card-moved" 
+      };
+      
+      if (!action) return defaults;
+    
       const lower = action.toLowerCase();
-
-      if (lower.includes("delete")) return "fa-trash-alt";
-      if (lower.includes("create")) return "fa-plus-circle";
-      if (lower.includes("update")) return "fa-edit";
-      if (lower.includes("move")) return "fa-undo";
-
-      return "fa-history";
+    
+      if (lower.includes("delete")) {
+        return { icon: "fa-trash-alt", cardClass: "log-card-delete" };
+      }
+      if (lower.includes("create")) {
+        return { icon: "fa-plus-circle", cardClass: "log-card-create" };
+      }
+      if (lower.includes("update")) {
+        return { icon: "fa-edit", cardClass: "log-card-update" };
+      }
+      if (lower.includes("move")) {
+        return { icon: "fa-undo", cardClass: "log-card-moved" };
+      }
+    
+      return defaults;
     }
+
 
     async function loadActivityLogs(days = 7) {
       setActiveButton(days);
@@ -344,50 +404,55 @@
         return;
       }
 
-      list.innerHTML = data.map(log => `
-        <div class="card shadow-sm log-card-delete">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start">
-
-              <div>
-                <div class="d-flex align-items-center mb-2">
-                  <span class="badge asset-id-badge mr-2">
-                    ID: ${log.communication_id ?? "-"}
-                  </span>
-
-                  <span class="badge badge-pill badge-secondary">
-                    communications
-                  </span>
-
-                  <span class="action-label">
-                    <i class="fas ${getActionIcon(log.action)} mr-1"></i>
-                    ${log.action || "Activity"}
+      list.innerHTML = data.map(log => {
+        // 1. Get the styling configuration for this item's specific action type
+        const config = getActionConfig(log.action);
+      
+        return `
+          <div class="card shadow-sm ${config.cardClass}">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+      
+                <div>
+                  <div class="d-flex align-items-center mb-2">
+                    <span class="badge asset-id-badge mr-2">
+                      ID: ${log.communication_id ?? "-"}
+                    </span>
+      
+                    <span class="badge badge-pill badge-secondary">
+                      communications
+                    </span>
+      
+                    <span class="action-label">
+                      <i class="fas ${config.icon} mr-1"></i>
+                      ${log.action || "Activity"}
+                    </span>
+                  </div>
+      
+                  <div class="log-title">
+                    ${log.action || "Activity Recorded"}
+                  </div>
+      
+                  <p class="log-stock">
+                    ${log.details || "No details available"}
+                  </p>
+      
+                  <small class="text-muted">
+                    Action by: System Administrator
+                  </small>
+                </div>
+      
+                <div class="text-right">
+                  <span class="log-time text-nowrap">
+                    <i class="far fa-clock"></i> ${formatDate(log.created_at)}
                   </span>
                 </div>
-
-                <div class="log-title">
-                  ${log.action || "Activity Recorded"}
-                </div>
-
-                <p class="log-stock">
-                  ${log.details || "No details available"}
-                </p>
-
-                <small class="text-muted">
-                  Action by: System Administrator
-                </small>
+      
               </div>
-
-              <div class="text-right">
-                <span class="log-time text-nowrap">
-                  <i class="far fa-clock"></i> ${formatDate(log.created_at)}
-                </span>
-              </div>
-
             </div>
           </div>
-        </div>
-      `).join("");
+        `;
+      }).join("");
     }
 
     document.addEventListener("DOMContentLoaded", () => {

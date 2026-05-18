@@ -182,7 +182,7 @@ def finalize_removal(request, pk):
         asset_id=asset.asset_ptr.id if hasattr(asset, 'asset_ptr') else asset.id,
         action_type='REMOVE',
         disposal_reason=reason,
-        description=f"Finalized disposal for {asset.model} ({asset.serial_no})"
+        description=f"Finalized disposal for {asset.model} ({asset.serial_no}) fa-trash-alt"
     )
 
     LogEntry.objects.log_action(
