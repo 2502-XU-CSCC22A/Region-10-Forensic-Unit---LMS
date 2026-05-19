@@ -78,6 +78,9 @@ class InvestigativeActivityLog(models.Model):
         on_delete=models.CASCADE,
         related_name="investigative_activity_logs",
         db_column="asset_ptr_id",
+        null=True,
+        blank=True,
+        db_constraint=False,
     )
 
     action = models.CharField(max_length=100)

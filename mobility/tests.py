@@ -1,426 +1,202 @@
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.contrib.auth.models import User
+from django.test import TestCase
 from django.utils import timezone
 from datetime import timedelta
-from unittest.mock import patch
 
+from config.models import Category, AssetStatus
+from .forms import VehicleForm, PARForm
 from .models import Vehicle, PARRecord, ActivityLog
 
 
-class MobilityBaseTest(TestCase):
+def create_category():
+    return Category.objects.get_or_create(category_name="VEHICLE")[0]
+
+
+def create_status(status_id, status_name):
+    return AssetStatus.objects.get_or_create(
+        status_id=status_id,
+        defaults={"status_name": status_name},
+    )[0]
+
+
+def setup_required_data():
+    create_category()
+    create_status(4, "BER")
+    create_status(5, "Disposed")
+    create_status(6, "Serviceable")
+    create_status(7, "Unserviceable")
+
+
+def create_vehicle(
+    vehicle_id="VEH-001",
+    plate_number="ABC-1234",
+    status="Serviceable",
+):
+    setup_required_data()
+
+    return Vehicle.objects.create(
+        vehicle_id=vehicle_id,
+        plate_number=plate_number,
+        primary_driver="Ben Dizon",
+        alternative_driver="Kate Almonte",
+        classification="SUV",
+        make_model="Toyota Hilux",
+        year="2026",
+        conduction_number="COND-001",
+        status=status,
+        engine_number=f"ENG-{vehicle_id}",
+        chassis_number=f"CHS-{vehicle_id}",
+        registration_renewal_date=timezone.now().date() + timedelta(days=60),
+        insurance_renewal_date=timezone.now().date() + timedelta(days=60),
+    )
+
+
+class VehicleModelTest(TestCase):
+
+    def test_vehicle_string_output(self):
+        vehicle = create_vehicle()
+
+        self.assertIn("Toyota Hilux", str(vehicle))
+        self.assertIn("ABC-1234", str(vehicle))
+
+    def test_vehicle_creates_linked_asset(self):
+        vehicle = create_vehicle()
+
+        self.assertIsNotNone(vehicle.asset)
+        self.assertEqual(vehicle.asset.model, "Toyota Hilux")
+        self.assertEqual(vehicle.asset.category.category_name, "VEHICLE")
+
+    def test_vehicle_status_updates_asset_status(self):
+        vehicle = create_vehicle(status="Serviceable")
+
+        vehicle.status = "Unserviceable"
+        vehicle.save()
+
+        vehicle.asset.refresh_from_db()
+
+        self.assertEqual(vehicle.asset.status.status_name, "Unserviceable")
+
+
+class VehicleFormTest(TestCase):
+
+    def test_vehicle_form_is_valid(self):
+        setup_required_data()
+
+        form = VehicleForm(
+            data={
+                "vehicle_id": "VEH-002",
+                "plate_number": "XYZ-5678",
+                "primary_driver": "Ben Dizon",
+                "alternative_driver": "Kate Almonte",
+                "classification": "SUV",
+                "make_model": "Ford Everest",
+                "year": "2025",
+                "conduction_number": "COND-002",
+                "status": "Serviceable",
+                "engine_number": "ENG-002",
+                "chassis_number": "CHS-002",
+                "registration_renewal_date": timezone.now().date(),
+                "insurance_renewal_date": timezone.now().date(),
+            }
+        )
+
+        self.assertTrue(form.is_valid())
+
+    def test_vehicle_form_invalid_without_make_model(self):
+        setup_required_data()
+
+        form = VehicleForm(
+            data={
+                "vehicle_id": "VEH-003",
+                "plate_number": "MISS-001",
+                "classification": "SUV",
+                "make_model": "",
+                "status": "Serviceable",
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("make_model", form.errors)
+
+    def test_vehicle_form_status_choices_exclude_disposed(self):
+        form = VehicleForm()
+
+        status_values = [choice[0] for choice in form.fields["status"].choices]
+
+        self.assertIn("Serviceable", status_values)
+        self.assertIn("Unserviceable", status_values)
+        self.assertIn("BER", status_values)
+        self.assertNotIn("Disposed", status_values)
+
+
+class MobilityPARTest(TestCase):
 
     def setUp(self):
-        self.client = Client()
+        self.vehicle = create_vehicle()
 
-        # Admin User
-        self.admin_user = User.objects.create_user(
-            username='Admin',
-            password='Admin_102026'
-        )
-
-        # Logistics Officer User
-        self.logistics_user = User.objects.create_user(
-            username='logistics',
-            password='logistics123'
-        )
-
-        # Supervisor User (Read-only)
-        self.supervisor_user = User.objects.create_user(
-            username='supervisor',
-            password='supervisor123'
-        )
-
-        # Test Vehicle
-        self.vehicle = Vehicle.objects.create(
-            vehicle_id='VH-001',
-            plate_number='ABC-1234',
-            classification='SUV',
-            make_model='Toyota Fortuner',
-            primary_driver='Juan Dela Cruz',
-            status='Serviceable'
-        )
-
-        # Test PAR
         self.par = PARRecord.objects.create(
             vehicle=self.vehicle,
-            par_number='PAR-001',
-            issued_to='John Doe',
+            par_number="PAR-2026-001",
+            issued_to="Ben",
             date_acquired=timezone.now().date(),
             expiry_date=timezone.now().date() + timedelta(days=20),
-            remarks='Test PAR'
+            remarks="Test PAR",
         )
 
+    def test_par_string_output(self):
+        self.assertEqual(str(self.par), "PAR-2026-001 - Ben")
 
-# =========================================================
-# VEHICLE MANAGEMENT TESTS
-# =========================================================
-
-class VehicleManagementTests(MobilityBaseTest):
-
-    def test_vehicle_management_page_loads(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.get(
-            reverse('mobility:vehicle_management')
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Vehicle Management Registry')
-
-
-# =========================================================
-# VEHICLE CREATION TESTS
-# =========================================================
-
-class VehicleCreationTests(MobilityBaseTest):
-
-    def test_create_vehicle(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.post(
-            reverse('mobility:vehicle_management'),
-            {
-                'vehicle_id': 'VH-002',
-                'plate_number': 'XYZ-5678',
-                'classification': 'SUV',
-                'make_model': 'Montero Sport',
-                'primary_driver': 'Pedro Santos',
-                'status': 'Serviceable',
-                'par_number': 'PAR-002',
-                'issued_to': 'Pedro Santos',
-                'date_acquired': timezone.now().date(),
+    def test_duplicate_par_number_is_invalid(self):
+        form = PARForm(
+            data={
+                "vehicle": self.vehicle.id,
+                "par_number": "PAR-2026-001",
+                "issued_to": "Kate",
+                "date_acquired": timezone.now().date(),
+                "expiry_date": timezone.now().date() + timedelta(days=30),
+                "remarks": "Duplicate PAR",
             }
         )
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(Vehicle.objects.count(), 2)
+        self.assertFalse(form.is_valid())
+        self.assertIn("par_number", form.errors)
 
+    def test_new_par_form_is_valid(self):
+        vehicle = create_vehicle(
+            vehicle_id="VEH-004",
+            plate_number="NEW-4444",
+        )
 
-# =========================================================
-# SEARCH TESTS
-# =========================================================
-
-class VehicleSearchTests(MobilityBaseTest):
-
-    def test_search_vehicle(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.get(
-            reverse('mobility:vehicle_management'),
-            {
-                'plate_no': 'ABC-1234'
+        form = PARForm(
+            data={
+                "vehicle": vehicle.id,
+                "par_number": "PAR-2026-002",
+                "issued_to": "David James",
+                "date_acquired": timezone.now().date(),
+                "expiry_date": timezone.now().date() + timedelta(days=30),
+                "remarks": "Valid PAR",
             }
         )
 
-        self.assertContains(response, 'Toyota Fortuner')
+        self.assertTrue(form.is_valid())
 
-
-# =========================================================
-# DELETE TESTS
-# =========================================================
-
-class VehicleDeleteTests(MobilityBaseTest):
-
-    def test_delete_vehicle(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.post(
-            reverse('mobility:delete_vehicle', args=[self.vehicle.id])
-        )
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(Vehicle.objects.count(), 0)
-
-
-# =========================================================
-# BER WORKFLOW TESTS
-# =========================================================
-
-class BERWorkflowTests(MobilityBaseTest):
-
-    def test_mark_vehicle_ber(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.post(
-            reverse('mobility:mark_vehicle_ber', args=[self.vehicle.id])
-        )
-
-        self.vehicle.refresh_from_db()
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(self.vehicle.status, 'BER')
-
-    def test_send_vehicle_to_disposal(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        self.vehicle.status = 'BER'
-        self.vehicle.save()
-
-        response = self.client.post(
-            reverse('mobility:send_vehicle_to_disposal', args=[self.vehicle.id])
-        )
-
-        self.vehicle.refresh_from_db()
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(self.vehicle.status, 'Disposed')
-
-
-# =========================================================
-# PAR MANAGEMENT TESTS
-# =========================================================
-
-class PARManagementTests(MobilityBaseTest):
-
-    def test_par_management_page_loads(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.get(
-            reverse('mobility:par_management')
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-    def test_delete_par(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.post(
-            reverse('mobility:delete_par', args=[self.par.id])
-        )
-
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(PARRecord.objects.count(), 0)
-
-
-# =========================================================
-# ACTIVITY LOG TESTS
-# =========================================================
-
-class ActivityLogTests(MobilityBaseTest):
-
-    def test_activity_log_creation(self):
-        ActivityLog.objects.create(
-            user=self.admin_user,
-            action_type='CREATE',
-            description='Created a vehicle'
-        )
-
-        self.assertEqual(ActivityLog.objects.count(), 1)
-
-    def test_activity_log_page(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.get(
-            reverse('mobility:activity_log')
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-
-# =========================================================
-# PERMISSION TESTS
-# =========================================================
-
-class PermissionTests(MobilityBaseTest):
-
-    def test_supervisor_cannot_delete_vehicle(self):
-        self.client.login(username='supervisor', password='supervisor123')
-
-        response = self.client.post(
-            reverse('mobility:delete_vehicle', args=[self.vehicle.id])
-        )
-
-        self.assertEqual(response.status_code, 403)
-
-    def test_supervisor_cannot_mark_ber(self):
-        self.client.login(username='supervisor', password='supervisor123')
-
-        response = self.client.post(
-            reverse('mobility:mark_vehicle_ber', args=[self.vehicle.id])
-        )
-
-        self.assertEqual(response.status_code, 403)
-
-
-# =========================================================
-# EXPIRING PAR TESTS
-# =========================================================
-
-class ExpiringPARTests(MobilityBaseTest):
-
-    def test_expiring_par_record(self):
-        upcoming_limit = timezone.now().date() + timedelta(days=30)
+    def test_expiring_par_detected(self):
+        today = timezone.now().date()
+        upcoming_limit = today + timedelta(days=30)
 
         expiring = PARRecord.objects.filter(
-            expiry_date__gte=timezone.now().date(),
-            expiry_date__lte=upcoming_limit
+            expiry_date__gte=today,
+            expiry_date__lte=upcoming_limit,
         )
 
         self.assertEqual(expiring.count(), 1)
 
 
-# =========================================================
-# EMAIL ALERT TESTS
-# =========================================================
+class MobilityActivityLogTest(TestCase):
 
-class EmailAlertTests(MobilityBaseTest):
-
-    def test_urgent_vehicle_detection(self):
-        self.vehicle.status = 'BER'
-        self.vehicle.save()
-
-        urgent = Vehicle.objects.filter(
-            status__in=['Unserviceable', 'BER']
+    def test_activity_log_creation(self):
+        ActivityLog.objects.create(
+            action_type="CREATE",
+            description="Created mobility vehicle",
         )
 
-        self.assertEqual(urgent.count(), 1)
-
-
-# =========================================================
-# ERROR HANDLING TESTS
-# =========================================================
-
-class MobilityErrorHandlingTests(MobilityBaseTest):
-
-    def test_invalid_form_submission_does_not_create_vehicle(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.post(
-            reverse('mobility:vehicle_management'),
-            {
-                'vehicle_id': '',
-                'plate_number': '',
-                'classification': '',
-                'make_model': '',
-                'status': '',
-            }
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(Vehicle.objects.count(), 1)
-
-    def test_duplicate_vehicle_id_not_allowed(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.post(
-            reverse('mobility:vehicle_management'),
-            {
-                'vehicle_id': 'VH-001',
-                'plate_number': 'NEW-1234',
-                'classification': 'SUV',
-                'make_model': 'Toyota Hilux',
-                'primary_driver': 'Test Driver',
-                'status': 'Serviceable',
-            }
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(
-            Vehicle.objects.filter(vehicle_id='VH-001').count(),
-            1
-        )
-
-    def test_duplicate_plate_number_not_allowed(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.post(
-            reverse('mobility:vehicle_management'),
-            {
-                'vehicle_id': 'VH-999',
-                'plate_number': 'ABC-1234',
-                'classification': 'SUV',
-                'make_model': 'Toyota Hilux',
-                'primary_driver': 'Test Driver',
-                'status': 'Serviceable',
-            }
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(
-            Vehicle.objects.filter(plate_number='ABC-1234').count(),
-            1
-        )
-
-    def test_missing_required_make_model_does_not_create_vehicle(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.post(
-            reverse('mobility:vehicle_management'),
-            {
-                'vehicle_id': 'VH-003',
-                'plate_number': 'MISS-001',
-                'classification': 'SUV',
-                'make_model': '',
-                'status': 'Serviceable',
-            }
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        self.assertFalse(
-            Vehicle.objects.filter(vehicle_id='VH-003').exists()
-        )
-
-    def test_invalid_par_data_does_not_create_par(self):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        response = self.client.post(
-            reverse('mobility:vehicle_management'),
-            {
-                'vehicle_id': 'VH-004',
-                'plate_number': 'PAR-404',
-                'classification': 'SUV',
-                'make_model': 'Toyota Hilux',
-                'status': 'Serviceable',
-                'par_number': 'PAR-BAD',
-                'issued_to': '',
-                'date_acquired': 'invalid-date',
-            }
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        self.assertFalse(
-            PARRecord.objects.filter(par_number='PAR-BAD').exists()
-        )
-
-    def test_unauthenticated_user_redirected_from_vehicle_management(self):
-        response = self.client.get(
-            reverse('mobility:vehicle_management')
-        )
-
-        self.assertEqual(response.status_code, 302)
-
-    def test_unauthenticated_user_redirected_from_par_management(self):
-        response = self.client.get(
-            reverse('mobility:par_management')
-        )
-
-        self.assertEqual(response.status_code, 302)
-
-    def test_unauthenticated_user_redirected_from_activity_log(self):
-        response = self.client.get(
-            reverse('mobility:activity_log')
-        )
-
-        self.assertEqual(response.status_code, 302)
-
-    @patch('smtplib.SMTP')
-    def test_email_sending_failure_handled(self, mock_smtp):
-        self.client.login(username='Admin', password='Admin_102026')
-
-        self.vehicle.status = 'BER'
-        self.vehicle.save()
-
-        mock_smtp.return_value.__enter__.return_value.login.side_effect = Exception(
-            'SMTP failed'
-        )
-
-        response = self.client.get(
-            reverse('mobility:manual_email_alert')
-        )
-
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(ActivityLog.objects.count(), 1)

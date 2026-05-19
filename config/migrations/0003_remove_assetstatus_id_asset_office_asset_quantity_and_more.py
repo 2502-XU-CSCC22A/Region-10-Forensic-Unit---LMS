@@ -12,11 +12,6 @@ class Migration(migrations.Migration):
        
         migrations.AddField(
             model_name='asset',
-            name='office',
-            field=models.CharField(blank=True, db_column='Office', max_length=100, null=True),
-        ),
-        migrations.AddField(
-            model_name='asset',
             name='quantity',
             field=models.IntegerField(default=1),
         ),

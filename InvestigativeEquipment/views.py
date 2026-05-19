@@ -232,7 +232,7 @@ def investigative_view(request):
 
 def par_monitoring_view(request):
     common_counts = get_common_counts(request)
-    
+
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
     all_f = Firearm.objects.all()
     all_v = Vehicle.objects.all()
@@ -240,7 +240,7 @@ def par_monitoring_view(request):
     all_d = DisposalItem.objects.filter(asset_ptr__status_id=4)
     all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     current_user_role = request.user.userprofile.role
-    
+
     pars = (
         InvestigativePARRecord.objects.select_related("asset").all().order_by("-par_id")
     )
@@ -298,8 +298,7 @@ def edit_par_view(request, pk):
     all_d = DisposalItem.objects.filter(asset_ptr__status_id=4)
     all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     current_user_role = request.user.userprofile.role
-    
-    
+
     record = get_object_or_404(
         InvestigativePARRecord.objects.select_related("asset"),
         pk=pk,
@@ -404,8 +403,7 @@ def ics_monitoring_view(request):
     all_d = DisposalItem.objects.filter(asset_ptr__status_id=4)
     all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     current_user_role = request.user.userprofile.role
-    
-    
+
     for ics in icss:
         ics.days_until_expiry = (
             (ics.expiry_date - today).days if ics.expiry_date else 9999
@@ -457,7 +455,7 @@ def edit_ics_view(request, pk):
     all_d = DisposalItem.objects.filter(asset_ptr__status_id=4)
     all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     current_user_role = request.user.userprofile.role
-    
+
     record = get_object_or_404(
         ICSRecord.objects.select_related("asset"),
         pk=pk,
@@ -542,7 +540,7 @@ def print_ics_view(request, pk):
     all_d = DisposalItem.objects.filter(asset_ptr__status_id=4)
     all_i = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5]).count()
     current_user_role = request.user.userprofile.role
-    
+
     ics = get_object_or_404(
         ICSRecord.objects.select_related("asset"),
         pk=pk,
@@ -575,17 +573,10 @@ def move_to_ber_investigative(request, item_id):
     try:
         ber_status, _ = AssetStatus.objects.get_or_create(status_name="BER")
 
-        asset.status = ber_status
-        asset.save()
-
         pars_deleted = InvestigativePARRecord.objects.filter(asset_id=item_id).delete()[
             0
         ]
         ics_deleted = ICSRecord.objects.filter(asset_id=item_id).delete()[0]
-
-        investigative_deleted = InvestigativeDetails.objects.filter(
-            asset_id=item_id
-        ).delete()[0]
 
         details = f"Investigative Asset ID {item_id} has been moved to BER"
 
@@ -596,14 +587,16 @@ def move_to_ber_investigative(request, item_id):
         elif ics_deleted:
             details += ", and ICS Record is deleted"
 
-        if investigative_deleted:
-            details += ", and Investigative Details record is removed from the table"
-
         create_investigative_activity_log(
             item_id,
             "Moved to BER",
             details,
         )
+
+        InvestigativeDetails.objects.filter(asset_id=item_id).delete()
+
+        asset.status = ber_status
+        asset.save()
 
         messages.success(
             request,

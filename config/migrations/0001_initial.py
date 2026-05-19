@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             name='AssetStatus',
             fields=[
                 ('status_id', models.AutoField(db_column='StatusID', primary_key=True, serialize=False)),
-                ('status_name', models.CharField(db_column='StatusName', max_length=50, unique=True)),
+                ('status_name', models.CharField(db_column='Status_Name', max_length=50, unique=True)),
             ],
             options={
                 'verbose_name_plural': 'Asset Statuses',
