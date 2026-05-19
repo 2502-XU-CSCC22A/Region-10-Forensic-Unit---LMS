@@ -133,7 +133,6 @@
     width: 100%;
     aspect-ratio: 16 / 9; /* Modern widescreen aspect ratio */
     background-color: #f1f5f9; /* The grey placeholder color */
-    background-image: url('{% static "img/placeholder_icon.png" %}'); /* You will need an icon */
     background-size: 40px; /* Icon size */
     background-repeat: no-repeat;
     background-position: center;
