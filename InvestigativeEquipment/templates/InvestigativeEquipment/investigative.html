@@ -347,46 +347,6 @@
 
   {% include 'InvestigativeEquipment/confirmation_modal.html' %}
 
-  <script>
-    window.selectedBERAssetId = null;
-
-    function openConfirmationModal(assetId) {
-      selectedBERAssetId = assetId;
-
-      const modal = document.getElementById("confirmationModal");
-      if (modal) {
-        modal.classList.add("active");
-      }
-    }
-
-    function closeConfirmationModal() {
-      window.selectedBERAssetId = null;
-
-      const modal = document.getElementById("confirmationModal");
-      if (modal) {
-        modal.classList.remove("active");
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const confirmForm = document.getElementById("confirmRemovalForm");
-
-      if (confirmForm) {
-        confirmForm.addEventListener("submit", async function (e) {
-          e.preventDefault();
-
-          if (!window.selectedBERAssetId) {
-            alert("No asset selected.");
-            return;
-          }
-
-          await moveToBER(window.selectedBERAssetId);
-          closeConfirmationModal();
-        });
-      }
-    });
-  </script>
-
   <script src="{% static 'InvestigativeEquipment/investigative.js' %}"></script>
 </body>
 

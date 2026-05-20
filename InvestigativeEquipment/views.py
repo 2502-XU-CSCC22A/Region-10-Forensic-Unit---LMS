@@ -74,7 +74,7 @@ def investigative_view(request):
                 if (
                     par_id
                     and Asset.objects.filter(property_no=par_id)
-                    .exclude(status__status_name="BER")
+                    .exclude(status_id__in=[4, 5, 6])
                     .exists()
                 ):
                     messages.error(

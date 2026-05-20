@@ -1,5 +1,5 @@
 let sb;
-let selectedBERId = null;
+window.selectedBERAssetId = null;
 
 function initSupabase() {
   if (!window.supabase) {
@@ -45,8 +45,8 @@ function toggleModal(id) {
   }
 }
 
-function prepareRemoval(id) {
-  selectedBERId = Number(id);
+function openConfirmationModal(id) {
+  window.selectedBERAssetId = Number(id);
 
   const modal = document.getElementById("confirmationModal");
 
@@ -56,7 +56,7 @@ function prepareRemoval(id) {
 }
 
 function closeConfirmationModal() {
-  selectedBERId = null;
+  window.selectedBERAssetId = null;
 
   const modal = document.getElementById("confirmationModal");
 
@@ -124,12 +124,12 @@ async function addInvestigativeActivityLog({ assetId, action, details }) {
 ========================================= */
 
 async function confirmBerRemoval() {
-  if (!selectedBERId) {
+  if (!window.selectedBERAssetId) {
     alert("No asset selected.");
     return;
   }
 
-  await moveToBER(selectedBERId);
+  await moveToBER(window.selectedBERAssetId);
 }
 
 async function moveToBER(id) {
@@ -543,7 +543,7 @@ window.onclick = function (event) {
 window.toggleModal = toggleModal;
 window.openUpdateModal = openUpdateModal;
 window.moveToBER = moveToBER;
-window.prepareRemoval = prepareRemoval;
+window.openConfirmationModal = openConfirmationModal;
 window.confirmBerRemoval = confirmBerRemoval;
 window.closeConfirmationModal = closeConfirmationModal;
 window.populateSubcategories = populateSubcategories;
