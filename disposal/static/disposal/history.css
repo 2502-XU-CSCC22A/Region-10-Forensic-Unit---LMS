@@ -117,6 +117,13 @@ body {
     background: #ffffff;
 }
 
+.card-body {
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    min-height: 1px;
+    padding: 22px;
+}
+
 .section-title {
     font-family: 'Inter', sans-serif;
     font-weight: 700;
@@ -129,6 +136,11 @@ body {
     font-weight: 800;
     color: #000;
     margin-bottom: 6px;
+}
+
+.assetName small {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
 }
 
 /* Smooth hover feedback for the interactive elements */
@@ -187,9 +199,23 @@ body {
     border-left: 4px solid #e53e3e;
 }
 
+.text-right {
+    padding: 15px !important;
+}
+
+.text-right small {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+}
+
 .activity-timeline {
     font-family: 'Inter', sans-serif;
     max-width: 100%;
+}
+
+.activity-timeline p {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
 }
 
 .activity-card {
@@ -198,7 +224,6 @@ body {
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12) !important;
     margin-bottom: 16px !important;
     background: #ffffff;
-    padding: 8px !important;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;

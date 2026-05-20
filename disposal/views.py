@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
+import requests
 import csv
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.admin.models import LogEntry, DELETION
@@ -137,7 +137,6 @@ def disposal_list(request):
         'current_user_role': current_user_role,
     })
 
-# --- ACTIVITY LOG ---
 def history_log(request):
     logs = DisposalActivityLog.objects.all().order_by('-timestamp')
     
@@ -176,20 +175,51 @@ def finalize_removal(request, pk):
     asset.status_id = disposed_status
     asset.save()
 
-    # 1. Keep your custom log working perfectly
+    if hasattr(asset, 'asset_ptr_id') and asset.asset_ptr_id:
+        parent_asset_id = asset.asset_ptr_id
+    elif hasattr(asset, 'asset_ptr') and asset.asset_ptr:
+        parent_asset_id = asset.asset_ptr.id
+    else:
+        parent_asset_id = asset.id
+
+    description = f"Finalized disposal for {asset.model} ({asset.serial_no}) fa-trash-alt"
+
     DisposalActivityLog.objects.create(
         user=request.user,
-        asset_id=asset.asset_ptr.id if hasattr(asset, 'asset_ptr') else asset.id,
+        asset_id=parent_asset_id,
         action_type='REMOVE',
         disposal_reason=reason,
-        description=f"Finalized disposal for {asset.model} ({asset.serial_no}) fa-trash-alt"
+        description=description
     )
+
+    # 2. Push to Supabase with explicitly aligned fields
+    supabase_url = "https://vamjajitzyspdyfxisac.supabase.co/rest/v1/disposal_disposalactivitylog"
+    supabase_headers = {
+        "apikey": "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54",
+        "Authorization": "Bearer sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54",
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal"
+    }
+    
+    supabase_data = {
+        "asset_id": parent_asset_id, 
+        "action_type": "REMOVE",
+        "disposal_reason": reason,
+        "description": description,
+        "user_id": request.user.id,
+        "timestamp": timezone.now().isoformat()
+    }
+    
+    try:
+        requests.post(supabase_url, headers=supabase_headers, json=supabase_data, timeout=5)
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to sync log to Supabase: {e}")
 
     LogEntry.objects.log_action(
         user_id=request.user.id,
         content_type_id=ContentType.objects.get_for_model(Asset).id,
         object_id=asset.id,
-        object_repr=f"{asset.category.category_name} – {asset.property_no}",
+        object_repr=f"{asset.category.category_name if asset.category else 'Asset'} – {asset.property_no}",
         action_flag=DELETION,
         change_message=f"Disposed asset. Reason: {reason}"
     )
