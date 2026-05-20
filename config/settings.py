@@ -132,26 +132,29 @@ LOGOUT_REDIRECT_URL = "/login/"
 
 # ── Email Configuration ───────────────────────────────────────────────────────
 
-# Default to SMTP backend on Render, fallback to console for local development
+# Determine environment
 IS_PRODUCTION = os.environ.get('RENDER', False)
 
+# Select backend: SMTP for production, console for local dev
 EMAIL_BACKEND = os.environ.get(
     'EMAIL_BACKEND',
     'django.core.mail.backends.smtp.EmailBackend' if IS_PRODUCTION else 'django.core.mail.backends.console.EmailBackend'
 )
 
+# Host configurations with robust defaults
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
 
+# Credentials pulled from Render environment variables
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 
-# Set default sender to the authenticated user or a system noreply address
+# Sender Identity
 DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL', 
     EMAIL_HOST_USER or 'noreply@rfu10.pnp.gov.ph'
 )
 
-# Fix for certificate verify failed errors on certain SMTP servers
+# SSL context fix for specialized servers
 EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
