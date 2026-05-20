@@ -238,8 +238,6 @@ async function moveToBER(id) {
 
     closeConfirmationModal();
 
-    alert("✅ Successfully moved to BER!");
-
     window.location.reload();
   } catch (err) {
     console.error(err);
