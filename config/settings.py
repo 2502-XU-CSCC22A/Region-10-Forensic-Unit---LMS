@@ -1,14 +1,8 @@
-"""
-Django settings for RFU10 LMS project.
-"""
-
 import os
-import ssl
 from pathlib import Path
 import dj_database_url
 from dotenv import load_dotenv
 import ssl
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -21,10 +15,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ── Security ──────────────────────────────────────────────────────────────────
 SECRET_KEY = os.getenv("SECRET_KEY")
-DEBUG = os.environ.get("DEBUG", "false").lower() == "true"
-SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,.onrender.com").split(
     ","
@@ -132,29 +124,23 @@ LOGOUT_REDIRECT_URL = "/login/"
 
 # ── Email Configuration ───────────────────────────────────────────────────────
 
-# Determine environment
 IS_PRODUCTION = os.environ.get('RENDER', False)
 
-# Select backend: SMTP for production, console for local dev
-EMAIL_BACKEND = os.environ.get(
-    'EMAIL_BACKEND',
-    'django.core.mail.backends.smtp.EmailBackend' if IS_PRODUCTION else 'django.core.mail.backends.console.EmailBackend'
-)
+if IS_PRODUCTION:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-# Host configurations with robust defaults
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+    EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp-relay.brevo.com')
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
 
-# Credentials pulled from Render environment variables
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 
-# Sender Identity
-DEFAULT_FROM_EMAIL = os.environ.get(
-    'DEFAULT_FROM_EMAIL', 
-    EMAIL_HOST_USER or 'noreply@rfu10.pnp.gov.ph'
-)
+    DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
-# SSL context fix for specialized servers
+    EMAIL_TIMEOUT = 10
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'testing@localhost'
+
 EMAIL_SSL_CONTEXT = ssl._create_unverified_context()
