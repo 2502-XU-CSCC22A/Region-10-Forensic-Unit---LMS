@@ -153,7 +153,7 @@ async function fetchData() {
           expiryDate.setHours(0, 0, 0, 0);
 
           const daysUntilExpiry = Math.ceil(
-            (expiryDate - today) / (1000 * 60 * 60 * 24)
+            (expiryDate - today) / (1000 * 60 * 60 * 24),
           );
 
           if (daysUntilExpiry > 0 && daysUntilExpiry <= 30) {
@@ -277,10 +277,10 @@ function updateStats() {
   document.getElementById("totalCount").textContent = total;
   document.getElementById("issuedCount").textContent = serviceable;
   document.getElementById("parCount").textContent = validated;
-  document.getElementById("expiringParCount").textContent = expiringParSoonCount;
+  document.getElementById("expiringParCount").textContent =
+    expiringParSoonCount;
 
-  document.getElementById("totalBar").style.width =
-    total > 0 ? "100%" : "0%";
+  document.getElementById("totalBar").style.width = total > 0 ? "100%" : "0%";
 
   document.getElementById("issuedBar").style.width =
     total > 0
@@ -288,9 +288,7 @@ function updateStats() {
       : "0%";
 
   document.getElementById("parBar").style.width =
-    total > 0
-      ? Math.max(5, Math.round((validated / total) * 100)) + "%"
-      : "0%";
+    total > 0 ? Math.max(5, Math.round((validated / total) * 100)) + "%" : "0%";
 
   document.getElementById("expiringParBar").style.width =
     total > 0
@@ -360,8 +358,8 @@ function selectField(label, id, options, selected = "") {
         "
       >
         ${options
-      .map(
-        (option) => `
+          .map(
+            (option) => `
           <option
             value="${option}"
             ${option === selected ? "selected" : ""}
@@ -369,8 +367,8 @@ function selectField(label, id, options, selected = "") {
             ${option}
           </option>
         `,
-      )
-      .join("")}
+          )
+          .join("")}
       </select>
     </div>
   `;
@@ -695,20 +693,15 @@ async function moveToBER(id) {
     return;
   }
 
-  communications = communications.filter(
-    (item) => Number(item.id) !== id,
-  );
+  communications = communications.filter((item) => Number(item.id) !== id);
 
-  filtered = filtered.filter(
-    (item) => Number(item.id) !== id,
-  );
+  filtered = filtered.filter((item) => Number(item.id) !== id);
 
   closeConfirmationModal();
 
   renderTable();
   renderPagination();
   updateStats();
-
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -790,7 +783,6 @@ window.onclick = function (event) {
     closeConfirmationModal();
   }
 };
-
 
 (function () {
   const cssStyles = `
@@ -938,7 +930,7 @@ window.onclick = function (event) {
   document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       overlayElement.classList.add("fade-out");
-    }, 250); 
+    }, 250);
   });
 
   document.addEventListener("click", (event) => {
@@ -949,11 +941,11 @@ window.onclick = function (event) {
       const target = anchor.getAttribute("target");
 
       if (
-        !href || 
-        href.startsWith("#") || 
-        href.startsWith("javascript:") || 
-        target === "_blank" || 
-        event.ctrlKey || 
+        !href ||
+        href.startsWith("#") ||
+        href.startsWith("javascript:") ||
+        target === "_blank" ||
+        event.ctrlKey ||
         event.metaKey
       ) {
         return;
@@ -964,10 +956,14 @@ window.onclick = function (event) {
   });
 
   document.addEventListener("submit", (event) => {
+    if (event.target.id === "confirmRemovalForm") {
+      return;
+    }
 
     if (event.target.checkValidity && !event.target.checkValidity()) {
       return;
     }
+
     overlayElement.classList.remove("fade-out");
   });
 
@@ -977,7 +973,6 @@ window.onclick = function (event) {
     }
   });
 })();
-
 
 window.openAddModal = openAddModal;
 window.openActionModal = openActionModal;
