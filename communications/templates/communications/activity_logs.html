@@ -234,7 +234,6 @@
 </head>
 
 <body>
-
   <header class="navbar-header d-flex align-items-center justify-content-between">
     <div class="header-brand d-flex align-items-center">
       <div class="header-logo">
@@ -294,8 +293,9 @@
     </a>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  
   <script>
     const sb = window.supabase.createClient(
       "https://vamjajitzyspdyfxisac.supabase.co",
@@ -468,6 +468,8 @@
       loadActivityLogs(7);
     });
   </script>
+
+  <script src="{% static 'js/communications.js' %}"></script>
 
 </body>
 

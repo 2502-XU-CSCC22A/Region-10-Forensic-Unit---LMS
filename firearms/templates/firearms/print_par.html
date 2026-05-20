@@ -1,448 +1,387 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>PAR Voucher - {{ par.par_number }}</title>
 
     <style>
-        @page {
-            size: portrait;
-            margin: 10mm;
-        }
-
+      @page {
+        size: portrait;
+        margin: 10mm;
+      }
+      
+      body {
+        font-family: 'Times New Roman', Times, serif;
+        color: #000;
+        margin: 0;
+        padding: 0;
+        background: #f1f5f9;
+      }
+      
+      .no-print-toolbar {
+        background: #fff;
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: Arial, sans-serif;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      
+      .toolbar-text {
+        margin-right: 20px;
+        color: #64748b;
+      }
+      
+      .btn-print {
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 8px 24px;
+        cursor: pointer;
+        border-radius: 6px;
+        font-weight: bold;
+      }
+      
+      .btn-cancel {
+        color: #ef4444;
+        margin-left: 20px;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      
+      .document-wrapper {
+        background: #fff;
+        width: 190mm;
+        min-height: 260mm;
+        margin: 20px auto;
+        border: 1px solid #000;
+        padding: 12mm;
+        box-sizing: border-box;
+      }
+      
+      .par-header {
+        position: relative;
+        text-align: center;
+        min-height: 95px;
+        margin-bottom: 10px;
+      }
+      
+      .logo {
+        position: absolute;
+        top: 0;
+        width: 75px;
+        height: 75px;
+        object-fit: contain;
+      }
+      
+      .logo-left {
+        left: 0;
+      }
+      
+      .logo-right {
+        right: 0;
+      }
+      
+      .header-text {
+        font-size: 14pt;
+        font-weight: bold;
+        padding-top: 10px;
+      }
+      
+      .par-title {
+        font-size: 15pt;
+        font-weight: bold;
+        margin-top: 3px;
+      }
+      
+      .top-info {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11pt;
+        margin-bottom: 8px;
+      }
+      
+      .top-info td {
+        padding: 3px;
+        vertical-align: bottom;
+      }
+      
+      .underline {
+        border-bottom: 1px solid #000;
+        display: inline-block;
+        min-width: 150px;
+        text-align: center;
+      }
+      
+      .info-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 5px;
+        font-size: 10pt;
+      }
+      
+      .info-table th,
+      .info-table td {
+        border: 1px solid #000;
+        padding: 6px;
+        text-align: center;
+        vertical-align: top;
+      }
+      
+      .item-row {
+        height: 130px;
+      }
+      
+      .description-cell {
+        text-align: left !important;
+      }
+      
+      .section-box {
+        border: 1px solid #000;
+        border-top: none;
+        padding: 8px;
+        font-size: 10pt;
+      }
+      
+      .signature-section {
+        display: table;
+        width: 100%;
+        border-left: 1px solid #000;
+        border-right: 1px solid #000;
+        border-bottom: 1px solid #000;
+        box-sizing: border-box;
+      }
+      
+      .sig-col {
+        display: table-cell;
+        width: 50%;
+        padding: 10px;
+        text-align: center;
+        font-size: 10pt;
+        vertical-align: top;
+        box-sizing: border-box;
+      }
+      
+      .sig-col:first-child {
+        border-right: 1px solid #000;
+      }
+      
+      .sig-title {
+        text-align: left;
+        font-weight: bold;
+        margin-bottom: 25px;
+      }
+      
+      .sig-line {
+        display: inline-block;
+        width: 85%;
+        border-bottom: 1px solid #000;
+        min-height: 18px;
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      
+      .sig-subline {
+        display: inline-block;
+        width: 65%;
+        border-bottom: 1px solid #000;
+        min-height: 16px;
+        margin-top: 18px;
+      }
+      
+      .sig-label {
+        display: block;
+        font-size: 9pt;
+        margin-top: 2px;
+      }
+      
+      .print-date {
+        border-left: 1px solid #000;
+        border-right: 1px solid #000;
+        border-bottom: 1px solid #000;
+        padding: 6px 10px;
+        font-size: 8pt;
+      }
+      
+      [contenteditable='true']:hover {
+        background: #eff6ff;
+        outline: 1px dashed #3b82f6;
+        cursor: pointer;
+      }
+      
+      @media print {
         body {
-            font-family: "Times New Roman", Times, serif;
-            color: #000;
-            margin: 0;
-            padding: 0;
-            background: #f1f5f9;
+          background: white;
         }
-
+      
         .no-print-toolbar {
-            background: #fff;
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: Arial, sans-serif;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid #e2e8f0;
+          display: none;
         }
-
-        .toolbar-text {
-            margin-right: 20px;
-            color: #64748b;
-        }
-
-        .btn-print {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 8px 24px;
-            cursor: pointer;
-            border-radius: 6px;
-            font-weight: bold;
-        }
-
-        .btn-cancel {
-            color: #ef4444;
-            margin-left: 20px;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
+      
         .document-wrapper {
-            background: #fff;
-            width: 190mm;
-            min-height: 260mm;
-            margin: 20px auto;
-            border: 1px solid #000;
-            padding: 12mm;
-            box-sizing: border-box;
+          margin: 0 auto;
+          border: 1px solid #000;
+          box-shadow: none;
         }
-
-        .par-header {
-            position: relative;
-            text-align: center;
-            min-height: 95px;
-            margin-bottom: 10px;
-        }
-
-        .logo {
-            position: absolute;
-            top: 0;
-            width: 75px;
-            height: 75px;
-            object-fit: contain;
-        }
-
-        .logo-left {
-            left: 0;
-        }
-
-        .logo-right {
-            right: 0;
-        }
-
-        .header-text {
-            font-size: 14pt;
-            font-weight: bold;
-            padding-top: 10px;
-        }
-
-        .par-title {
-            font-size: 15pt;
-            font-weight: bold;
-            margin-top: 3px;
-        }
-
-        .top-info {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11pt;
-            margin-bottom: 8px;
-        }
-
-        .top-info td {
-            padding: 3px;
-            vertical-align: bottom;
-        }
-
-        .underline {
-            border-bottom: 1px solid #000;
-            display: inline-block;
-            min-width: 150px;
-            text-align: center;
-        }
-
-        .info-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 5px;
-            font-size: 10pt;
-        }
-
-        .info-table th,
-        .info-table td {
-            border: 1px solid #000;
-            padding: 6px;
-            text-align: center;
-            vertical-align: top;
-        }
-
-        .item-row {
-            height: 130px;
-        }
-
-        .description-cell {
-            text-align: left !important;
-        }
-
-        .section-box {
-            border: 1px solid #000;
-            border-top: none;
-            padding: 8px;
-            font-size: 10pt;
-        }
-
-        .signature-section {
-            display: table;
-            width: 100%;
-            border-left: 1px solid #000;
-            border-right: 1px solid #000;
-            border-bottom: 1px solid #000;
-            box-sizing: border-box;
-        }
-
-        .sig-col {
-            display: table-cell;
-            width: 50%;
-            padding: 10px;
-            text-align: center;
-            font-size: 10pt;
-            vertical-align: top;
-            box-sizing: border-box;
-        }
-
-        .sig-col:first-child {
-            border-right: 1px solid #000;
-        }
-
-        .sig-title {
-            text-align: left;
-            font-weight: bold;
-            margin-bottom: 25px;
-        }
-
-        .sig-line {
-            display: inline-block;
-            width: 85%;
-            border-bottom: 1px solid #000;
-            min-height: 18px;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .sig-subline {
-            display: inline-block;
-            width: 65%;
-            border-bottom: 1px solid #000;
-            min-height: 16px;
-            margin-top: 18px;
-        }
-
-        .sig-label {
-            display: block;
-            font-size: 9pt;
-            margin-top: 2px;
-        }
-
-        .print-date {
-            border-left: 1px solid #000;
-            border-right: 1px solid #000;
-            border-bottom: 1px solid #000;
-            padding: 6px 10px;
-            font-size: 8pt;
-        }
-
-        [contenteditable="true"]:hover {
-            background: #eff6ff;
-            outline: 1px dashed #3b82f6;
-            cursor: pointer;
-        }
-
-        @media print {
-            body {
-                background: white;
-            }
-
-            .no-print-toolbar {
-                display: none;
-            }
-
-            .document-wrapper {
-                margin: 0 auto;
-                border: 1px solid #000;
-                box-shadow: none;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
 
     <div class="no-print-toolbar">
-        <span class="toolbar-text">
-            Document Review: You can click any text below to edit before printing.
-        </span>
+      <span class="toolbar-text">Document Review: You can click any text below to edit before printing.</span>
 
-        <button class="btn-print" onclick="window.print()">
-            Print Receipt
-        </button>
+      <button class="btn-print" onclick="window.print()">Print Receipt</button>
 
-        <a href="{% url 'firearms:par_management' %}" class="btn-cancel">
-            Exit Preview
-        </a>
+      <a href="{% url 'firearms:par_management' %}" class="btn-cancel">Exit Preview</a>
     </div>
 
     <div class="document-wrapper">
+      <!-- HEADER -->
+      <div class="par-header">
+        <img src="{% static 'img/pnp_logo.png' %}" class="logo logo-left" alt="PNP Logo" />
 
-        <!-- HEADER -->
-        <div class="par-header">
-            <img src="{% static 'img/pnp_logo.png' %}" class="logo logo-left" alt="PNP Logo">
+        <img src="{% static 'img/forensic_logo.png' %}" class="logo logo-right" alt="Forensic Logo" />
 
-            <img src="{% static 'img/forensic_logo.png' %}" class="logo logo-right" alt="Forensic Logo">
+        <div class="header-text">PROPERTY ACKNOWLEDGEMENT RECEIPT</div>
 
-            <div class="header-text">
-                PROPERTY ACKNOWLEDGEMENT RECEIPT
-            </div>
+        <div class="par-title">( P A R )</div>
+      </div>
 
-            <div class="par-title">
-                ( P A R )
-            </div>
+      <!-- TOP INFO -->
+      <table class="top-info">
+        <tr>
+          <td style="width: 72%;">
+            Entity Name:
+            <u>PHILIPPINE NATIONAL POLICE</u>
+            <b>FORENSIC GROUP</b>
+          </td>
+
+          <td style="text-align: right;">
+            PAR NO:
+            <span contenteditable="true" class="underline">{{ par.par_number }}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            Fund Cluster:
+            <span contenteditable="true" class="underline">{{ par.fund_cluster|default:'' }}</span>
+          </td>
+
+          <td></td>
+        </tr>
+      </table>
+
+      <!-- INFO TABLE -->
+      <table class="info-table">
+        <thead>
+          <tr>
+            <th style="width: 8%;">Qty</th>
+            <th style="width: 10%;">Unit</th>
+            <th>Description</th>
+            <th style="width: 18%;">Property No.</th>
+            <th style="width: 18%;">Date Acquired</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr class="item-row">
+            <td contenteditable="true">1</td>
+
+            <td contenteditable="true">Unit</td>
+
+            <td class="description-cell" contenteditable="true">
+              <strong>{{ par.firearm.type }}</strong>
+              <br />
+
+              Serial No:
+              {{ par.firearm.faid_serial }}
+              <br />
+
+              FAID:
+              {{ par.firearm.faid_serial }}
+            </td>
+
+            <td contenteditable="true">{{ par.firearm.faid_serial|default:'-' }}</td>
+
+            <td contenteditable="true">{{ par.date_issued|date:'M d, Y' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- PURPOSE / REMARKS -->
+      <div class="section-box">
+        Purpose:
+        <u contenteditable="true">{{ par.purpose|default:'For official use of RFU 10' }}</u>
+        <br />
+
+        Ref: Supply Directive NR:
+        <span contenteditable="true">{{ par.reference_no|default:'N/A' }}</span>
+        <br />
+
+        REMARKS:
+        <b contenteditable="true">
+          {% if par.remarks %}
+            {{ par.remarks|upper }}
+          {% else %}
+            EXPIRES ON
+            {{ par.expiry_date|date:'F d, Y'|upper }}. RENEW AT SAO, FG OFFICE.
+          {% endif %}
+        </b>
+      </div>
+
+      <!-- SIGNATURES -->
+      <div class="signature-section">
+        <!-- RECEIVED -->
+        <div class="sig-col">
+          <div class="sig-title">Received by:</div>
+
+          <span class="sig-line" contenteditable="true">{{ par.issued_to|upper }}</span>
+
+          <span class="sig-label">Signature over Printed Name of End-User</span>
+
+          <span class="sig-subline" contenteditable="true">{{ par.designation|default:'' }}</span>
+
+          <span class="sig-label">Position / Designation</span>
+
+          <span class="sig-subline" contenteditable="true">{{ par.date_issued|date:'M d, Y' }}</span>
+
+          <span class="sig-label">Date Received</span>
         </div>
 
-        <!-- TOP INFO -->
-        <table class="top-info">
-            <tr>
-                <td style="width: 72%;">
-                    Entity Name:
-                    <u>PHILIPPINE NATIONAL POLICE</u>
-                    <b>FORENSIC GROUP</b>
-                </td>
+        <!-- ISSUED -->
+        <div class="sig-col">
+          <div class="sig-title">Issued by:</div>
 
-                <td style="text-align: right;">
-                    PAR NO:
-                    <span contenteditable="true" class="underline">
-                        {{ par.par_number }}
-                    </span>
-                </td>
-            </tr>
+          <span class="sig-line" contenteditable="true"></span>
 
-            <tr>
-                <td>
-                    Fund Cluster:
-                    <span contenteditable="true" class="underline">
-                        {{ par.fund_cluster|default:"" }}
-                    </span>
-                </td>
+          <span class="sig-label">Signature over Printed Name of Supply Officer</span>
 
-                <td></td>
-            </tr>
-        </table>
+          <span class="sig-subline" contenteditable="true">Logistics / Supply Office</span>
 
-        <!-- INFO TABLE -->
-        <table class="info-table">
-            <thead>
-                <tr>
-                    <th style="width: 8%;">Qty</th>
-                    <th style="width: 10%;">Unit</th>
-                    <th>Description</th>
-                    <th style="width: 18%;">Property No.</th>
-                    <th style="width: 18%;">Date Acquired</th>
-                </tr>
-            </thead>
+          <span class="sig-label">Office / Unit</span>
 
-            <tbody>
-                <tr class="item-row">
-                    <td contenteditable="true">1</td>
+          <span class="sig-subline" contenteditable="true">{{ par.date_issued|date:'M d, Y' }}</span>
 
-                    <td contenteditable="true">
-                        Unit
-                    </td>
-
-                    <td class="description-cell" contenteditable="true">
-                        <strong>
-                            {{ par.firearm.type }}
-                        </strong>
-                        <br>
-
-                        Serial No:
-                        {{ par.firearm.faid_serial }}
-                        <br>
-
-                        FAID:
-                        {{ par.firearm.faid_serial }}
-                    </td>
-
-                    <td contenteditable="true">
-                        {{ par.firearm.faid_serial|default:"-" }}
-                    </td>
-
-                    <td contenteditable="true">
-                        {{ par.date_issued|date:"M d, Y" }}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <!-- PURPOSE / REMARKS -->
-        <div class="section-box">
-            Purpose:
-            <u contenteditable="true">
-                {{ par.purpose|default:"For official use of RFU 10" }}
-            </u>
-            <br>
-
-            Ref: Supply Directive NR:
-            <span contenteditable="true">
-                {{ par.reference_no|default:"N/A" }}
-            </span>
-            <br>
-
-            REMARKS:
-            <b contenteditable="true">
-                {% if par.remarks %}
-                {{ par.remarks|upper }}
-                {% else %}
-                EXPIRES ON
-                {{ par.expiry_date|date:"F d, Y"|upper }}.
-                RENEW AT SAO, FG OFFICE.
-                {% endif %}
-            </b>
+          <span class="sig-label">Date Issued</span>
         </div>
+      </div>
 
-        <!-- SIGNATURES -->
-        <div class="signature-section">
-
-            <!-- RECEIVED -->
-            <div class="sig-col">
-
-                <div class="sig-title">
-                    Received by:
-                </div>
-
-                <span class="sig-line" contenteditable="true">
-                    {{ par.issued_to|upper }}
-                </span>
-
-                <span class="sig-label">
-                    Signature over Printed Name of End-User
-                </span>
-
-                <span class="sig-subline" contenteditable="true">
-                    {{ par.designation|default:"" }}
-                </span>
-
-                <span class="sig-label">
-                    Position / Designation
-                </span>
-
-                <span class="sig-subline" contenteditable="true">
-                    {{ par.date_issued|date:"M d, Y" }}
-                </span>
-
-                <span class="sig-label">
-                    Date Received
-                </span>
-
-            </div>
-
-            <!-- ISSUED -->
-            <div class="sig-col">
-
-                <div class="sig-title">
-                    Issued by:
-                </div>
-
-                <span class="sig-line" contenteditable="true"></span>
-
-                <span class="sig-label">
-                    Signature over Printed Name of Supply Officer
-                </span>
-
-                <span class="sig-subline" contenteditable="true">
-                    Logistics / Supply Office
-                </span>
-
-                <span class="sig-label">
-                    Office / Unit
-                </span>
-
-                <span class="sig-subline" contenteditable="true">
-                    {{ par.date_issued|date:"M d, Y" }}
-                </span>
-
-                <span class="sig-label">
-                    Date Issued
-                </span>
-
-            </div>
-
-        </div>
-
-        <!-- PRINT DATE -->
-        <div class="print-date">
-            <strong>System Print Date:</strong>
-            {{ par.date_issued|date:"M d, Y" }}
-        </div>
-
+      <!-- PRINT DATE -->
+      <div class="print-date">
+        <strong>System Print Date:</strong>
+        {{ par.date_issued|date:'M d, Y' }}
+      </div>
     </div>
 
-</body>
+    <script src="{% static 'firearms/js/firearms_main.js' %}"></script>
 
+  </body>
 </html>

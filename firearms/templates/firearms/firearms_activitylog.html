@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="{% static 'firearms/js/firearms_main.js' %}"></script>
 
   <style>
     body {
@@ -87,22 +88,32 @@
       margin: 0;
     }
 
-    .log-card-create {
-      border-left: 4px solid #10b981 !important;
+    .log-card-delete {
+      border-left: 4px solid #ef4444 !important;
+      border-radius: 3px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
+      margin-bottom: 16px !important;
+      background: #ffffff;
     }
 
     .log-card-update {
       border-left: 4px solid #f59e0b !important;
+      border-radius: 3px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
+      margin-bottom: 16px !important;
+      background: #ffffff;
     }
 
-    .log-card-delete {
-      border-left: 4px solid #ef4444 !important;
+    .log-card-create {
+      border-left: 4px solid #10b981 !important;
+      border-radius: 3px !important;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
+      margin-bottom: 16px !important;
+      background: #ffffff;
     }
 
-    .log-card-delete,
-    .log-card-update,
-    .log-card-create,
     .log-card-moved {
+      border-left: 4px solid #2563eb !important;
       border-radius: 3px !important;
       box-shadow: 0 1px 4px rgba(0, 0, 0, .12) !important;
       margin-bottom: 16px !important;
@@ -255,14 +266,30 @@
       }
     }
 
-    function getActionIcon(action) {
-      if (!action) return "fa-history";
+    function getActionConfig(action) {
+      const defaults = { 
+        icon: "fa-history", 
+        cardClass: "log-card-moved" 
+      };
+      
+      if (!action) return defaults;
+    
       const lower = action.toLowerCase();
-      if (lower.includes("delete")) return "fa-trash-alt";
-      if (lower.includes("create")) return "fa-plus-circle";
-      if (lower.includes("update")) return "fa-edit";
-      if (lower.includes("move"))   return "fa-undo";
-      return "fa-history";
+    
+      if (lower.includes("delete")) {
+        return { icon: "fa-trash-alt", cardClass: "log-card-delete" };
+      }
+      if (lower.includes("create")) {
+        return { icon: "fa-plus-circle", cardClass: "log-card-create" };
+      }
+      if (lower.includes("update")) {
+        return { icon: "fa-edit", cardClass: "log-card-update" };
+      }
+      if (lower.includes("move")) {
+        return { icon: "fa-undo", cardClass: "log-card-moved" };
+      }
+    
+      return defaults;
     }
 
     async function loadActivityLogs(days = 7) {
@@ -285,31 +312,52 @@
           return;
         }
 
-        list.innerHTML = data.map(log => `
-          <div class="card shadow-sm log-card-delete">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start">
-                <div>
-                  <div class="d-flex align-items-center mb-2">
-                    <span class="badge asset-id-badge mr-2">ID: ${log.firearm_id ?? log.id ?? "-"}</span>
-                    <span class="badge badge-pill badge-secondary">firearms</span>
-                    <span class="action-label">
-                      <i class="fas ${getActionIcon(log.action)} mr-1"></i>
-                      ${log.action || "Activity"}
+        list.innerHTML = data.map(log => {
+          // 1. Get the custom icon and CSS class for the current action text
+          const actionConfig = getActionConfig(log.action);
+        
+          // 2. Inject them into the HTML template string
+          return `
+            <div class="card shadow-sm ${actionConfig.cardClass}">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+        
+                  <div>
+                    <div class="d-flex align-items-center mb-2">
+                      <span class="badge asset-id-badge mr-2">
+                        ID: ${log.firearm_id ?? log.id ?? "-"}
+                      </span>
+        
+                      <span class="badge badge-pill badge-secondary">
+                        firearms
+                      </span>
+        
+                      <span class="action-label">
+                        <i class="fas ${actionConfig.icon} mr-1"></i>
+                        ${log.action || "Activity"}
+                      </span>
+                    </div>
+        
+                    <div class="log-title">
+                      ${log.action || "Activity Recorded"}
+                    </div>
+        
+                    <p class="log-stock">
+                      ${log.details || "No details available"}
+                    </p>
+                  </div>
+        
+                  <div class="text-right">
+                    <span class="log-time text-nowrap">
+                      <i class="far fa-clock"></i> ${formatDate(log.created_at)}
                     </span>
                   </div>
-                  <div class="log-title">${log.action || "Activity Recorded"}</div>
-                  <p class="log-stock">${log.details || "No details available"}</p>
-                </div>
-                <div class="text-right">
-                  <span class="log-time text-nowrap">
-                    <i class="far fa-clock"></i> ${formatDate(log.created_at)}
-                  </span>
+        
                 </div>
               </div>
             </div>
-          </div>
-        `).join("");
+          `;
+        }).join("");
 
       } catch (err) {
         list.innerHTML = `<div class="text-center py-5">
