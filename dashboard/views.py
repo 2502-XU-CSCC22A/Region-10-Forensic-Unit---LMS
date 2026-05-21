@@ -128,7 +128,6 @@ def dashboard_view(request):
 @login_required
 @require_POST
 def mark_all_read(request):
-    """AJAX endpoint — marks all current activity items as read in the session."""
     from django.contrib.contenttypes.models import ContentType
 
     asset_ct = ContentType.objects.get_for_model(Asset)

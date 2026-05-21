@@ -230,8 +230,8 @@ function renderTable() {
 
   tbody.innerHTML = page.length
     ? page
-        .map(
-          (f) => `
+      .map(
+        (f) => `
         <tr>
           <td><strong>${f.name || "N/A"}</strong></td>
           <td>${f.subunit || "N/A"}</td>
@@ -242,14 +242,19 @@ function renderTable() {
           <td>${f.makeModel}</td>
           <td>${statusBadge(f.status)}</td>
           <td>${validatedBadge(f.validated)}</td>
+          
           <td>
-            <button class="action-btn" onclick="openActionModal(${f.id})">Edit ▸</button>
-            <button class="action-btn" style="background:#ef4444;margin-left:4px"
-                    onclick="prepareRemoval(${f.id})">BER</button>
+            <button class="action-btn" onclick="openActionModal('${f.id}')" ${(currentUserRole === "Admin" || currentUserRole === "Logistics Officer") ? "" : "disabled"}> 
+              <i class="fas fa-pen"></i> Edit
+            </button>
+  
+            <button class="action-btn" style="background:#ef4444; margin-left:4px"onclick="prepareRemoval('${f.id}')"${(currentUserRole === "Admin" || currentUserRole === "Logistics Officer") ? "" : "disabled"}>
+             <i class="ph ph-trash"></i> BER
+            </button>
           </td>
         </tr>`,
-        )
-        .join("")
+      )
+      .join("")
     : `<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--muted)">No records found.</td></tr>`;
 
   document.getElementById("rowInfo").textContent =

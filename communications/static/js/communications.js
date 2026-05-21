@@ -186,6 +186,11 @@ async function fetchData() {
 
 function renderTable() {
   const tbody = document.getElementById("tableBody");
+  
+  // Read from the clean global variable we set in the HTML template
+  const role = window.currentUserRole || ""; 
+  const isAuthorized = (role === "Admin" || role === "Logistics Officer");
+  const disableAttr = isAuthorized ? "" : "disabled";
 
   const start = (currentPage - 1) * pageSize;
   const pageItems = filtered.slice(start, start + pageSize);
@@ -193,47 +198,30 @@ function renderTable() {
   if (pageItems.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="7" style="text-align:center;">
-          No records found
-        </td>
+        <td colspan="7" style="text-align:center;">No records found</td>
       </tr>
     `;
-
     document.getElementById("rowInfo").textContent = "No records";
     return;
   }
 
   tbody.innerHTML = pageItems
-    .map(
-      (c) => `
+    .map((c) => `
     <tr>
-      <td>${c.type}</td>
-      <td>${c.serial}</td>
-      <td>${c.parNo}</td>
-      <td>${c.radioId}</td>
+      <td>${c.type || "N/A"}</td>
+      <td>${c.serial || "N/A"}</td>
+      <td>${c.parNo || "N/A"}</td>
+      <td>${c.radioId || "N/A"}</td>
       <td>${statusBadge(c.status)}</td>
       <td>${remarksBadge(c.remarks)}</td>
       <td>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <button
-            class="action-btn"
-            onclick="openActionModal('${c.id}')"
-          >
-            Edit ▸
-          </button>
-
-          <button
-            class="delete-btn"
-            onclick="prepareRemoval('${c.id}')"
-          >
-            BER
-          </button>
+        <div style="display:flex; gap:8px; justify-content:center;">
+          <button type="button" class="action-btn" onclick="openActionModal('${c.id}')" ${disableAttr}><i class="fas fa-pen"></i> <span>Edit</span></button>
+          <button type="button" class="delete-btn" onclick="prepareRemoval('${c.id}')" ${disableAttr}><i class="ph ph-trash"></i> <span>BER</span></button>
         </div>
       </td>
     </tr>
-  `,
-    )
-    .join("");
+  `).join("");
 
   document.getElementById("rowInfo").textContent =
     `Showing ${start + 1}-${Math.min(start + pageSize, filtered.length)} of ${filtered.length}`;
@@ -358,8 +346,8 @@ function selectField(label, id, options, selected = "") {
         "
       >
         ${options
-          .map(
-            (option) => `
+      .map(
+        (option) => `
           <option
             value="${option}"
             ${option === selected ? "selected" : ""}
@@ -367,8 +355,8 @@ function selectField(label, id, options, selected = "") {
             ${option}
           </option>
         `,
-          )
-          .join("")}
+      )
+      .join("")}
       </select>
     </div>
   `;

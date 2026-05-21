@@ -122,9 +122,9 @@
           <h3>Move to BER & Disposal</h3>
           <form id="confirmRemovalForm">
             <p style="margin:16px 0;color:var(--muted);font-size:14px;">Are you sure you want to move this firearm to BER & Disposal? This action cannot be undone.</p>
-            <div class="modal-actions">
-              <button type="button" class="btn btn-outline" onclick="closeConfirmationModal()">Cancel</button>
-              <button type="submit" class="btn btn-primary" style="background:#ef4444;border-color:#ef4444">Confirm</button>
+            <div class="filter-modal-footer">
+              <button type="button" class="filter-btn-apply" onclick="closeConfirmationModal()">Cancel</button>
+              <button type="submit" class="filter-btn-reset" >Confirm</button>
             </div>
           </form>
         </div>
@@ -196,8 +196,10 @@
             </select>
 
             <a href="{% url 'firearms:par_management' %}" class="btn btn-outline" style="font-size:13px;padding:7px 16px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">PAR Records</a>
-
-            <button class="btn btn-primary" onclick="openAddModal()">Add Record</button>
+            
+            {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
+              <button class="btn btn-primary" onclick="openAddModal()">Add Record</button>
+            {% endif %}
 
             <a href="{% url 'firearms:activity_logs' %}" class="btn btn-outline" style="font-size:13px;padding:7px 16px;text-decoration:none;display:inline-flex;align-items:center;gap:6px;">Activity Logs</a>
 
@@ -217,7 +219,7 @@
                   <th onclick="sortTable('makeModel')">ITEM DESCRIPTION &#x21C5;</th>
                   <th onclick="sortTable('status')">STATUS &#x21C5;</th>
                   <th onclick="sortTable('validated')">REMARKS &#x21C5;</th>
-                  <th>ACTION</th>
+                  <th>ACTION </th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -239,7 +241,7 @@
           <h3 id="modalTitle">Firearm Details</h3>
           <div id="modalBody"></div>
           <div class="modal-actions">
-            <button type="button" class="btn btn-outline" onclick="closeModal()">Close</button>
+            <button type="button" class="filter-btn-apply" onclick="closeModal()">Close</button>
             <button type="button" class="btn btn-primary" id="modalSaveBtn" onclick="saveRecord()">Save to Database</button>
           </div>
         </div>
@@ -259,6 +261,8 @@
 
     <script>
   const supabaseData = JSON.parse(document.getElementById('supabase-data').textContent);
+  const currentUserRole = "{{ current_user_role }}";
+  console.log("Current User Role in JS is:", JSON.stringify(currentUserRole));
 </script>
 
     <script src="{% static 'firearms/js/firearms_main.js' %}"></script>

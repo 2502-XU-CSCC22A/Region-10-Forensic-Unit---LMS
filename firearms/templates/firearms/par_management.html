@@ -204,14 +204,14 @@
           <p>Dashboard</p>
 
           <li class="{% if active_page == 'home' %}active{% endif %}">
-            <a href="#">
+            <a href="{% url 'dashboard:dashboard_view'%}">
               <i class="fas fa-home"></i>
               <span class="sidebar-item-label">Home</span>
             </a>
           </li>
 
           <li class="{% if active_page == 'mobility' %}active{% endif %}">
-            <a href="#">
+            <a href="{% url 'mobility:vehicle_management' %}">
               <span>
                 <i class="fas fa-car"></i>
                 <span class="sidebar-item-label">Mobility</span>
@@ -231,7 +231,7 @@
           </li>
 
           <li class="{% if active_page == 'communications' %}active{% endif %}">
-            <a href="#">
+            <a href="{% url 'communications:communications_list' %}">
               <span>
                 <i class="fas fa-broadcast-tower"></i>
                 <span class="sidebar-item-label">Communications</span>
@@ -241,7 +241,7 @@
           </li>
 
           <li class="{% if active_page == 'investigative' %}active{% endif %}">
-            <a href="#">
+            <a href="{% url 'InvestigativeEquipment:investigative_view'%}">
               <i class="fas fa-microscope"></i>
               <span class="sidebar-item-label">Investigative Equipment</span>
               <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_inves|default:'0' }}</span>
@@ -249,7 +249,7 @@
           </li>
 
           <li class="{% if active_page == 'disposal' %}active{% endif %}">
-            <a href="#">
+            <a href="{% url 'disposal:disposal_list' %}">
               <i class="fas fa-recycle"></i>
               <span class="sidebar-item-label">BER & Disposal</span>
               <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_ber|default:'0' }}</span>
@@ -274,7 +274,7 @@
           </li>
 
           <li>
-            <a href="#">
+            <a href="{% url 'user_management:user_list' %}">
               <i class="fas fa-user-shield mr-2"></i>
               <span class="sidebar-item-label">User Management</span>
             </a>
@@ -283,7 +283,7 @@
           <div class="UM">
             <p>System Action</p>
             <li>
-              <a href="#"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label">Logout</span></a>
+              <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label">Logout</span></a>
             </li>
           </div>
         </ul>
@@ -339,7 +339,11 @@
                   </div>
 
                   <div class="col-12 mt-4 text-right">
-                    <button type="submit" class="btn-save shadow-sm"><i class="fas fa-check-circle mr-2"></i> Save to Registry</button>
+                    <button type="submit" 
+                            class="btn-save shadow-sm btn-action-submit" 
+                            {% if current_user_role != "Admin" and current_user_role != "Logistics Officer" %}disabled{% endif %}>
+                      <i class="fas fa-check-circle mr-2"></i> Save to Registry
+                    </button>
                   </div>
                 </div>
               </form>
@@ -377,8 +381,10 @@
                       <td class="text-right pr-4">
                         <div class="d-flex justify-content-end" style="gap: 8px;">
                           <a href="{% url 'firearms:print_par' par.pk %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
+                          {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
                           <a href="{% url 'firearms:edit_par' par.pk %}" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
                           <button type="button" class="btn-icon btn-delete" title="Delete" onclick="openDeleteModal({{ par.pk }})"><i class="fas fa-trash-alt"></i></button>
+                          {% endif %}
                         </div>
                       </td>
                     </tr>

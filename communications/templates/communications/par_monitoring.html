@@ -244,7 +244,14 @@
                   </div>
 
                   <div class="col-12 mt-2 text-right">
-                    <button type="submit" class="btn-save shadow-sm"><i class="fas fa-check-circle mr-2"></i> Save to Registry</button>
+                    <button type="submit" 
+                            class="btn-save shadow-sm btn-action-submit" 
+                            {% if current_user_role != "Admin" and current_user_role != "Logistics Officer" %}
+                              disabled 
+                              style="background: #cbd5e1 !important; background-color: #cbd5e1 !important; color: #64748b !important; border: 1px solid #cbd5e1 !important; box-shadow: none !important; cursor: not-allowed !important; pointer-events: none !important;"
+                            {% endif %}>
+                      <i class="fas fa-check-circle mr-2"></i> Save to Registry
+                    </button>
                   </div>
                 </div>
               </form>
@@ -331,12 +338,14 @@
           gap:8px;
         ">
                           <a href="{% url 'communications:print_par' par.id %}" class="btn-icon btn-print" title="Print"><i class="fas fa-print"></i></a>
-
+                          
+                          {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
                           <a href="{% url 'communications:edit_par' par.id %}" class="btn-icon btn-edit" title="Edit"><i class="fas fa-edit"></i></a>
 
                     <a href="#" class="btn-icon btn-delete" title="Delete"
                       onclick="preparePARRemoval('{% url 'communications:delete_par' par.id %}'); return false;"><i
                         class="fas fa-trash-alt"></i></a>
+                        {% endif %}
                   </td>
                 </tr>
                 {% empty %}

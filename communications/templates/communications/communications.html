@@ -13,6 +13,8 @@
 
     <link rel="stylesheet" href="{% static 'css/sidebar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/communications.css' %}" />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
   </head>
 
 <body>
@@ -107,7 +109,9 @@
               <option value="SERVICEABLE">Serviceable</option>
               <option value="UNSERVICEABLE">Unserviceable</option>
             </select>
+            {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
             <button id="addRecordBtn" class="btn btn-primary">Add Record</button>
+            {% endif %}
             <a href="{% url 'communications:par_monitoring' %}" class="btn btn-outline">PAR Records</a>
             <a href="{% url 'communications:ics_monitoring' %}" class="btn btn-outline">ICS Records</a>
             <a href="{% url 'communications:activity_logs' %}" class="btn btn-outline">Activity Log</a>
@@ -124,7 +128,7 @@
                   <th>RADIO ID &#x21C5;</th>
                   <th>STATUS &#x21C5;</th>
                   <th>REMARKS &#x21C5;</th>
-                  <th>ACTION &#x21C5;</th>
+                  <th class="text-center"> ACTION &#x21C5;</th>
                 </tr>
               </thead>
               <tbody id="tableBody"></tbody>
@@ -152,6 +156,11 @@
     </div>
     {% include 'communications/confirmation_modal.html' %}
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script> 
+      const currentUserRole = "{{ current_user_role }}";
+      console.log("Current User Role in JS is:", JSON.stringify(currentUserRole));
+      window.currentUserRole = "{{ current_user_role|escapejs }}".trim();
+    </script>
     <script src="{% static 'js/communications.js' %}"></script>
   </body>
 </html>

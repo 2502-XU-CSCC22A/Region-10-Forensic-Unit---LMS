@@ -55,7 +55,7 @@ def update_user_role(request, user_id):
         data = json.loads(request.body)
         new_role = data.get('role')
 
-        if new_role not in ['User', 'Admin']:
+        if new_role not in ['Supervisor', 'Admin']:
             return JsonResponse({'success': False, 'error': 'Invalid role'}, status=400)
 
         target_user = User.objects.get(id=user_id)

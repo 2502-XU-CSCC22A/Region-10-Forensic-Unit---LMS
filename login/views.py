@@ -47,10 +47,7 @@ def login_view(request):
 
 
 def verify_token_view(request, token):
-    """
-    Step 2 – Validate and consume the one-time token in the URL.
-    Visiting this URL destroys the token; it cannot be reused.
-    """
+    
     user = LoginToken.consume(token)
 
     if user is None:
@@ -64,9 +61,9 @@ def verify_token_view(request, token):
     auth_login(request, user)
 
     if remember:
-        request.session.set_expiry(1_209_600)   # 2 weeks
+        request.session.set_expiry(1_209_600)   
     else:
-        request.session.set_expiry(0)            # expires on browser close
+        request.session.set_expiry(0)          
 
     return redirect('dashboard:dashboard_view')
 

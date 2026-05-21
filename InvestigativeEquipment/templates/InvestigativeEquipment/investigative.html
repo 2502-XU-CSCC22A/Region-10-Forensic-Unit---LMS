@@ -109,9 +109,11 @@
               <i class="ph ph-funnel"></i> Filter
             </button>
 
+            {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
             <button type="button" class="btn-primary" onclick="toggleModal('addModal')">
               + New Asset
             </button>
+            {% endif %}
           </div>
         </div>
 
@@ -147,17 +149,18 @@
                 </span>
               </td>
               <td>{{ item.asset_id.quantity }}</td>
-              <td>
-                <div style="display:flex;gap:8px;justify-content:center;">
+              <td class="text-center" style="vertical-align: middle;">
+                <div class="action-btn-container">
                   <button type="button"
+                    class="btn-action btn-edit"
                     onclick="openUpdateModal('{{ item.asset_id.pk }}', '{{ item.asset_id.model|escapejs }}', '{{ item.asset_id.property_no|escapejs }}', '{{ item.asset_id.category.category_name|escapejs }}', '{{ item.asset_id.quantity }}')"
-                    style="background-color:#2563eb !important;color:white !important;border:none !important;padding:6px 14px !important;border-radius:8px !important;font-weight:600 !important;cursor:pointer !important;display:flex !important;align-items:center !important;gap:5px !important;transition:0.2s;">
-                    <i class="ph ph-pencil-simple" style="font-size:16px;"></i> Edit
-                  </button>
-
-                  <button type="button" onclick="openConfirmationModal('{{ item.asset_id.id }}')"
-                    style="background-color:#ef4444 !important;color:white !important;border:none !important;padding:6px 14px !important;border-radius:8px !important;font-weight:600 !important;cursor:pointer !important;display:flex !important;align-items:center !important;gap:5px !important;transition:0.2s;">
-                    <i class="ph ph-trash" style="font-size:16px;"></i> BER
+                    {% if current_user_role != "Admin" and current_user_role != "Logistics Officer" %}disabled{% endif %}>
+                    <i class="ph ph-pencil-simple"></i> Edit
+                  </button><button type="button" 
+                    class="btn-action btn-ber"
+                    onclick="openConfirmationModal('{{ item.asset_id.id }}')"
+                    {% if current_user_role != "Admin" and current_user_role != "Logistics Officer" %}disabled{% endif %}>
+                    <i class="ph ph-trash"></i> BER
                   </button>
                 </div>
               </td>

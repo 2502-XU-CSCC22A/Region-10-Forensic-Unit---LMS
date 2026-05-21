@@ -79,7 +79,7 @@
                       data-original-role="{{ u.userprofile.role|default:'User' }}"
                       aria-label="Role for {{ u.get_full_name|default:u.username }}"
                     >
-                    <option value="User" {% if u.userprofile.role == "User" or not u.userprofile.role %}selected{% endif %}>User</option>
+                    <option value="Supervisor" {% if u.userprofile.role == "Supervisor" or not u.userprofile.role %}selected{% endif %}>Supervisor</option>
                     <option value="Admin" {% if u.userprofile.role == "Admin" %}selected{% endif %}>Admin</option>
                   </select>
                     {% else %} {{ u.userprofile.role|default:"—" }} {% endif %}
@@ -115,7 +115,7 @@
                         '{{ u.email|escapejs }}'
                       )"
                     >
-                      <i aria-hidden="true"></i> Edit
+                      <i aria-hidden="true"></i><i class="fas fa-pen"></i> Edit
                     </button>
                   </td>
                   {% endif %}

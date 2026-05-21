@@ -46,6 +46,14 @@ body {
     padding: 30px;
 }
 
+.action-btn:disabled {
+    opacity: 0.5;          
+    cursor: not-allowed;     
+    pointer-events: none;   
+    background-color: #cbd5e1 !important; 
+    color: #64748b !important;
+  }
+
 /* TABLE */
 .table-container {
     background: #ffffff;
