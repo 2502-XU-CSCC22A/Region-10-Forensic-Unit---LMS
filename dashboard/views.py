@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_POST
 
-from config.models import Asset, AssetStatus, Category
+from config.models import Asset
 from disposal.models import DisposalItem
 from mobility.models import Vehicle
 from firearms.models import Firearm
@@ -16,7 +16,6 @@ User = get_user_model()
 
 
 def _role_label(user):
-    """Read the role varchar column directly from auth_user."""
     return getattr(user, "role", None) or (
         "Admin" if (user.is_superuser or user.is_staff) else "User"
     )
@@ -24,90 +23,64 @@ def _role_label(user):
 
 @login_required
 def dashboard_view(request):
-    def count_category(name):
-        return Asset.objects.filter(category__category_name__iexact=name).count()
-
-    def count_status(name):
-        return Asset.objects.filter(status__status_name__iexact=name).count()
-
     total_asset = Asset.objects.exclude(status__in=[4, 5])
     all_v = Vehicle.objects.all()
-    visible_v = all_v.exclude(status__in=['BER', 'Disposed'])
+    visible_v = all_v.exclude(status__in=["BER", "Disposed"])
     comms_all = Communication.objects.exclude(status_id__in=[4, 5]).count()
     firearms_all = Firearm.objects.count()
     inves_all = InvestigativeDetails.objects.exclude(asset_id__status_id__in=[4, 5])
-    
     total_ber = DisposalItem.objects.filter(asset_ptr__status_id=4).count()
-    current_user_role = request.user.userprofile.role
 
-    from django.contrib.contenttypes.models import ContentType
-
-    asset_ct = ContentType.objects.get_for_model(Asset)
+    try:
+        current_user_role = request.user.userprofile.role
+    except Exception:
+        current_user_role = _role_label(request.user)
 
     log_entries = (
-        LogEntry.objects.filter(content_type=asset_ct)
-        .select_related("user")
-        .order_by("-action_time")
+        LogEntry.objects.select_related("user", "content_type")
+        .order_by("-action_time")[:20]
     )
 
     ACTION_FLAG_MAP = {
-        ADDITION: "added asset",
-        CHANGE: "updated asset",
-        DELETION: "removed asset",
+        ADDITION: "added record",
+        CHANGE: "updated record",
+        DELETION: "removed record",
     }
 
     read_ids = set(request.session.get("read_activity_ids", []))
-
     activities = []
 
-    if log_entries.exists():
-        for entry in log_entries:
-            u = entry.user
-            role = _role_label(u)
-            name = u.get_full_name() or u.username
-            actor = f"{name} ({role})"
+    for entry in log_entries:
+        u = entry.user
+        name = u.get_full_name() or u.username
+        role = _role_label(u)
+        actor = f"{name} ({role})"
 
-            action_text = ACTION_FLAG_MAP.get(entry.action_flag, "modified asset")
-            initials = (
-                "".join(p[0].upper() for p in name.split()[:2]) or u.username[0].upper()
-            )
+        change_message = str(entry.change_message or "")
 
-            activities.append(
-                {
-                    "id": entry.id,
-                    "initials": initials,
-                    "actor": actor,
-                    "action": action_text,
-                    "item": entry.object_repr,
-                    "timestamp": entry.action_time.strftime("%b %d, %Y %I:%M %p"),
-                    "unread": entry.id not in read_ids,
-                }
-            )
-    else:
-        recent_assets = Asset.objects.select_related("status", "category").order_by(
-            "-id"
-        )
-        current_user = request.user
-        current_role = _role_label(current_user)
-        current_name = current_user.get_full_name() or current_user.username
-        current_actor = f"{current_name} ({current_role})"
-        current_initials = (
-            "".join(p[0].upper() for p in current_name.split()[:2])
-            or current_user.username[0].upper()
+        if "logged in" in change_message.lower():
+            action_text = change_message
+            item_text = ""
+        else:
+            action_text = ACTION_FLAG_MAP.get(entry.action_flag, "modified record")
+            item_text = entry.object_repr
+
+        initials = (
+            "".join(p[0].upper() for p in name.split()[:2])
+            or u.username[0].upper()
         )
 
-        for asset in recent_assets:
-            activities.append(
-                {
-                    "id": asset.id,
-                    "initials": current_initials,
-                    "actor": current_actor,
-                    "action": "recorded asset",
-                    "item": f"{asset.category.category_name} – {asset.property_no}",
-                    "timestamp": asset.date_acquired.strftime("%b %d, %Y") if asset.date_acquired else "N/A",
-                    "unread": asset.id not in read_ids,
-                }
-            )
+        activities.append(
+            {
+                "id": entry.id,
+                "initials": initials,
+                "actor": actor,
+                "action": action_text,
+                "item": item_text,
+                "timestamp": entry.action_time.strftime("%b %d, %Y"),
+                "unread": entry.id not in read_ids,
+            }
+        )
 
     unread_count = sum(1 for a in activities if a["unread"])
 
@@ -122,25 +95,21 @@ def dashboard_view(request):
         "current_user_role": current_user_role,
         "notification_count": unread_count,
     }
+
     return render(request, "dashboard/dashboard.html", context)
 
 
 @login_required
 @require_POST
 def mark_all_read(request):
-    from django.contrib.contenttypes.models import ContentType
-
-    asset_ct = ContentType.objects.get_for_model(Asset)
     recent_ids = list(
-        LogEntry.objects.filter(content_type=asset_ct)
-        .order_by("-action_time")
-        .values_list("id", flat=True)
+        LogEntry.objects.order_by("-action_time").values_list("id", flat=True)[:20]
     )
-    if not recent_ids:
-        recent_ids = list(Asset.objects.order_by("-id").values_list("id", flat=True))
 
     existing = set(request.session.get("read_activity_ids", []))
     existing.update(recent_ids)
+
     request.session["read_activity_ids"] = list(existing)
     request.session.modified = True
+
     return JsonResponse({"status": "ok", "read_count": len(recent_ids)})

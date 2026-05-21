@@ -3,6 +3,9 @@ from django.contrib.auth import authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
+from django.contrib.admin.models import LogEntry, ADDITION
+from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 from .models import LoginToken
 
@@ -59,6 +62,17 @@ def verify_token_view(request, token):
 
     remember = request.session.pop('_pending_remember', False)
     auth_login(request, user)
+    
+    user_ct = ContentType.objects.get(app_label="auth", model="user")
+
+    LogEntry.objects.create(
+        user_id=user.id,
+        content_type=user_ct,
+        object_id=str(user.id),
+        object_repr=user.get_full_name() or user.username,
+        action_flag=ADDITION,
+        change_message=f"logged in at {timezone.localtime().strftime('%I:%M %p')}"
+    )
 
     if remember:
         request.session.set_expiry(1_209_600)   
