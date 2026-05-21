@@ -18,7 +18,7 @@ User = get_user_model()
 def _role_label(user):
     try:
         return user.userprofile.role
-    except:
+    except Exception:
         return "User"
 
 
@@ -37,9 +37,10 @@ def dashboard_view(request):
     except Exception:
         current_user_role = _role_label(request.user)
 
-    log_entries = LogEntry.objects.select_related("user", "content_type").order_by(
-        "-action_time"
-    )[:20]
+    log_entries = (
+        LogEntry.objects.select_related("user", "content_type")
+        .order_by("-action_time")[:20]
+    )
 
     ACTION_FLAG_MAP = {
         ADDITION: "added record",
@@ -61,12 +62,15 @@ def dashboard_view(request):
         if "logged in" in change_message.lower():
             action_text = change_message
             item_text = ""
+            is_login = True
         else:
             action_text = ACTION_FLAG_MAP.get(entry.action_flag, "modified record")
             item_text = entry.object_repr
+            is_login = False
 
         initials = (
-            "".join(p[0].upper() for p in name.split()[:2]) or u.username[0].upper()
+            "".join(p[0].upper() for p in name.split()[:2])
+            or u.username[0].upper()
         )
 
         activities.append(
@@ -78,6 +82,7 @@ def dashboard_view(request):
                 "item": item_text,
                 "timestamp": entry.action_time.strftime("%b %d, %Y"),
                 "unread": entry.id not in read_ids,
+                "is_login": is_login,
             }
         )
 
