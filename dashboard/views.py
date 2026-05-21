@@ -16,9 +16,10 @@ User = get_user_model()
 
 
 def _role_label(user):
-    return getattr(user, "role", None) or (
-        "Admin" if (user.is_superuser or user.is_staff) else "User"
-    )
+    try:
+        return user.userprofile.role
+    except:
+        return "User"
 
 
 @login_required
@@ -36,10 +37,9 @@ def dashboard_view(request):
     except Exception:
         current_user_role = _role_label(request.user)
 
-    log_entries = (
-        LogEntry.objects.select_related("user", "content_type")
-        .order_by("-action_time")[:20]
-    )
+    log_entries = LogEntry.objects.select_related("user", "content_type").order_by(
+        "-action_time"
+    )[:20]
 
     ACTION_FLAG_MAP = {
         ADDITION: "added record",
@@ -66,8 +66,7 @@ def dashboard_view(request):
             item_text = entry.object_repr
 
         initials = (
-            "".join(p[0].upper() for p in name.split()[:2])
-            or u.username[0].upper()
+            "".join(p[0].upper() for p in name.split()[:2]) or u.username[0].upper()
         )
 
         activities.append(
