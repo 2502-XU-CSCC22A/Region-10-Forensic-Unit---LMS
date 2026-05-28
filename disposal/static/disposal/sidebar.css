@@ -82,3 +82,13 @@ body {
   font-family: 'Inter', sans-serif;
   margin: 0;
 }
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  white-space: nowrap;
+  font-weight: 700;
+  letter-spacing: .3px;
+}

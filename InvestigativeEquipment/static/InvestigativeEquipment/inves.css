@@ -151,7 +151,8 @@ header,
 .action-btn-container {
   display: inline-flex;
   gap: 8px;
-  justify-content: center; /* 🎯 Pulls the interior buttons into the center of the wrapper */
+  justify-content: center;
+  /* 🎯 Pulls the interior buttons into the center of the wrapper */
   align-items: center;
   width: max-content;
 }
@@ -177,6 +178,7 @@ header,
 .btn-edit {
   background-color: #2563eb;
 }
+
 .btn-edit:hover {
   background-color: #1d4ed8;
 }
@@ -184,16 +186,27 @@ header,
 .btn-ber {
   background-color: #ef4444;
 }
+
 .btn-ber:hover {
   background-color: #dc2626;
 }
 
 .btn-action:disabled {
   opacity: 0.5;
-  background-color: #cbd5e1; 
+  background-color: #cbd5e1;
   color: #64748b;
   cursor: not-allowed;
-  pointer-events: none; 
+  pointer-events: none;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11px;
+  white-space: nowrap;
+  font-weight: 700;
+  letter-spacing: .3px;
 }
 
 /* SIDEBAR */
@@ -263,7 +276,7 @@ header,
   transition: 0.2s;
 }
 
-#sidebar ul li.active > a {
+#sidebar ul li.active>a {
   color: #fff !important;
 
   background: var(--figma-active);
@@ -300,15 +313,11 @@ header,
 #sidebar .badge {
   min-width: 22px;
   height: 18px;
-
-  padding: 2px 8px;
-
-  border-radius: 999px;
-
+  padding: 3px 8px;
+  border-radius: 99px;
   font-size: 11px;
   font-weight: 700;
-
-  display: inline-flex;
+  display: inline-block;
   align-items: center;
   justify-content: center;
 }
@@ -618,38 +627,32 @@ tbody tr:hover {
 
 .btn-primary {
   background: var(--primary-blue);
-
   color: white;
-
   border: none;
-
   padding: 10px 18px;
-
   border-radius: 8px;
-
   cursor: pointer;
-
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
   font-weight: 600;
+  height: 37px;
 }
 
 .btn-secondary {
   background: white;
-
   color: var(--text-dark);
-
   border: 1.5px solid #dcdcdc;
-
   padding: 10px 18px;
-
   border-radius: 8px;
-
   cursor: pointer;
-
   display: flex;
   align-items: center;
   gap: 8px;
-
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
+  height: 37px;
 }
 
 /* MODALS */

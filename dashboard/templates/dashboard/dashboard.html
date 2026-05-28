@@ -122,7 +122,7 @@
           <li>
             <a href="{% url 'disposal:disposal_list' %}">
               <i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span>
-              <span class="badge badge-light badge-pill">{{ total_ber|default:'0' }}</span>
+              <span class="badge badge-primary badge-pill">{{ total_ber|default:'0' }}</span>
             </a>
           </li>
 
@@ -229,38 +229,34 @@
         </div> <!-- /stat-cards -->
 
         <div class="two-col">
-          <!-- Assets widget -->
           <div class="widget" id="widget-assets">
             <div class="widget-header">
-              <span class="widget-title">Assets</span>
+              <span class="widget-title">Assets Status Changes</span>
+              <span class="notif-badge" id="notif-badge">{{ notification_count }}</span>
+              <button class="read-btn" id="read-all-btn">Read all</button>
               <div class="widget-header-actions">
                 <button class="icon-btn js-refresh" data-target="assets" title="Refresh"><i class="fas fa-sync-alt"></i></button>
                 <button class="icon-btn js-export" data-target="assets" title="Export"><i class="fas fa-download"></i></button>
               </div>
             </div>
             <div class="activity-list" id="list-assets">
-              {% for act in activities %}
-                {% if not act.is_login %}
-                  <div class="activity-item">
-                    <div class="av-sm">{{ act.initials }}</div>
-                    <div class="activity-body">
-                      <div class="activity-text">
-                        <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %}
-                          <strong>{{ act.item }}</strong>
-                        {% endif %}
-                      </div>
-                      <div class="activity-meta">{{ act.timestamp }}</div>
+              {% for act in asset_activities %}
+                <div class="activity-item">
+                  <div class="av-sm"><i class="fas fa-pen-nib"></i></div>
+                  <div class="activity-body">
+                    <div class="activity-text">
+                      <strong>{{ act.actor }}</strong> {{ act.action }} asset: <strong>{{ act.item }}</strong>
                     </div>
+                    <div class="activity-meta">{{ act.timestamp }}</div>
                   </div>
-                {% endif %}
+                </div>
               {% empty %}
-                <p class="empty-msg">No recent asset records.</p>
+                <p class="empty-msg">No recent asset records</p>
               {% endfor %}
             </div>
-            <a href="#" class="view-all" data-target="assets">View all</a>
+            <a href="#" class="view-all" id="open-assets-modal-btn" data-toggle="modal" data-target="#assetsActivitiesModal">View all</a>
           </div>
 
-          <!-- Notifications widget -->
           <div class="widget" id="widget-notifications">
             <div class="widget-header">
               <span class="widget-title">Notifications</span>
@@ -272,61 +268,209 @@
               </div>
             </div>
             <div class="activity-list" id="list-notifications">
-              {% for act in activities %}
-                <div class="activity-item">
-                  <div class="av-sm">{{ act.initials }}</div>
+              {% for alert in expiring_notifications %}
+                <div class="activity-item alert-danger-soft">
+                  <div class="av-sm text-danger"><i class="fas fa-exclamation-triangle"></i></div>
                   <div class="activity-body">
                     <div class="activity-text">
-                      <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %}
-                        <strong>{{ act.item }}</strong>
-                      {% endif %}
+                      Asset <strong>{{ alert.asset_name }}</strong> (S/N: {{ alert.serial_number }}) has a PAR nearing expiry.
                     </div>
-                    <div class="activity-meta">{{ act.timestamp }}</div>
+                    <div class="activity-meta text-danger font-weight-bold">Expires on: {{ alert.expiry_date }}</div>
                   </div>
-                  {% if act.unread %}
-                    <span class="dot"></span>
-                  {% endif %}
+                  <span class="dot"></span>
                 </div>
               {% empty %}
-                <p class="empty-msg">No notifications.</p>
+                <p class="empty-msg">No assets expiring within 1 month.</p>
               {% endfor %}
             </div>
-            <a href="#" class="view-all" data-target="notifications">View all</a>
+            <a href="#" class="view-all" id="open-notifications-modal-btn" data-toggle="modal" data-target="#notificationsModal">View all</a>
           </div>
         </div>
-        <!-- /two-col -->
-
-        <!-- ── Recent Activities -->
         <div class="widget" id="widget-recent">
           <div class="widget-header">
             <span class="widget-title">Recent Activities</span>
+            <span class="notif-badge" id="notif-badge">{{ notification_count }}</span>
             <div class="widget-header-actions" style="margin-left:auto;">
+              <button class="read-btn" id="read-all-btn">Read all</button>
               <button class="icon-btn js-refresh" data-target="recent" title="Refresh"><i class="fas fa-sync-alt"></i></button>
               <button class="icon-btn js-export" data-target="recent" title="Export"><i class="fas fa-download"></i></button>
             </div>
           </div>
           <div class="activity-list" id="list-recent">
-            {% for act in activities %}
+            {% for act in recent_activities %}
               <div class="activity-item">
-                <div class="av-sm">{{ act.initials }}</div>
+                <div class="av-sm">
+                  {% if "out" in act.action.lower %}
+                    <i class="fas fa-sign-out-alt text-danger"></i>
+                  {% else %}
+                    <i class="fas fa-sign-in-alt"></i>
+                  {% endif %}
+                </div>
                 <div class="activity-body">
                   <div class="activity-text">
-                    <strong>{{ act.actor }}</strong> {{ act.action }}{% if act.item %}
-                      <strong>{{ act.item }}</strong>
-                    {% endif %}
+                    <strong>{{ act.actor }}</strong> successfully <strong>{{ act.action }}</strong>
                   </div>
                   <div class="activity-meta">{{ act.timestamp }}</div>
                 </div>
               </div>
             {% empty %}
-              <p class="empty-msg">No activity yet.</p>
+              <p class="empty-msg">No recent login/logout sessions recorded.</p>
             {% endfor %}
           </div>
-          <a href="#" class="view-all" data-target="recent">View all</a>
+          <a href="#" class="view-all" id="open-recent-modal-btn" data-toggle="modal" data-target="#recentActivitiesModal">View all</a>
         </div>
       </main>
     </div>
     <!-- /layout -->
+
+    <div class="modal fade" id="recentActivitiesModal" tabindex="-1" aria-labelledby="recentActivitiesModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="font-family: 'Inter', sans-serif;">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title font-weight-bold text-dark" id="recentActivitiesModalLabel" style="color: #2563eb;">
+              <i class="fas fa-history mr-2 text-primary"></i>Login History
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          
+          <div class="modal-body">
+            <div class="row mb-4 p-2 bg-light rounded mx-1">
+              <div class="col-md-5 mb-2 mb-md-0">
+                <label class="small font-weight-bold text-muted">Filter by Date</label>
+                <input type="date" id="modal-filter-date" class="form-control form-control-sm" />
+              </div>
+              <div class="col-md-5 mb-2 mb-md-0">
+                <label class="small font-weight-bold text-muted">Filter by System Role</label>
+                <select id="modal-filter-role" class="form-control form-control-sm">
+                  <option value="">All Roles</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Logistics Officer">Logistics Officer</option>
+                  <option value="Supervisor">Supervisor</option>
+                  <option value="Chief">Chief</option>
+                </select>
+              </div>
+              <div class="col-md-2 d-flex align-items-end">
+                <button id="modal-filter-reset" class="btn btn-sm btn-outline-secondary btn-block" title="Clear Filters">
+                  <i class="fas fa-undo"></i> Reset
+                </button>
+              </div>
+            </div>
+    
+            <div class="activity-list px-2" id="modal-activities-container">
+              </div>
+          </div>
+    
+          <div class="modal-footer d-flex justify-content-between align-items-center bg-light">
+            <span class="text-muted small" id="modal-pagination-info">Showing page -- of --</span>
+            <nav aria-label="Modal pagination navigational buttons">
+              <ul class="pagination pagination-sm m-0">
+                <li class="page-item" id="modal-btn-prev">
+                  <a class="page-link" href="#" tabindex="-1"><i class="fas fa-chevron-left"></i> Previous</a>
+                </li>
+                <li class="page-item" id="modal-btn-next">
+                  <a class="page-link" href="#">Next <i class="fas fa-chevron-right"></i></a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="assetsActivitiesModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="font-family: 'Inter', sans-serif;">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title font-weight-bold text-dark"><i class="fas fa-boxes mr-2 text-info"></i>Asset Status Log History</h5>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-4 p-2 bg-light rounded mx-1">
+              <div class="col-md-4 mb-2">
+                <label class="small font-weight-bold text-muted">Date</label>
+                <input type="date" id="asset-filter-date" class="form-control form-control-sm" />
+              </div>
+              <div class="col-md-4 mb-2">
+                <label class="small font-weight-bold text-muted">System Action</label>
+                <select id="asset-filter-action" class="form-control form-control-sm">
+                  <option value="">All Actions</option>
+                  <option value="Added">Added</option>
+                  <option value="Edited/Moved">Edited/Moved</option>
+                  <option value="Deleted">Deleted</option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-2">
+                <label class="small font-weight-bold text-muted">Role</label>
+                <select id="asset-filter-role" class="form-control form-control-sm">
+                  <option value="">All Roles</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Logistics Officer">Logistics Officer</option>
+                  <option value="Supervisor">Supervisor</option>
+                  <option value="Chief">Chief</option>
+                </select>
+              </div>
+            </div>
+            <div class="activity-list px-2" id="asset-activities-container"></div>
+          </div>
+          <div class="modal-footer d-flex justify-content-between align-items-center bg-light">
+            <span class="text-muted small" id="asset-pagination-info">Showing page -- of --</span>
+            <nav>
+              <ul class="pagination pagination-sm m-0">
+                <li class="page-item" id="asset-btn-prev"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i> Prev</a></li>
+                <li class="page-item" id="asset-btn-next"><a class="page-link" href="#">Next <i class="fas fa-chevron-right"></i></a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal fade" id="notificationsModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="font-family: 'Inter', sans-serif;">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title font-weight-bold text-dark"><i class="fas fa-exclamation-triangle mr-2 text-danger"></i>Active PAR Expiration Logs</h5>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="row mb-4 p-2 bg-light rounded mx-1">
+              <div class="col-md-8 mb-2">
+                <label class="small font-weight-bold text-muted">Filter Asset Category Classification</label>
+                <select id="notif-filter-category" class="form-control form-control-sm">
+                  <option value="">All Functional Classifications</option>
+                  <option value="Investigative">Investigative Equipment</option>
+                  <option value="Mobility">Mobility Vehicles</option>
+                  <option value="Communications">Communications Fleet</option>
+                  <option value="Firearms">Firearms Registry</option>
+                </select>
+              </div>
+            </div>
+            <div class="activity-list px-2" id="notif-activities-container"></div>
+          </div>
+          <div class="modal-footer d-flex justify-content-between align-items-center bg-light">
+            <span class="text-muted small" id="notif-pagination-info">Showing page -- of --</span>
+            <nav>
+              <ul class="pagination pagination-sm m-0">
+                <li class="page-item" id="notif-btn-prev"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i> Prev</a></li>
+                <li class="page-item" id="notif-btn-next"><a class="page-link" href="#">Next <i class="fas fa-chevron-right"></i></a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script>
+      window.RECENT_ACTIVITIES_API_URL = "{% url 'dashboard:recent_activities_api' %}";
+      window.ASSET_ACTIVITIES_API_URL = "{% url 'dashboard:asset_activities_api' %}";
+      window.NOTIFICATIONS_API_URL = "{% url 'dashboard:notifications_api' %}";
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script src="{% static 'js/dashboard.js' %}"></script>
   </body>

@@ -44,7 +44,6 @@ def communications_list(request):
         'total_firearms': all_f.count(),
         })
 
-
 # ACTIVITY LOGS
 def activity_logs(request):
     all_c = Communication.objects.exclude(status_id__in=[4, 5])
@@ -63,7 +62,6 @@ def activity_logs(request):
         'total_vehicles': visible_v.count(),
         'total_firearms': all_f.count(),
     })
-
 
 # PAR MONITORING
 def par_monitoring(request):
@@ -127,7 +125,6 @@ def par_monitoring(request):
             'current_user_role': current_user_role,
         },
     )
-
 
 # PRINT PAR
 def print_par(request, pk):

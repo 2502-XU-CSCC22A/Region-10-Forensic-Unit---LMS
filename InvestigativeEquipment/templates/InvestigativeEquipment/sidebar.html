@@ -23,7 +23,7 @@
     <li class="{% if request.path == comms_url %}active{% endif %}">
       <a href="{{ comms_url }}">
         <span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
-        <span class="badge badge-light badge-pill">{{ total_comms|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_comms|default:'0' }}</span>
       </a>
     </li>
 
@@ -31,7 +31,7 @@
     <li class="{% if request.path == inves_url %}active{% endif %}">
       <a href="{{ inves_url }}">
         <i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_inves|default:'0' }}</span>
+        <span class="badge badge-light badge-pill" >{{ total_inves|default:'0' }}</span>
       </a>
     </li>
 

@@ -362,3 +362,186 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 })();
+
+document.addEventListener("DOMContentLoaded", function () {
+  // State Tracking variables 
+  let currentPage = 1;
+  const dateInput = document.getElementById("modal-filter-date");
+  const roleSelect = document.getElementById("modal-filter-role");
+  const resetButton = document.getElementById("modal-filter-reset");
+  const container = document.getElementById("modal-activities-container");
+  
+  const prevBtn = document.getElementById("modal-btn-prev");
+  const nextBtn = document.getElementById("modal-btn-next");
+  const pagInfo = document.getElementById("modal-pagination-info");
+
+  // Endpoint Configuration Target URL 
+  const apiEndpoint = window.RECENT_ACTIVITIES_API_URL || "/dashboard/api/recent-activities/";
+
+  function fetchModalActivities(page = 1) {
+      currentPage = page;
+      
+      // Form URL tracking query parameters 
+      let url = `${apiEndpoint}?page=${page}`;
+      if (dateInput.value) url += `&date=${dateInput.value}`;
+      if (roleSelect.value) url += `&role=${encodeURIComponent(roleSelect.value)}`;
+
+      // Render Loading Indicator
+      container.innerHTML = `<div class="text-center my-4 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i>Loading history logs...</div>`;
+
+      fetch(url)
+          .then(response => response.json())
+          .then(data => {
+              renderLogs(data.results);
+              setupPaginationControls(data);
+          })
+          .catch(err => {
+              console.error("Error loading activity updates:", err);
+              container.innerHTML = `<p class="text-center text-danger my-3">Failed to load access logs history data records.</p>`;
+          });
+  }
+
+  function renderLogs(logs) {
+      if (!logs || logs.length === 0) {
+          container.innerHTML = `<p class="text-center text-muted my-4">No matching access logs matching your selection parameters.</p>`;
+          return;
+      }
+
+      container.innerHTML = logs.map(act => {
+          const iconClass = act.is_logout ? "fa-sign-out-alt text-danger" : "fa-sign-in-alt text-success";
+          return `
+              <div class="activity-item d-flex align-items-start border-bottom py-2 my-1">
+                  <div class="av-sm mr-3 bg-light rounded-circle p-2 text-center" style="width: 38px; height: 38px;">
+                      <i class="fas ${iconClass}"></i>
+                  </div>
+                  <div class="activity-body flex-grow-1">
+                      <div class="activity-text text-dark" style="font-size: 0.9rem;">
+                          <strong>${act.actor}</strong> successfully <strong>${act.action}</strong>
+                      </div>
+                      <div class="activity-meta text-muted small mt-1">${act.timestamp}</div>
+                  </div>
+              </div>
+          `;
+      }).join("");
+  }
+
+  function setupPaginationControls(meta) {
+      pagInfo.textContent = `Showing page ${meta.number} of ${meta.num_pages || 1}`;
+
+      // Previous Page Button Management
+      if (meta.has_previous) {
+          prevBtn.classList.remove("disabled");
+          prevBtn.onclick = (e) => { e.preventDefault(); fetchModalActivities(meta.number - 1); };
+      } else {
+          prevBtn.classList.add("disabled");
+          prevBtn.onclick = null;
+      }
+
+      // Next Page Button Management
+      if (meta.has_next) {
+          nextBtn.classList.remove("disabled");
+          nextBtn.onclick = (e) => { e.preventDefault(); fetchModalActivities(meta.number + 1); };
+      } else {
+          nextBtn.classList.add("disabled");
+          nextBtn.onclick = null;
+      }
+  }
+
+  // --- Dynamic Filters Listeners ---
+  dateInput.addEventListener("change", () => fetchModalActivities(1));
+  roleSelect.addEventListener("change", () => fetchModalActivities(1));
+  
+  resetButton.addEventListener("click", () => {
+      dateInput.value = "";
+      roleSelect.value = "";
+      fetchModalActivities(1);
+  });
+
+  // Trigger loading logic immediately upon showing the view-all modal interface
+  document.getElementById("open-recent-modal-btn").addEventListener("click", function() {
+      fetchModalActivities(1);
+  });
+});
+
+// --- ASSETS MODAL MANAGER SYSTEM ---
+const assetEndpoint = window.ASSET_ACTIVITIES_API_URL || "/dashboard/api/assets-log/";
+const aDate = document.getElementById("asset-filter-date");
+const aAction = document.getElementById("asset-filter-action");
+const aRole = document.getElementById("asset-filter-role");
+const aContainer = document.getElementById("asset-activities-container");
+
+function fetchAssetActivities(page = 1) {
+    let url = `${assetEndpoint}?page=${page}`;
+    if (aDate.value) url += `&date=${aDate.value}`;
+    if (aAction.value) url += `&action=${encodeURIComponent(aAction.value)}`;
+    if (aRole.value) url += `&role=${encodeURIComponent(aRole.value)}`;
+
+    aContainer.innerHTML = `<div class="text-center my-3 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i>Parsing status logs...</div>`;
+    fetch(url).then(res => res.json()).then(data => {
+        if(!data.results.length) {
+            aContainer.innerHTML = `<p class="text-center text-muted my-3">No matching modification footprints found.</p>`;
+            return;
+        }
+        aContainer.innerHTML = data.results.map(act => `
+            <div class="activity-item d-flex border-bottom py-2">
+                <div class="av-sm mr-3 bg-light rounded p-2 text-info"><i class="fas fa-pen-nib"></i></div>
+                <div>
+                    <div class="text-dark"><strong>${act.actor}</strong> explicitly <strong>${act.action}</strong> asset item: <strong>${act.item}</strong></div>
+                    <div class="small text-muted mt-1">${act.timestamp}</div>
+                </div>
+            </div>
+        `).join("");
+        handleModalPagination(data, "asset", fetchAssetActivities);
+    });
+}
+document.getElementById("open-assets-modal-btn").addEventListener("click", () => fetchAssetActivities(1));
+aDate.addEventListener("change", () => fetchAssetActivities(1));
+aAction.addEventListener("change", () => fetchAssetActivities(1));
+aRole.addEventListener("change", () => fetchAssetActivities(1));
+
+
+// --- NOTIFICATIONS EXPIRY MODAL SYSTEM ---
+const notifEndpoint = window.NOTIFICATIONS_API_URL || "/dashboard/api/notifications-log/";
+const nCategory = document.getElementById("notif-filter-category");
+const nContainer = document.getElementById("notif-activities-container");
+
+function fetchNotificationsHistory(page = 1) {
+    let url = `${notifEndpoint}?page=${page}`;
+    if (nCategory.value) url += `&category=${nCategory.value}`;
+
+    nContainer.innerHTML = `<div class="text-center my-3 text-muted"><i class="fas fa-spinner fa-spin mr-2"></i>Checking lifecycle logs...</div>`;
+    fetch(url).then(res => res.json()).then(data => {
+        if(!data.results.length) {
+            nContainer.innerHTML = `<p class="text-center text-muted my-3">No immediate asset expirations discovered inside this category segment.</p>`;
+            return;
+        }
+        nContainer.innerHTML = data.results.map(alert => `
+            <div class="activity-item d-flex border-bottom py-2 bg-light-red mb-1 rounded p-2">
+                <div class="av-sm mr-3 text-danger pt-1"><i class="fas fa-exclamation-triangle"></i></div>
+                <div>
+                    <div class="text-dark">[<strong>${alert.category}</strong>] Asset: <strong>${alert.asset_name}</strong> (S/N: ${alert.serial_number}) has an active tracking structure nearing expiry.</div>
+                    <div class="small text-danger font-weight-bold mt-1">Expires on: ${alert.expiry_date}</div>
+                </div>
+            </div>
+        `).join("");
+        handleModalPagination(data, "notif", fetchNotificationsHistory);
+    });
+}
+document.getElementById("open-notifications-modal-btn").addEventListener("click", () => fetchNotificationsHistory(1));
+nCategory.addEventListener("change", () => fetchNotificationsHistory(1));
+
+
+// Generic Modal Pagination Helper Component
+function handleModalPagination(meta, prefix, callback) {
+    document.getElementById(`${prefix}-pagination-info`).textContent = `Showing page ${meta.number} of ${meta.num_pages || 1}`;
+    const prev = document.getElementById(`${prefix}-btn-prev`);
+    const next = document.getElementById(`${prefix}-btn-next`);
+    
+    if (meta.has_previous) {
+        prev.classList.remove("disabled"); prev.onclick = (e) => { e.preventDefault(); callback(meta.number - 1); };
+    } else { prev.classList.add("disabled"); prev.onclick = null; }
+
+    if (meta.has_next) {
+        next.classList.remove("disabled"); next.onclick = (e) => { e.preventDefault(); callback(meta.number + 1); };
+    } else { next.classList.add("disabled"); next.onclick = null; }
+}
