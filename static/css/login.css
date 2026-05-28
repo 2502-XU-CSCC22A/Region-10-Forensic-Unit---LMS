@@ -21,6 +21,18 @@ body {
   min-height: 100vh;
   padding: 24px;
   width: 100%;
+
+  /* The Animated Gradient Track */
+  background: linear-gradient(-45deg, #6495ED, #F0F5FE, #DEE7FB, #9BBDF5);
+  background-size: 400% 400%;
+  animation: fluidShimmerAnimation 15s ease infinite;
+}
+
+/* Transitions the background positions over time to create the moving color wave */
+@keyframes fluidShimmerAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* ── Card ──────────────────────────────────────────────────────────────────── */

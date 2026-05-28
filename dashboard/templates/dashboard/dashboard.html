@@ -240,7 +240,7 @@
           <div class="widget" id="widget-assets">
             <div class="widget-header">
               <span class="widget-title">Assets Status Changes</span>
-              <span class="notif-badge" id="notif-badge">{{ notification_count }}</span>
+              <span class="notif-badge" id="notif-badge">{{ asset_badge_count }}</span>
               <button class="read-btn" id="read-all-btn-assets">Read all</button>
               <div class="widget-header-actions">
                 <button class="icon-btn js-refresh" data-target="assets" title="Refresh"><i class="fas fa-sync-alt"></i></button>
@@ -265,17 +265,18 @@
             <a href="#" class="view-all" id="open-assets-modal-btn" data-toggle="modal" data-target="#assetsActivitiesModal">View all</a>
           </div>
 
-          <div class="widget" id="widget-notifications">
+          <div class="widget d-flex flex-column" id="widget-notifications" style="min-height: 100%; height: 100%;">
             <div class="widget-header">
               <span class="widget-title">Notifications</span>
-              <span class="notif-badge" id="notif-badge">{{ notification_count }}</span>
+              <span class="notif-badge" id="notif-badge">{{ notif_badge_count }}</span>
               <button class="read-btn" id="read-all-btn-notifs">Read all</button>
               <div class="widget-header-actions">
                 <button class="icon-btn js-refresh" data-target="notifications" title="Refresh"><i class="fas fa-sync-alt"></i></button>
                 <button class="icon-btn js-export" data-target="notifications" title="Export"><i class="fas fa-download"></i></button>
               </div>
             </div>
-            <div class="activity-list" id="list-notifications">
+            
+            <div class="activity-list flex-grow-1" id="list-notifications" style="flex-grow: 1;">
               {% for alert in expiring_notifications %}
                 <div class="activity-item alert-danger-soft">
                   <div class="av-sm text-danger"><i class="fas fa-exclamation-triangle"></i></div>
@@ -291,13 +292,14 @@
                 <p class="empty-msg">No assets expiring within 1 month.</p>
               {% endfor %}
             </div>
-            <a href="#" class="view-all" id="open-notifications-modal-btn" data-toggle="modal" data-target="#notificationsModal">View all</a>
+            
+            <a href="#" class="view-all mt-auto" id="open-notifications-modal-btn" data-toggle="modal" data-target="#notificationsModal" style="margin-top: auto;">View all</a>
           </div>
         </div>
         <div class="widget" id="widget-recent">
           <div class="widget-header">
             <span class="widget-title">Recent Activities</span>
-            <span class="notif-badge" id="notif-badge">{{ notification_count }}</span>
+            <span class="notif-badge" id="notif-badge">{{ recent_badge_count }}</span>
             <div class="widget-header-actions" style="margin-left:auto;">
               <button class="read-btn" id="read-all-btn-recent">Read all</button>
               <button class="icon-btn js-refresh" data-target="recent" title="Refresh"><i class="fas fa-sync-alt"></i></button>
