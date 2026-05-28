@@ -45,3 +45,24 @@ class FirearmPARRecord(models.Model):
 
     def __str__(self):
         return f"{self.par_number} — {self.issued_to}"
+
+class FirearmActivityLog(models.Model):
+    firearm = models.ForeignKey(
+        Firearm,
+        db_column='firearm_id',
+        on_delete=models.CASCADE
+    )
+
+    action = models.TextField()
+
+    details = models.TextField()
+
+    created_at = models.DateTimeField()
+
+    class Meta:
+        db_table = "firearms_activitylog"
+        ordering = ["-created_at"]
+        managed = False
+
+    def __str__(self):
+        return self.action

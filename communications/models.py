@@ -125,3 +125,32 @@ class CommunicationICSRecord(models.Model):
 
     def __str__(self):
         return f"{self.ics_number} - {self.communication.type}"
+    
+class CommunicationActivityLog(models.Model):
+    communication = models.ForeignKey(
+        Communication,
+        on_delete=models.CASCADE
+    )
+
+    action = models.TextField()
+
+    old_stock = models.IntegerField(
+        null=True,
+        blank=True
+    )
+
+    new_stock = models.IntegerField(
+        null=True,
+        blank=True
+    )
+
+    details = models.TextField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "communications_activitylog"
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.action
