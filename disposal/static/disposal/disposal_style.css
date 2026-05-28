@@ -238,6 +238,7 @@ header,
     display: flex;
     align-items: flex-start;
     gap: 15px;
+    color: #1a202c;
     background-color: #e3f2fd;
     border: 1px solid #bbdefb;
     border-radius: 10px;
@@ -289,7 +290,7 @@ header,
 
 .sync-text {
     font-size: 13px;
-    color: #64748b;
+    color: #4a5568;
 }
 
 button.outline {
@@ -310,8 +311,8 @@ button.outline {
 }
 
 button.outline:hover {
-    border-color: #3f51b5;
-    color: #3f51b5;
+    background-color: #2563eb;
+    color: white;
     text-decoration: none;
 }
 

@@ -5,10 +5,11 @@
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <title>Disposal History - PNP Forensic Group</title>
+      <meta name="description" content="Review History for Disposed Assets for the Regional Forensic Unit 10 Logistics Management System.">
       <link rel="icon" type="image/png" href="{% static 'img/RFU10 Logo.png' %}">
 
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+      <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
 
       <link rel="stylesheet" href="{% static 'disposal/history.css' %}" />
       <link rel="stylesheet" href="{% static 'disposal/sidebar.css' %}" />
@@ -48,7 +49,11 @@
 
         <nav id="sidebar">
           <ul class="list-unstyled components">
-            <p>Dashboard</p>
+
+            <li>
+              <p class="sidebar-section-title">Dashboard</p>
+            </li>
+            
             <li>
               <a href="{% url 'dashboard:dashboard_view'%}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
             </li>
@@ -87,8 +92,11 @@
                 <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_ber|default:'0' }}</span>
               </a>
             </li>
-        
-            <p class="mt-4">Monitoring</p>
+
+            <li>
+              <p class="sidebar-section-title mt-4">Monitoring</p>
+            </li>
+            
             <li class="active">
               <a href="{% url 'disposal:history_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
             </li>
@@ -96,20 +104,22 @@
             <li>
               <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
             </li>
-
-            <div class="UM">
-              <p>System Action</p>
-              <li>
-                <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
-              </li>
-            </div>
+        
+            <li class="UM">
+              <p class="sidebar-section-title">System Action</p>
+              <ul class="list-unstyled">
+                <li>
+                  <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
+                </li>
+              </ul>
+            </li>
           </ul>
         </nav>
 
         <main class="main-content">
           <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-              <h3 class="page-title mb-0">Removal History</h3>
+              <h1 class="page-title mb-0">Removal History</h1>
               <p class="text-muted small">
                 Tracking Removal History of All Assets
               </p>
@@ -195,17 +205,6 @@
       `;
 
       const startDate = getDateDaysAgo(daysLimit);
-
-      // --- DEBUG STEP A: UNFILTERED RAW CHECK ---
-      const debugCheck = await sb
-        .from("disposal_disposalactivitylog")
-        .select("*");
-      
-      console.log("DEBUG: Total raw rows in Supabase:", debugCheck.data ? debugCheck.data.length : 0);
-      console.log("DEBUG: Raw table contents:", debugCheck.data);
-      if (debugCheck.error) {
-        console.error("DEBUG: Raw fetch error details:", debugCheck.error);
-      }
       // ------------------------------------------
 
       // Actual query

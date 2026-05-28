@@ -217,7 +217,7 @@ function renderTable() {
       <td>
         <div style="display:flex; gap:8px; justify-content:center;">
           <button type="button" class="action-btn" onclick="openActionModal('${c.id}')" ${disableAttr}><i class="fas fa-pen"></i> <span>Edit</span></button>
-          <button type="button" class="delete-btn" onclick="prepareRemoval('${c.id}')" ${disableAttr}><i class="ph ph-trash"></i> <span>BER</span></button>
+          <button type="button" class="delete-btn" onclick="prepareRemoval('${c.id}')" ${disableAttr}><i class="fas fa-trash-alt"></i> <span>BER</span></button>
         </div>
       </td>
     </tr>

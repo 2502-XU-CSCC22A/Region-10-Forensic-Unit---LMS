@@ -1,158 +1,229 @@
-*, *::before, *::after {
-  box-sizing: border-box;
+ /* Canvas Layout Defaults Reset */
+ html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background-color: #120078; /* High-density deep indigo brand color */
+  overflow-x: hidden;
 }
 
-body {
-  font-family: 'Inter', sans-serif;
+/* Main Screen Component Grid Wrapper */
+.desktop {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  box-sizing: border-box;
+
+  /* The Animated Gradient Track */
+  background: linear-gradient(-45deg, #120078, #1d0c91, #090046, #1a02b1);
+  background-size: 400% 400%;
+  animation: fluidShimmerAnimation 15s ease infinite;
+}
+
+/* Transitions the background positions over time to create the moving color wave */
+@keyframes fluidShimmerAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Giant Full-Width Background Decorative Typography */
+.bg-text-wrapper {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  user-select: none;
+  pointer-events: none;
+  z-index: 1;
   overflow: hidden;
 }
 
-.desktop {
-  width: 100vw;
-  min-height: 100vh;
-  display: flex;
-  background: #ffffff;
-}
-
-.hero {
-  width: 100%;
-  min-height: 100vh;
-  position: relative;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 1) 52%,
-    rgba(39, 61, 142, 0.48) 100%
-  );
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-}
-
-/* ── Logo (right side) ─────────────────────────────────────────────────────── */
-.logo {
-  position: absolute;
-  top: 50%;
-  right: 8%;
-  transform: translateY(-50%);
-  width: min(420px, 38vw);
-  height: auto;
-  animation: floatLogo 4s ease-in-out infinite;
-  filter: drop-shadow(0 12px 32px rgba(25, 42, 122, 0.18));
-}
-
-@keyframes floatLogo {
-  0%, 100% { transform: translateY(-50%) translateY(0); }
-  50%       { transform: translateY(-50%) translateY(-14px); }
-}
-
-/* ── Text Content (left side) ──────────────────────────────────────────────── */
-.content {
-  position: absolute;
-  top: 50%;
-  left: 6%;
-  transform: translateY(-50%);
-  width: min(560px, 48vw);
-}
-
-.description {
-  display: flex;
-  width: 850px;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.welcome-to {
-  font-family: 'Inter', sans-serif;
-  font-weight: 800;
-  font-size: clamp(2rem, 3.8vw, 3.5rem);
-  color: #192a7a;
-  line-height: 1.15;
+.bg-text {
+  font-size: 14vw;
+  font-weight: 900;
+  color: #fdd3ec; /* Soft pastel pink splash tone matching reference */
+  text-transform: uppercase;
   letter-spacing: -0.03em;
-  animation: fadeUp 0.7s ease both;
+  margin: 0;
+  opacity: 0.95;
+  line-height: 1;
 }
 
-.subtitle {
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  font-size: clamp(1rem, 1.6vw, 1.35rem);
-  color: rgba(0, 0, 0, 0.55);
-  letter-spacing: -0.01em;
-  animation: fadeUp 0.7s 0.1s ease both;
+/* Core App Container Grid Split Layout */
+.landing-container {
+  position: relative;
+  z-index: 2; /* Sits cleanly on top of background typography */
+  max-width: 1200px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: center;
 }
 
-/* ── Login Button ──────────────────────────────────────────────────────────── */
-.primary-button {
+/* Left Interface Column: Identity Details and CTA button */
+.content-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.main-heading {
+  font-size: 3.25rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.02em;
+}
+
+.sub-heading {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ededf5;
+  display: block;
+  margin-top: 4px;
+}
+
+.tagline {
+  font-size: 1.15rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 500px;
+  margin: 0 0 44px 0;
+}
+
+/* Highlighted Accent Action Pill-Button */
+.btn-modern {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 180px;
-  padding: 14px 20px;
-  background-color: #192a7a;
-  border-radius: 10px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
-  box-shadow: 0 4px 18px rgba(25, 42, 122, 0.3);
-  animation: fadeUp 0.7s 0.2s ease both;
-}
-
-.primary-button:hover {
-  background-color: #2e4ab0;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(25, 42, 122, 0.38);
-}
-
-.text-wrapper {
-  font-family: 'Inter', sans-serif;
+  justify-content: space-between;
+  background-color: #ffb423; /* High-contrast golden amber highlight */
+  color: #120078 !important; /* Premium branding color ink */
+  text-decoration: none !important;
   font-weight: 700;
-  font-size: 1.05rem;
-  color: #ffffff;
-  letter-spacing: 0.01em;
+  font-size: 1.1rem;
+  padding: 16px 36px;
+  border-radius: 50px;
+  box-shadow: 0 10px 25px rgba(255, 180, 35, 0.25);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 220px;
+  max-width: 260px;
+  box-sizing: border-box;
 }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
+.btn-modern:hover {
+  background-color: #ffa500;
+  transform: scale(1.03);
+  box-shadow: 0 15px 30px rgba(255, 180, 35, 0.4);
 }
 
-/* ── Responsive ────────────────────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  body { overflow: auto; }
+/* Animated indicator icon displacement mechanics */
+.btn-modern i {
+  transition: transform 0.2s ease;
+}
 
-  .hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 60px 30px 40px;
-    gap: 0;
-    min-height: 100vh;
+.btn-modern:hover i {
+  transform: translateX(6px);
+}
+
+/* Right Interface Column: Interactive Floating Logo Component */
+.graphic-side {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.floating-badge-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Primary Floating Seal Engine Config */
+.main-seal {
+  height: 330px;
+  width: auto;
+  filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.3));
+  animation: uniformOscillationFloat 5s ease-in-out infinite;
+  transform-origin: center;
+  position: relative;
+  z-index: 3;
+}
+
+/* Combined rhythmic tilt and liftoff motion frames */
+@keyframes uniformOscillationFloat {
+  0% {
+      transform: translateY(0px) rotate(0deg);
   }
-
-  .logo {
-    position: relative;
-    top: auto; right: auto;
-    transform: none;
-    width: min(220px, 55vw);
-    margin-bottom: 32px;
-    animation: floatLogoMobile 4s ease-in-out infinite;
+  50% {
+      transform: translateY(-16px) rotate(3deg);
   }
-
-  @keyframes floatLogoMobile {
-    0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(-10px); }
+  100% {
+      transform: translateY(0px) rotate(0deg);
   }
+}
 
-  .content {
-    position: relative;
-    top: auto; left: auto;
-    transform: none;
-    width: 100%;
-    text-align: center;
+/* Abstract Background Floating Accent Sparks */
+.accent-particle {
+  position: absolute;
+  background: rgba(253, 211, 236, 0.25);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.particle-1 {
+  width: 64px;
+  height: 64px;
+  top: -20px;
+  left: -24px;
+  animation: sparkDriftAlpha 7s ease-in-out infinite;
+}
+
+.particle-2 {
+  width: 44px;
+  height: 44px;
+  bottom: -12px;
+  right: 24px;
+  animation: sparkDriftBeta 9s ease-in-out infinite;
+}
+
+@keyframes sparkDriftAlpha {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-10px, -14px); }
+}
+
+@keyframes sparkDriftBeta {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(14px, 10px); }
+}
+
+/* Responsive Micro-Breakpoints Configuration */
+@media (max-width: 991px) {
+  .bg-text { 
+      font-size: 18vw; 
   }
-
-  .description { align-items: center; }
-
-  .primary-button { width: 160px; }
+  .landing-container {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 64px;
+  }
+  .content-side { 
+      align-items: center; 
+  }
+  .tagline { 
+      max-width: 100%; 
+  }
+  .main-seal { 
+      max-height: 280px; 
+  }
+  .bg-text-wrapper { 
+      top: 40%; 
+  }
 }

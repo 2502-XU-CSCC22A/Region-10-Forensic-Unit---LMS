@@ -83,6 +83,18 @@ body {
   margin: 0;
 }
 
+.top {
+  color: #ffffff !important;
+  font-family: 'Inter', sans-serif;
+  font-weight: bold;
+  padding: 10px 25px;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
 .badge {
   display: inline-block;
   padding: 3px 10px;

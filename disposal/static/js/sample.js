@@ -3,16 +3,6 @@
 const supabaseUrl = "https://vamjajitzyspdyfxisac.supabase.co";
 const supabaseKey = "sb_publishable_mTj-PK3WV3ZPqGOii548Ng_EXvssL54";
 
-let sb = null;
-if (window.supabaseClient) {
-    sb = window.supabaseClient;
-} else if (window.supabase && typeof window.supabase.createClient === 'function') {
-    window.supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-    sb = window.supabaseClient;
-} else {
-    console.warn("Supabase CDN not detected yet. Retrying configuration...");
-}
-
 /* ---------------- STATE ---------------- */
 let disposal = [];
 let filtered = [];

@@ -5,23 +5,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Disposal Management - PNP Forensic Group</title>
+    <meta name="description" content="Manage and review Beyond Economic Repair (BER) profiles and final asset disposal workflows for the Regional Forensic Unit 10 Logistics Management System.">
+
     <link rel="icon" type="image/png" href="{% static 'img/RFU10 Logo.png' %}">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+
     <link rel="stylesheet" href="{% static 'disposal/disposal_style.css' %}" />
     <link rel="stylesheet" href="{% static 'disposal/filter_modal.css' %}" />
     <link rel="stylesheet" href="{% static 'disposal/summary_modal.css' %}" />
     <link rel="stylesheet" href="{% static 'disposal/sidebar.css' %}" />
 
-    
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700;800&display=swap" rel="stylesheet" />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script src="{% static 'js/sample.js' %}"></script>
   </head>
 
@@ -108,7 +107,7 @@
             </div>
             <div>
               <div class="stat-value" id="firearmsBerCount">{{ firearms_ber|default:'0' }}</div>
-              <div class="stat-label">Total Firearms</div>
+              <div class="stat-label">BER Firearms</div>
             </div>
           </div>
           <div class="stat-bar-wrap">
@@ -218,20 +217,25 @@
         <td>{{ item.disposal_date|date:'d/m/Y H:i' }}</td>
 
         <td class="text-center" style="vertical-align: middle;">
-          {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
-            <a href="javascript:void(0)" 
-               class="btn btn-sm btn-danger px-3" 
-               onclick="prepareRemoval('{% url 'disposal:finalize_removal' item.pk %}')">
-              <i class="fas fa-trash-alt"></i>
-            </a>
-          {% else %}
-            <a href="javascript:void(0)" 
-               class="btn btn-sm btn-danger px-3 disabled" 
-               style="opacity: 0.5; cursor: not-allowed; pointer-events: none;">
-              <i class="fas fa-trash-alt"></i>
-            </a>
-          {% endif %}
-        </td>
+  {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
+    <button type="button" 
+            class="btn btn-sm btn-danger px-3" 
+            aria-label="Remove item"
+            onclick="prepareRemoval('{% url 'disposal:finalize_removal' item.pk %}')">
+      <i class="fas fa-trash-alt mr-1"></i>
+      <span class="sidebar-item-label">Remove</span>
+    </button>
+  {% else %}
+    <button type="button" 
+            class="btn btn-sm btn-danger px-3" 
+            aria-label="Remove item (Disabled)"
+            disabled
+            style="opacity: 0.5; cursor: not-allowed;">
+      <i class="fas fa-trash-alt mr-1"></i>
+      <span class="sidebar-item-label">Remove</span>
+    </button>
+  {% endif %}
+</td>
       </tr>
     {% empty %}
       <tr>

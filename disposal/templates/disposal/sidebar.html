@@ -1,8 +1,11 @@
 <nav id="sidebar">
   <ul class="list-unstyled components">
-    <p>Dashboard</p>
     <li>
-      <a href="{% url 'dashboard:dashboard_view'%}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
+      <div class="top">Dashboard</div>
+    </li>
+    
+    <li>
+      <a href="{% url 'dashboard:dashboard_view' %}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
     </li>
 
     <li>
@@ -22,12 +25,12 @@
     <li>
       <a href="{% url 'communications:communications_list' %}">
         <span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
-        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;"> {{ comms_all|default:'0' }}</span>
+        <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ comms_all|default:'0' }}</span>
       </a> 
     </li>
 
     <li>
-      <a href="{% url 'InvestigativeEquipment:investigative_view'%}">
+      <a href="{% url 'InvestigativeEquipment:investigative_view' %}">
         <i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
         <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ inves_all|default:'0' }}</span>
       </a> 
@@ -40,7 +43,10 @@
       </a>
     </li>
 
-    <p class="mt-4">Monitoring</p>
+    <li>
+      <div class="top">Monitoring</div>
+    </li>
+
     <li>
       <a href="{% url 'disposal:history_log' %}"><i class="fas fa-file-invoice"></i> <span class="sidebar-item-label">Reports</span></a>
     </li>
@@ -48,12 +54,16 @@
       <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label"> User Management </span></a>
     </li>
 
-    <div class = "UM">
-      <p>System Action</p>
-
-      <li>
-        <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label"> Logout </span></a>
-      </li>
-    </div>
+    <li class="UM">
+      <p class="sidebar-section-title">System Action</p>
+      <ul class="list-unstyled">
+        <li>
+          <a href="{% url 'dashboard:logout' %}">
+            <i class="fas fa-arrow-right mr-2"></i> 
+            <span class="sidebar-item-label"> Logout </span>
+          </a>
+        </li>
+      </ul>
+    </li>
   </ul>
 </nav>

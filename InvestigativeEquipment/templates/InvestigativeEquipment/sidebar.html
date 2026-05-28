@@ -1,6 +1,10 @@
 <nav id="sidebar">
   <ul class="list-unstyled components">
-    <p>Dashboard</p>
+    
+    <li>
+      <p class="sidebar-section-title">Dashboard</p>
+    </li>
+    
     <li>
       <a href="{% url 'dashboard:dashboard_view' %}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
     </li>
@@ -42,7 +46,9 @@
       </a>
     </li>
 
-    <p class="mt-4">Monitoring</p>
+    <li>
+      <p class="sidebar-section-title mt-4">Monitoring</p>
+    </li>
 
     {% url 'InvestigativeEquipment:par_monitoring' as inves_par_url %}
     <li class="{% if 'par-monitoring/' in request.path %}active{% endif %}">
@@ -67,6 +73,7 @@
         <span class="sidebar-item-label">Reports</span>
       </a>
     </li>
+    
     <li>
       <a href="{% url 'user_management:user_list' %}">
         <i class="fas fa-user-shield mr-2"></i>
@@ -74,12 +81,13 @@
       </a>
     </li>
 
-    <div class="UM">
-      <p>System Action</p>
-
-      <li>
-        <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label">Logout</span></a>
-      </li>
-    </div>
+    <li class="UM">
+      <p class="sidebar-section-title">System Action</p>
+      <ul class="list-unstyled">
+        <li>
+          <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label">Logout</span></a>
+        </li>
+      </ul>
+    </li>
   </ul>
 </nav>

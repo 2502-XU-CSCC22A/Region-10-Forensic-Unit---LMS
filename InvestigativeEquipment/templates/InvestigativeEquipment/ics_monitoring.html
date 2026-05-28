@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="{% static 'InvestigativeEquipment/RFU10 Logo.png' %}">
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{% static 'InvestigativeEquipment/inves.css' %}" />
 
@@ -126,12 +126,16 @@
 
     .btn-edit {
       color: #3b82f6;
-      background: #eff6ff;
+      background: #f1f5f9;
+    }
+
+    .btn-edit:hover {
+      color: #1d4ed8;
     }
 
     .btn-delete {
       color: #ef4444;
-      background: #fef2f2;
+      background: #f1f5f9;
     }
 
   </style>
@@ -339,7 +343,7 @@
                       </a>
 
                       {% if current_user_role == "Admin" or current_user_role == "Logistics Officer" %}
-                      <a href="{% url 'InvestigativeEquipment:edit_ics' ics.pk %}" class="btn-icon btn-edit"
+                      <a href="{% url 'InvestigativeEquipment:edit_ics' ics.pk %}" class="btn-icon"
                         title="Edit">
                         <i class="fas fa-edit"></i>
                       </a>

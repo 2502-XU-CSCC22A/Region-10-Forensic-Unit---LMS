@@ -97,6 +97,7 @@ body {
 
 /* ------ Main Content ----- */
 .page-title {
+    font-size: 30px;
     font-weight: 700;
     color: #1a2b6d;
     margin: 20px 0 15px 0;

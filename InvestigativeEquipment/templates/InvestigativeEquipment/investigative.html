@@ -6,15 +6,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Investigative Equipment - PNP Forensic Group</title>
+  <meta name="description" content="Manage and Review Investigative Equipment Asset for the Regional Forensic Unit 10 Logistics Management System.">
   <link rel="icon" type="image/png" href="{% static 'InvestigativeEquipment/RFU10 Logo.png' %}">
 
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-  
+  <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="{% static 'InvestigativeEquipment/inves.css' %}" />
 
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
 </head>
@@ -156,12 +156,12 @@
                     class="btn-action btn-edit"
                     onclick="openUpdateModal('{{ item.asset_id.pk }}', '{{ item.asset_id.model|escapejs }}', '{{ item.asset_id.property_no|escapejs }}', '{{ item.asset_id.category.category_name|escapejs }}', '{{ item.asset_id.quantity }}')"
                     {% if current_user_role != "Admin" and current_user_role != "Logistics Officer" %}disabled{% endif %}>
-                    <i class="ph ph-pencil-simple"></i> Edit
+                    <i class="fas fa-pen"></i> Edit
                   </button><button type="button" 
                     class="btn-action btn-ber"
                     onclick="openConfirmationModal('{{ item.asset_id.id }}')"
                     {% if current_user_role != "Admin" and current_user_role != "Logistics Officer" %}disabled{% endif %}>
-                    <i class="ph ph-trash"></i> BER
+                    <i class="fas fa-trash-alt"></i> BER
                   </button>
                 </div>
               </td>

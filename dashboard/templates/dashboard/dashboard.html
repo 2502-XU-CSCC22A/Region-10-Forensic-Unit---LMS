@@ -5,10 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard - PNP Forensic Group</title>
+    <meta name="description" content="Dashboard Overview of All Assets for the Regional Forensic Unit 10 Logistics Management System.">
     <link rel="icon" type="image/png" href="{% static 'img/RFU10 Logo.png' %}" />
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="{% static 'dashboard/dashboard.css' %}" />
     <link rel="stylesheet" href="{% static 'dashboard/sidebar.css' %}" />
@@ -83,64 +84,71 @@
 
     <!-- Layout ── -->
     <div class="layout">
-      <!-- Sidebar -->
       <nav id="sidebar">
         <ul class="list-unstyled components">
-          <p>Dashboard</p>
+          
+          <li>
+            <p class="sidebar-section-title">Dashboard</p>
+          </li>
+      
           <li class="active">
             <a href="{% url 'dashboard:dashboard_view' %}"><i class="fas fa-home"></i> <span class="sidebar-item-label">Home</span></a>
           </li>
-
+      
           <li>
             <a href="{% url 'mobility:vehicle_management' %}">
               <span><i class="fas fa-car"></i> <span class="sidebar-item-label">Mobility</span></span>
               <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_mobility|default:'0' }}</span>
             </a>
           </li>
-
+      
           <li>
             <a href="{% url 'firearms:index' %}">
               <span><i class="fas fa-crosshairs"></i> <span class="sidebar-item-label">Firearms</span></span>
               <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_firearms|default:'0' }}</span>
             </a>
           </li>
-
+      
           <li>
             <a href="{% url 'communications:communications_list' %}">
               <span><i class="fas fa-broadcast-tower"></i> <span class="sidebar-item-label">Communications</span></span>
               <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_communications|default:'0' }}</span>
             </a>
           </li>
-
+      
           <li>
             <a href="{% url 'InvestigativeEquipment:investigative_view' %}">
               <i class="fas fa-microscope"></i> <span class="sidebar-item-label">Investigative Equipment</span>
               <span class="badge badge-primary badge-pill" style="background-color: #4e73df;">{{ total_investigative|default:'0' }}</span>
             </a>
           </li>
-
+      
           <li>
             <a href="{% url 'disposal:disposal_list' %}">
               <i class="fas fa-recycle"></i> <span class="sidebar-item-label">BER & Disposal</span>
               <span class="badge badge-primary badge-pill">{{ total_ber|default:'0' }}</span>
             </a>
           </li>
-
-          <p class="mt-4">Monitoring</p>
+      
+          <li>
+            <p class="sidebar-section-title mt-4">Monitoring</p>
+          </li>
+      
           <li>
             <a href="{% url 'user_management:user_list' %}"><i class="fas fa-user-shield mr-2"></i> <span class="sidebar-item-label">User Management</span></a>
           </li>
-
-          <div class="UM">
-            <p>System Action</p>
-
-            <li>
-              <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label">Logout</span></a>
-            </li>
-          </div>
+      
+          <li class="UM">
+            <p class="sidebar-section-title">System Action</p>
+            <ul class="list-unstyled">
+              <li>
+                <a href="{% url 'dashboard:logout' %}"><i class="fas fa-arrow-right mr-2"></i> <span class="sidebar-item-label">Logout</span></a>
+              </li>
+            </ul>
+          </li>
+      
         </ul>
       </nav>
-
       <!-- ── Main ── -->
       <main>
         <!-- ── Stat Cards ──────────────────────────────────────────────────── -->
@@ -233,7 +241,7 @@
             <div class="widget-header">
               <span class="widget-title">Assets Status Changes</span>
               <span class="notif-badge" id="notif-badge">{{ notification_count }}</span>
-              <button class="read-btn" id="read-all-btn">Read all</button>
+              <button class="read-btn" id="read-all-btn-assets">Read all</button>
               <div class="widget-header-actions">
                 <button class="icon-btn js-refresh" data-target="assets" title="Refresh"><i class="fas fa-sync-alt"></i></button>
                 <button class="icon-btn js-export" data-target="assets" title="Export"><i class="fas fa-download"></i></button>
@@ -261,7 +269,7 @@
             <div class="widget-header">
               <span class="widget-title">Notifications</span>
               <span class="notif-badge" id="notif-badge">{{ notification_count }}</span>
-              <button class="read-btn" id="read-all-btn">Read all</button>
+              <button class="read-btn" id="read-all-btn-notifs">Read all</button>
               <div class="widget-header-actions">
                 <button class="icon-btn js-refresh" data-target="notifications" title="Refresh"><i class="fas fa-sync-alt"></i></button>
                 <button class="icon-btn js-export" data-target="notifications" title="Export"><i class="fas fa-download"></i></button>
@@ -291,7 +299,7 @@
             <span class="widget-title">Recent Activities</span>
             <span class="notif-badge" id="notif-badge">{{ notification_count }}</span>
             <div class="widget-header-actions" style="margin-left:auto;">
-              <button class="read-btn" id="read-all-btn">Read all</button>
+              <button class="read-btn" id="read-all-btn-recent">Read all</button>
               <button class="icon-btn js-refresh" data-target="recent" title="Refresh"><i class="fas fa-sync-alt"></i></button>
               <button class="icon-btn js-export" data-target="recent" title="Export"><i class="fas fa-download"></i></button>
             </div>
@@ -333,7 +341,7 @@
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
-          </div>
+          </div>  
           
           <div class="modal-body">
             <div class="row mb-4 p-2 bg-light rounded mx-1">

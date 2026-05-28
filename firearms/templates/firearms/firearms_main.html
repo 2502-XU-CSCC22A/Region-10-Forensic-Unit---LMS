@@ -5,10 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Firearms Management - PNP Forensic Group</title>
+    <meta name="description" content="Manage and Review Firearms Asset for the Regional Forensic Unit 10 Logistics Management System.">
     <link rel="icon" type="image/png" href="{% static 'firearms/img/RFU10 Logo.png' %}">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;400;500;700;800&display=swap" rel="stylesheet" />
 
@@ -107,7 +108,7 @@
           </div>
           <div class="user-text ml-2">
             <div class="user-name font-weight-bold">{{ user.get_full_name|default:user.username }}</div>
-            <div class="user-role text-muted">{{ current_user_role|default:'User' }}</div>
+            <div class="user-role">{{ current_user_role|default:'User' }}</div>
           </div>
         </div>
       </div>

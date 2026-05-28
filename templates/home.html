@@ -1,37 +1,57 @@
 {% load static %}
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="utf-8" />
+    
+    <title>Welcome | RFU10 Logistics Management System</title>
+    <link rel="icon" type="image/png" href="{% static 'img/RFU10 Logo.png' %}" />
+    <meta name="description" content="Welcome portal for the Regional Forensic Unit 10 Logistics Management System. Secure portal access for authorized logistics personnel." />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="{% static 'css/home.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+
   </head>
   <body>
+
     <div class="desktop">
-      <div class="hero">
-        <img class="logo" src="{% static 'img/RFU10 Logo.png' %}" />
-        <div class="content">
-          <div class="description">
-            <p class="welcome-to">
-              Welcome to RFU10 <br />Logistics Management System
-            </p>
-            <p class="div">
-              Let us serve the people of the Philippines for the better.
-            </p>
-            <a href="{% url 'login'%}" class="primary-button">
-              <div class="text-wrapper">Login</div>
+      <div class="bg-text-wrapper">
+      </div>
+
+      <div class="landing-container">
+        
+        <div class="content-side">
+          <h1 class="main-heading">
+            Welcome to RFU10 
+            <span class="sub-heading">Logistics Management System</span>
+          </h1>
+          <p class="tagline">
+            Let us serve the people of the Philippines for the better. Ensure precision, integrity, and absolute accountability inside asset management workflows.
+          </p>
+          <div class="action-wrapper">
+            <a href="{% url 'login' %}" class="btn-modern">
+              <span>Login </span>
+              <i class="fas fa-arrow-right"></i>
             </a>
           </div>
         </div>
+
+        <div class="graphic-side">
+          <div class="floating-badge-wrapper">
+            <img class="main-seal" src="{% static 'img/RFU10 Logo.png' %}" alt="RFU10 Emblem" />
+            
+            <div class="accent-particle particle-1"></div>
+            <div class="accent-particle particle-2"></div>
+          </div>
+        </div>
+
       </div>
     </div>
+
   </body>
 </html>
