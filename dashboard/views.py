@@ -281,7 +281,7 @@ def dashboard_view(request):
 
     context = {
         # CHANGE THIS LINE HERE: Calculate count dynamically using visible_v
-        "total_assets": total_asset.count() + visible_v.count(),
+        "total_assets": total_asset.count(),
         
         "total_firearms": firearms_all,
         "total_mobility": visible_v.count(),
